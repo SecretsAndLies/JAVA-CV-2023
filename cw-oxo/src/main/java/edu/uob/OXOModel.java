@@ -38,12 +38,19 @@ public class OXOModel {
     }
 
     public void addPlayer(OXOPlayer player) {
-        for (int i = 0; i < players.length; i++) {
+        int len = players.length;
+        for (int i = 0; i < len; i++) {
             if (players[i] == null) {
                 players[i] = player;
                 return;
             }
         }
+        // if you’re here, the arary wasn't big enough. copy it it into a larger one.
+        OXOPlayer[] newPlayers = new OXOPlayer[len+1];
+        System.arraycopy(players,0,newPlayers,0, len);
+        players = newPlayers;
+        addPlayer(player); // hack - since we need to run the top of this method again, we can just run this
+        // recursively. Should never run more than once.
     }
 
     public OXOPlayer getPlayerByNumber(int number) {
@@ -66,7 +73,7 @@ public class OXOModel {
         if(row<0 || row>this.getNumberOfRows()-1){
             return true;
         }
-        if(col<0 || row>this.getNumberOfColumns()-1){
+        if(col<0 || col>this.getNumberOfColumns()-1){
             return true;
         }
         return false;
@@ -94,12 +101,13 @@ public class OXOModel {
         return false;
     }
 
-    public void reset(){
-        for (int i = 0; i < cells.size(); i++) {
-            for (int j = 0; j < cells.get(0).size(); j++) {
-                setCellOwner(i,j,null);
+    public boolean boardHasMove(){
+        for (int i = 0; i < getNumberOfRows(); i++) {
+            if(valueInRow(i)){
+                return true;
             }
         }
+        return false;
     }
 
     public int getNumberOfRows() {
@@ -117,7 +125,6 @@ public class OXOModel {
     public void setCellOwner(int rowNumber, int colNumber, OXOPlayer player) {
         cells.get(rowNumber).set(colNumber,player);
     }
-
     public void setWinThreshold(int winThresh) {
         winThreshold = winThresh;
     }
