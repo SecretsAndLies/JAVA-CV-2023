@@ -9,7 +9,7 @@ public class Database {
     private List<Table> tables;
 
     public Database(String name) {
-        // read the existing folder- populate the list of tables (create if doesn't exist.)
+        // check if a
     }
 
     public List<Table> getTables() {

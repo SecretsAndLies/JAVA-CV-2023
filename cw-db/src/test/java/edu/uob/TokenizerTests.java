@@ -1,27 +1,60 @@
 package edu.uob;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.Duration;
-import java.util.Arrays;
+import java.util.ArrayList;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TokenizerTests {
 
-    // Random name generator - useful for testing "bare earth" queries (i.e. where tables don't previously exist)
-
     @Test
     public void testWhiteSpace() {
-        Tokenizer tokenizer = new Tokenizer();
-        String[] cleanQuery = tokenizer.tokenise(
+        Tokenizer tokenizer = new Tokenizer(
                 "  INSERT  INTO  people   VALUES(  'Simon Lock'  ,35, 'simon@bristol.ac.uk' , 1.8  ) ;   ");
-        // todo make this a test with asserts.
-        System.out.println(Arrays.stream(cleanQuery).toList());
+        ArrayList<String> tokens = tokenizer.getTokens();
+        assertEquals("INSERT", tokens.get(0));
+        assertEquals(";", tokens.get(13));
+        assertEquals(14, tokens.size());
     }
+
+
+    @Test
+    public void testCreateQuery() {
+        Tokenizer tokenizer = new Tokenizer(
+                "  CREATE DATABASE   markbook   ;   ");
+        ArrayList<String> tokens = tokenizer.getTokens();
+        assertEquals("CREATE", tokens.get(0));
+        assertEquals(";", tokens.get(3));
+        assertEquals(4, tokens.size());
+    }
+
+    @Test
+    public void testSelectQuery(){
+        Tokenizer tokenizer = new Tokenizer(
+                " SELECT * FROM    marks    WHERE pass == TRUE;  ");
+        ArrayList<String> tokens = tokenizer.getTokens();
+        assertEquals("SELECT", tokens.get(0));
+        assertEquals("*", tokens.get(1));
+        assertEquals("==", tokens.get(6));
+        assertEquals("TRUE", tokens.get(7));
+        assertEquals(";", tokens.get(8));
+        assertEquals(9, tokens.size());
+    }
+
+    @Test
+    public void testCaseQuery(){
+        Tokenizer tokenizer = new Tokenizer(
+                " sElecT * frOM    marks     WHERe pass == true;  ");
+        ArrayList<String> tokens = tokenizer.getTokens();
+        assertEquals("SELECT", tokens.get(0));
+        assertEquals("*", tokens.get(1));
+        assertEquals("==", tokens.get(6));
+        assertEquals("TRUE", tokens.get(7));
+        assertEquals(";", tokens.get(8));
+        assertEquals(9, tokens.size());
+
+    }
+
+    // test other  queries work
+    //
 
 }
