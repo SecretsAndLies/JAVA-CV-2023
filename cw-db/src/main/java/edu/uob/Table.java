@@ -1,19 +1,33 @@
 package edu.uob;
 
 
+import java.util.ArrayList;
+
 public class Table {
     private int idIndex;
+    private ArrayList<Record> records;
 
     public Table() {
         idIndex = 1;
     }
 
+    // todo: have a think about how records of arbitrary size should be passed into this method.
+    // my guess is I'll need a record type?
     public void addRecord() {
+        // adds the record to the table and increments the id index.
+        idIndex++;
+    }
 
+    public void getRecords(){
+        // fetches the specified records according to the filtering criteria
+        // and adds to the return string?
+    }
+
+    public void modifyRecord(){
+        // searches for a specific record and changes the specified col
     }
 
     public void addCollumn() {
-
     }
 }
 

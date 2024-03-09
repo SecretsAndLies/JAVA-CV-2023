@@ -42,8 +42,8 @@ public class DBServer {
     * <p>This method handles all incoming DB commands and carries out the required actions.
     */
     public String handleCommand(String command) {
-        // TODO implement your server logic here
-        return "[OK]";
+        CommandHandler commandHandler = new CommandHandler(command);
+        return commandHandler.getReturnString();
     }
 
     //  === Methods below handle networking aspects of the project - you will not need to change these ! ===
