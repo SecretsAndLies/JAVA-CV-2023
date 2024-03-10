@@ -1,4 +1,9 @@
-package edu.uob;
+package edu.uob.Model;
+
+import edu.uob.Exceptions.Database.InternalError;
+import edu.uob.Exceptions.Database.AlreadyExists;
+import edu.uob.Exceptions.Database.NotFound;
+import edu.uob.Exceptions.GenericException;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -6,8 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Database {
+
     private String name;
-    File folder;
+    private File folder;
     private ArrayList<Table> tables;
 
     public Database(String name) {
@@ -17,29 +23,26 @@ public class Database {
         this.name = name;
     }
 
-    public void createDatabase(){
-        // check if the directory already exists, if so throw an error.
+    public void createDatabase() throws GenericException {
         if(folder.exists()){
-            //todo: error: folder already exists.
+            throw new AlreadyExists(folder.getName());
         }
         if(!folder.mkdir()){
-            // todo: error: cannot make directory folder.
+            throw new InternalError();
         }
     }
 
-    public void dropDatabase(){
-        // todo: if folder doesn't exist
+    public void dropDatabase() throws GenericException {
         if(!folder.exists()){
-            // todo: error: can't find database folder.
+            throw new NotFound(folder.getName());
         }
         if(!folder.delete()){
-            // todo: error: cannot delete database folder
+            throw new InternalError();
         }
     }
 
-    public void useDatabase(){
-        // todo: this will access the folder and create the underlying tables. It's kinda a constructor.
-
+    public String getName() {
+        return name;
     }
 
     public List<Table> getTables() {

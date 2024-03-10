@@ -1,4 +1,4 @@
-package edu.uob;
+package edu.uob.Model;
 
 import java.util.ArrayList;
 

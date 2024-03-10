@@ -1,8 +1,11 @@
 package edu.uob;
 
+import edu.uob.Controller.CommandHandler;
+import edu.uob.Exceptions.GenericException;
+import edu.uob.Model.Database;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -16,6 +19,7 @@ public class DBServer {
 
     private static final char END_OF_TRANSMISSION = 4;
     private String storageFolderPath;
+    private Database currentDatabase;
 
     public static void main(String args[]) throws IOException {
         DBServer server = new DBServer();
@@ -42,9 +46,24 @@ public class DBServer {
     * <p>This method handles all incoming DB commands and carries out the required actions.
     */
     public String handleCommand(String command) {
-        CommandHandler commandHandler = new CommandHandler(command);
+
+        CommandHandler commandHandler = null;
+        try {
+            commandHandler = new CommandHandler(command, this);
+        } catch (GenericException e) {
+            return e.toString();
+        }
         return commandHandler.getReturnString();
     }
+
+    public Database getCurrentDatabase() {
+        return currentDatabase;
+    }
+
+    public void setCurrentDatabase(Database currentDatabase) {
+        this.currentDatabase = currentDatabase;
+    }
+
 
     //  === Methods below handle networking aspects of the project - you will not need to change these ! ===
 

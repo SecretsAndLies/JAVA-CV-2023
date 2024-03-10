@@ -1,4 +1,4 @@
-package edu.uob;
+package edu.uob.Model;
 
 
 import java.util.ArrayList;
@@ -6,7 +6,9 @@ import java.util.ArrayList;
 public class Table {
     private int idIndex;
     private ArrayList<Record> records;
+    private ArrayList<String> colNames;
 
+    // todo: idIndex is gonna be weird when you are accessing a previously existing table.
     public Table() {
         idIndex = 1;
     }

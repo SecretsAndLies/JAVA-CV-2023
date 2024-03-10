@@ -1,35 +1,29 @@
-package edu.uob;
+package edu.uob.Controller;
 
+import edu.uob.Utils.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Tokenizer {
     private final String[] specialCharacters;
-    private final ArrayList<String> reservedKeywords;
-    private final ArrayList<String> tokens;
+    private final List<String> tokens;
     private String query;
 
     public Tokenizer(String query) {
         this.query = query;
         this.specialCharacters = new String[]{"(", ")", ",", ";"};
         this.tokens = new ArrayList<>();
-        this.reservedKeywords = new ArrayList<>(
-                List.of("USE", "CREATE", "DATABASE", "TABLE", "DROP",
-                        "ALTER", "INSERT", "INTO", "VALUES", "SELECT", "FROM",
-                        "WHERE", "UPDATE", "SET", "DELETE", "JOIN", "ON", "ADD",
-                        "TRUE", "FALSE", "NULL", "AND", "OR", "LIKE"
-                ));
         setup();
         handleReservedKeywords();
     }
-    public ArrayList<String> getTokens() {
+    public List<String> getTokens() {
         return tokens;
     }
 
     private void handleReservedKeywords(){
         for (int i=0; i<tokens.size(); i++){
-            if(reservedKeywords.contains(tokens.get(i).toUpperCase())){
+            if(Utils.isReservedKeyword(tokens.get(i))){
                 tokens.set(i,tokens.get(i).toUpperCase());
             }
         }
@@ -68,5 +62,3 @@ public class Tokenizer {
         return input.split(" ");
     }
 }
-// outputs an arraylist
-// should convert reserved keywords eg select becomes SELECT
