@@ -1,5 +1,8 @@
 package edu.uob;
 
+import edu.uob.Exceptions.DatabaseNotFound;
+import edu.uob.Model.Database;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +10,7 @@ public class CommandHandler {
     private final ArrayList<String> tokens;
     private String returnString;
 
-    public CommandHandler(String query) {
+    public CommandHandler(String query) throws DatabaseNotFound {
         this.tokens = new Tokenizer(query).getTokens();
         this.returnString = "";
 
@@ -24,7 +27,7 @@ public class CommandHandler {
             handleCreateDatabaseCommand();
         }
         if(this.tokens.get(0).equals("DROP") && this.tokens.get(1).equals("DATABASE")){
-            handleDropDatabaseommand();
+            handleDropDatabaseCommand();
         }
         if(this.returnString.isEmpty()){
             this.returnString = "[OK]";
@@ -62,8 +65,8 @@ public class CommandHandler {
         database.createDatabase();
     }
 
-    private void handleDropDatabaseommand() {
-        // todo: this is duplicative of create
+    private void handleDropDatabaseCommand() throws DatabaseNotFound {
+        // todo: this is pretty duplicative of create
         String databaseName  = this.tokens.get(2);
         if(this.isReservedKeyword(databaseName)){
             this.returnString =

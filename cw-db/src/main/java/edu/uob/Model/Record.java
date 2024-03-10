@@ -3,7 +3,7 @@ package edu.uob;
 import java.util.ArrayList;
 
 public class Record {
-    ArrayList<DataField> dataFields;
+    ArrayList<String> data;
     public Record() {
     }
 }
