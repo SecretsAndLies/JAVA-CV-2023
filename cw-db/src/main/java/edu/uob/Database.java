@@ -33,7 +33,7 @@ public class Database {
             // todo: error: can't find database folder.
         }
         if(!folder.delete()){
-            // todo: error: cannot delete database folder.
+            // todo: error: cannot delete database folder
         }
     }
 
