@@ -51,21 +51,28 @@ public class CommandHandler {
     private void handleCreateDatabaseCommand() {
         // eg: CREATE DATABASE t;
         String databaseName  = this.tokens.get(2);
+        // todo: in the future this will raise an error that I catch somehow.
         if(this.isReservedKeyword(databaseName)){
             this.returnString =
                     "[ERROR]: You cannot call a database "+ databaseName +
                             " because it is a reserved keyword in SQL.";
             return;
         }
-        Database database = new Database();
-        database.createDatabase(databaseName);
+        Database database = new Database(databaseName);
+        database.createDatabase();
     }
 
     private void handleDropDatabaseommand() {
-        // eg: DROP DATABASE t;
-
-        // checks if that folder exists. If not, it returns an error.
-        // deletes that folder.
+        // todo: this is duplicative of create
+        String databaseName  = this.tokens.get(2);
+        if(this.isReservedKeyword(databaseName)){
+            this.returnString =
+                    "[ERROR]: You cannot call a database "+ databaseName +
+                            " because it is a reserved keyword in SQL.";
+            return;
+        }
+        Database database = new Database(databaseName);
+        database.dropDatabase();
     }
 }
 

@@ -1,31 +1,45 @@
 package edu.uob;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Database {
     private String name;
-    private List<Table> tables;
+    File folder;
+    private ArrayList<Table> tables;
 
-    public Database() {
-        // todo: have a think about this.
+    public Database(String name) {
+        String storageFolderPath = Paths.get("databases").toAbsolutePath().toString(); // this is a copy of the line in the server.
+        String folderPath = storageFolderPath+File.separator+name;
+        folder = new File(folderPath);
+        this.name = name;
     }
 
-    public void createDatabase(String name){
+    public void createDatabase(){
         // check if the directory already exists, if so throw an error.
-
-        // if not, create the folder
-        // todo: should the initialization of arraylist be here?
-        this.tables = new ArrayList<>();
+        if(folder.exists()){
+            //todo: error: folder already exists.
+        }
+        if(!folder.mkdir()){
+            // todo: error: cannot make directory folder.
+        }
     }
 
-    public void dropDatabase(String name){
+    public void dropDatabase(){
         // todo: if folder doesn't exist
+        if(!folder.exists()){
+            // todo: error: can't find database folder.
+        }
+        if(!folder.delete()){
+            // todo: error: cannot delete database folder.
+        }
     }
 
-    public void useDatabase(String name){
-        // todo: this is kinda like a constructor.
+    public void useDatabase(){
+        // todo: this will access the folder and create the underlying tables. It's kinda a constructor.
+
     }
 
     public List<Table> getTables() {
