@@ -12,7 +12,7 @@ public class Tokenizer {
 
     public Tokenizer(String query) {
         this.query = query;
-        this.specialCharacters = new String[]{"(", ")", ",", ";","==" , ">" , "<" , ">=" , "<=" , "!=" };
+        this.specialCharacters = new String[]{"(", ")", ",", ";","!" , ">" , "<" , "="};
         this.tokens = new ArrayList<>();
         setup();
         handleReservedKeywords();
@@ -58,6 +58,15 @@ public class Tokenizer {
         while (input.contains("  ")) input = input.replaceAll("  ", " ");
         // Again, remove any whitespace from the beginning and end that might have been introduced
         input = input.trim();
+
+        // combine adjacent = =, ! =, < =, and > = to be together with no spaces.
+        String[] specialStrings = new String[]{"= =", "! =", "< =", "> ="};
+        for (String specialString : specialStrings) {
+            if (input.contains(specialString)) {
+                input = input.replace(specialString, specialString.replace(" ", ""));
+            }
+        }
+
         // Finally split on the space char (since there will now ALWAYS be a space between tokens)
         return input.split(" ");
     }

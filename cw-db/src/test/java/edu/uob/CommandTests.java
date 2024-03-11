@@ -1,9 +1,7 @@
 package edu.uob;
 
-import edu.uob.Controller.CommandHandler;
-import edu.uob.Exceptions.Database.AlreadyExists;
+import edu.uob.Controller.Parser;
 import edu.uob.Exceptions.GenericException;
-import edu.uob.Model.Database;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,11 +11,11 @@ public class CommandTests {
     public void testCreateUseDelete() throws GenericException {
         DBServer s = new DBServer();
 
-         new CommandHandler("CREATE DATABASE test;",s);
-         new CommandHandler("USE test;",s);
+         new Parser("CREATE DATABASE test;",s);
+         new Parser("USE test;",s);
          assertNotNull(s.getCurrentDatabase());
          assertEquals(s.getCurrentDatabase().getName(), "test");
-         new CommandHandler("DROP DATABASE test;",s);
+         new Parser("DROP DATABASE test;",s);
          assertNull(s.getCurrentDatabase());
     }
 }

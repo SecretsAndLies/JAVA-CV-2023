@@ -1,6 +1,6 @@
 package edu.uob;
 
-import edu.uob.Controller.CommandHandler;
+import edu.uob.Controller.Parser;
 import edu.uob.Exceptions.GenericException;
 import edu.uob.Model.Database;
 
@@ -46,14 +46,18 @@ public class DBServer {
     * <p>This method handles all incoming DB commands and carries out the required actions.
     */
     public String handleCommand(String command) {
-
-        CommandHandler commandHandler = null;
+        Parser parser = null;
         try {
-            commandHandler = new CommandHandler(command, this);
+            parser = new Parser(command, this);
         } catch (GenericException e) {
             return e.toString();
         }
-        return commandHandler.getReturnString();
+        catch (Exception e){
+            // send the internal error to the server, not to the client.
+            System.err.println(e.toString());
+            return "[ERROR] Something went wrong.";
+        }
+        return parser.getReturnString();
     }
 
     public Database getCurrentDatabase() {

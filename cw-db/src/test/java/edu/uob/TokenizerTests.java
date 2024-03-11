@@ -73,7 +73,45 @@ public class TokenizerTests {
         assertEquals(8, tokens.size());
     }
 
-    // test other  queries work
-    //
+    @Test
+    public void testEqualityQuery(){
+        Tokenizer tokenizer = new Tokenizer(
+                " UPDATE marks SET age = 35 WHERE name == 'Simon'" +
+                        " AND age < 35 AND age>35 AND age>=35 AND age <=35" +
+                        " AND name != 'test'; ");
+        List<String> tokens = tokenizer.getTokens();
+        assertEquals("UPDATE", tokens.get(0));
+        assertEquals("marks", tokens.get(1));
+        assertEquals("SET", tokens.get(2));
+        assertEquals("age", tokens.get(3));
+        assertEquals("=", tokens.get(4));
+        assertEquals("35", tokens.get(5));
+        assertEquals("WHERE", tokens.get(6));
+        assertEquals("name", tokens.get(7));
+        assertEquals("==", tokens.get(8));
+        assertEquals("'Simon'", tokens.get(9));
+        assertEquals("AND", tokens.get(10));
+        assertEquals("age", tokens.get(11));
+        assertEquals("<", tokens.get(12));
+        assertEquals("35", tokens.get(13));
+        assertEquals("AND", tokens.get(14));
+        assertEquals("age", tokens.get(15));
+        assertEquals(">", tokens.get(16));
+        assertEquals("35", tokens.get(17));
+        assertEquals("AND", tokens.get(18));
+        assertEquals("age", tokens.get(19));
+        assertEquals(">=", tokens.get(20));
+        assertEquals("35", tokens.get(21));
+        assertEquals("AND", tokens.get(22));
+        assertEquals("age", tokens.get(23));
+        assertEquals("<=", tokens.get(24));
+        assertEquals("35", tokens.get(25));
+        assertEquals("AND", tokens.get(26));
+        assertEquals("name", tokens.get(27));
+        assertEquals("!=", tokens.get(28));
+        assertEquals("'test'", tokens.get(29));
+        assertEquals(";", tokens.get(30));
+        assertEquals(31, tokens.size());
+    }
 
 }
