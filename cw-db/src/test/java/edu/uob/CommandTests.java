@@ -1,6 +1,7 @@
 package edu.uob;
 
 import edu.uob.Controller.Parser;
+import edu.uob.Exceptions.Database.NotFound;
 import edu.uob.Exceptions.GenericException;
 import org.junit.jupiter.api.Test;
 
@@ -17,5 +18,11 @@ public class CommandTests {
          assertEquals(s.getCurrentDatabase().getName(), "test");
          new Parser("DROP DATABASE test;",s);
          assertNull(s.getCurrentDatabase());
+    }
+
+    @Test
+    public void testUsingNonExistentDB() {
+        DBServer s = new DBServer();
+        assertThrows(NotFound.class, () -> new Parser("USE test;",s));
     }
 }

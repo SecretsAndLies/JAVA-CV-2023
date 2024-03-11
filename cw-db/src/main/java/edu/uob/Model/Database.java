@@ -14,13 +14,27 @@ public class Database {
 
     private String name;
     private File folder;
-    private ArrayList<Table> tables;
+    private List<Table> tables;
 
     public Database(String name) {
         String storageFolderPath = Paths.get("databases").toAbsolutePath().toString(); // this is a copy of the line in the server.
         String folderPath = storageFolderPath+File.separator+name;
         folder = new File(folderPath);
+        populateTables();
         this.name = name;
+    }
+
+    private void populateTables(){
+        this.tables = new ArrayList<>();
+        if(folder.exists()){
+            File[] tableFiles = folder.listFiles();
+            if(tableFiles==null){
+                return;
+            }
+            for (File file : tableFiles){
+                tables.add(new Table(file.getName()));
+            }
+        }
     }
 
     public void createDatabase() throws GenericException {
@@ -30,6 +44,10 @@ public class Database {
         if(!folder.mkdir()){
             throw new InternalError();
         }
+    }
+
+    public boolean exists(){
+        return folder.exists();
     }
 
     public void dropDatabase() throws GenericException {
@@ -50,15 +68,28 @@ public class Database {
     }
 
     public Table getTableByName(String name){
+        for (Table t : tables){
+            if(t.getName().equals(name)){
+                return t;
+            }
+        }
         return null;
     }
 
-    public void addTable() {
-
+    public void addTable(Table table) {
+        tables.add(table);
+//        table.
+        // todo: also write this table to output?
     }
 
-    public void deleteTable() {
-
+    public void deleteTable(String name) throws edu.uob.Exceptions.Table.NotFound {
+        for (Table t : tables){
+            if(t.getName().equals(name)){
+                t.delete();
+                return;
+            }
+        }
+        throw new edu.uob.Exceptions.Table.NotFound(name);
     }
 
 }

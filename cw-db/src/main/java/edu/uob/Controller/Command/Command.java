@@ -12,9 +12,11 @@ public abstract class Command {
     String databaseName;
     String commandType;
     String returnString;
+    DBServer server;
 
     public Command(DBServer server){
         this.returnString="";
+        this.server = server;
     }
 
     public String getReturnString() {

@@ -7,10 +7,38 @@ public class Table {
     private int idIndex;
     private ArrayList<Record> records;
     private ArrayList<String> colNames;
+    private String name;
 
     // todo: idIndex is gonna be weird when you are accessing a previously existing table.
-    public Table() {
+    public Table(String name) {
         idIndex = 1;
+        this.name=createTableName(name);
+        this.colNames=new ArrayList<>();
+        this.records=new ArrayList<>();
+    }
+
+    private String createTableName(String name){
+        // todo check valid name and do the lowercase or whatever.
+        return name;
+    }
+
+    public Table(String name, ArrayList<String> colNames){
+        // todo check valid name?
+        // todo check valid colnames?
+    }
+
+    /* deletes the underlying database folder.*/
+    public void delete(){
+        //todo c.
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    /* Saves the table in memory.*/
+    public void createTable(){
+        // todo: implement
     }
 
     // todo: have a think about how records of arbitrary size should be passed into this method.
