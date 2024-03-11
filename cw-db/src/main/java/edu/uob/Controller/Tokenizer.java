@@ -12,7 +12,7 @@ public class Tokenizer {
 
     public Tokenizer(String query) {
         this.query = query;
-        this.specialCharacters = new String[]{"(", ")", ",", ";"};
+        this.specialCharacters = new String[]{"(", ")", ",", ";","==" , ">" , "<" , ">=" , "<=" , "!=" };
         this.tokens = new ArrayList<>();
         setup();
         handleReservedKeywords();

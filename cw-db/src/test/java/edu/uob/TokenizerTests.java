@@ -57,6 +57,22 @@ public class TokenizerTests {
 
     }
 
+    @Test
+    public void testConditionalQuery(){
+        Tokenizer tokenizer = new Tokenizer(
+                " DELETE FROM marks WHERE mark<40; ");
+        List<String> tokens = tokenizer.getTokens();
+        assertEquals("DELETE", tokens.get(0));
+        assertEquals("FROM", tokens.get(1));
+        assertEquals("marks", tokens.get(2));
+        assertEquals("WHERE", tokens.get(3));
+        assertEquals("mark", tokens.get(4));
+        assertEquals("<", tokens.get(5));
+        assertEquals("40", tokens.get(6));
+        assertEquals(";", tokens.get(7));
+        assertEquals(8, tokens.size());
+    }
+
     // test other  queries work
     //
 
