@@ -2,6 +2,7 @@ package edu.uob.Controller.Command;
 
 import edu.uob.DBServer;
 import edu.uob.Exceptions.Command.MustIncludeDBOrTable;
+import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.Database.ReservedKeyword;
 import edu.uob.Exceptions.GenericException;
 import edu.uob.Exceptions.Table.AlreadyExists;
@@ -34,20 +35,21 @@ public class CreateCommand extends Command {
     // this is constructor for tables with columns.
     public CreateCommand(DBServer server, String name, ArrayList<String> attributeList) throws AlreadyExists {
         super(server);
-        createTable(name);
-        this.colNames=new HashSet<>();
-        for (String s : attributeList){
-            // todo: validate col names
-            if(colNames.contains(s)) {
-                // todo: throw duplicate col names.
-            }
-            colNames.add(s);
-        }
+//        Database db = this.server.getCurrentDatabase();
+//        this.colNames=new ArrayList<>();
+//            for (String s : attributeList){
+//            // todo: validate col names
+//            if(colNames.contains(s)) {
+//                // todo: throw duplicate col names.
+//            }
+//            colNames.add(s);
+//        }
+//        Table t = new Table(name, db, colNames);
     }
 
-    private void createTable(String name) throws AlreadyExists {
-        Table t = new Table(name);
+    private void createTable(String name) throws AlreadyExists, InternalError {
         Database db = this.server.getCurrentDatabase();
+        Table t = new Table(name, db);
         if(db.getTableByName(name)!=null){
             throw new AlreadyExists(name);
         }

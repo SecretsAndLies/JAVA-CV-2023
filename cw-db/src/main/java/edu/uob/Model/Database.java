@@ -9,19 +9,25 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Database {
 
     private String name;
+
     private File folder;
     private List<Table> tables;
 
     public Database(String name) {
+        // todo: file stuff is duplicative.
         String storageFolderPath = Paths.get("databases").toAbsolutePath().toString(); // this is a copy of the line in the server.
         String folderPath = storageFolderPath+File.separator+name;
         folder = new File(folderPath);
         populateTables();
         this.name = name;
+    }
+    public File getFolder() {
+        return folder;
     }
 
     private void populateTables(){
@@ -32,7 +38,7 @@ public class Database {
                 return;
             }
             for (File file : tableFiles){
-                tables.add(new Table(file.getName()));
+                tables.add(new Table(file.getName(), this));
             }
         }
     }
@@ -53,6 +59,11 @@ public class Database {
     public void dropDatabase() throws GenericException {
         if(!folder.exists()){
             throw new NotFound(folder.getName());
+        }
+        for(File f : Objects.requireNonNull(folder.listFiles())){
+            if(!f.delete()) {
+                throw new InternalError();
+            }
         }
         if(!folder.delete()){
             throw new InternalError();
@@ -76,10 +87,9 @@ public class Database {
         return null;
     }
 
-    public void addTable(Table table) {
+    public void addTable(Table table) throws InternalError, edu.uob.Exceptions.Table.AlreadyExists {
         tables.add(table);
-//        table.
-        // todo: also write this table to output?
+        table.createTable();
     }
 
     public void deleteTable(String name) throws edu.uob.Exceptions.Table.NotFound {

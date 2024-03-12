@@ -7,8 +7,8 @@ import java.util.Set;
 
 public abstract class Command {
     List<Condition> conditions;
-    Set<String> colNames;
-    Set<String> tableNames;
+    List<String> colNames;
+    String tableName;
     String databaseName;
     String commandType;
     String returnString;

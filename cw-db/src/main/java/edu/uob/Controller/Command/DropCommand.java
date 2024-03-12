@@ -26,10 +26,13 @@ public class DropCommand extends Command{
             }
         }
         else if(location.equals("TABLE")){
-            // todo:
+            // todo: why do you need to store these things in the overall command structure?
+            Table t = new Table(name, server.getCurrentDatabase());
+            t.delete();
         }
         else{
-            // todo: exception
+            // todo: test thatkeyword isn't DATABASE or TABLE throws this error.
+            throw new InvalidCommand();
         }
 
     }

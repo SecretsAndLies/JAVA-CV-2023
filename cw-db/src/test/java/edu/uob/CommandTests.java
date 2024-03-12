@@ -25,4 +25,22 @@ public class CommandTests {
         DBServer s = new DBServer();
         assertThrows(NotFound.class, () -> new Parser("USE test;",s));
     }
+
+    @Test
+    public void testCreateTable() throws GenericException {
+        DBServer s = new DBServer();
+        // todo: this setup stuff is duplivative. Might want to move it somewhere.
+        new Parser("CREATE DATABASE test;",s);
+        new Parser("USE test;",s);
+        new Parser("CREATE TABLE t;",s);
+        new Parser("DROP TABLE t;",s);
+        //CREATE TABLE marks (name, mark, pass);
+        // INSERT INTO marks VALUES ('Simon', 65, TRUE);
+        // tests that you can
+        new Parser("DROP DATABASE test;",s);
+        // tODO: this tests nothing atm. Validate the actual structure?
+
+    }
+
+
 }
