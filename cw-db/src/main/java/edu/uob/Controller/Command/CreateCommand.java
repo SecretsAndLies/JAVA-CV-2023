@@ -33,18 +33,13 @@ public class CreateCommand extends Command {
     }
 
     // this is constructor for tables with columns.
-    public CreateCommand(DBServer server, String name, ArrayList<String> attributeList) throws AlreadyExists {
+    public CreateCommand(DBServer server, String name, ArrayList<String> attributeList) throws InternalError, AlreadyExists {
         super(server);
-//        Database db = this.server.getCurrentDatabase();
-//        this.colNames=new ArrayList<>();
-//            for (String s : attributeList){
-//            // todo: validate col names
-//            if(colNames.contains(s)) {
-//                // todo: throw duplicate col names.
-//            }
-//            colNames.add(s);
-//        }
-//        Table t = new Table(name, db, colNames);
+        Database db = this.server.getCurrentDatabase();
+        // todo: validate the attribute list.
+        // validates that table doesn't already exist in the db.
+        Table t = new Table(name, attributeList, db);
+        db.addTable(t);
     }
 
     private void createTable(String name) throws AlreadyExists, InternalError {

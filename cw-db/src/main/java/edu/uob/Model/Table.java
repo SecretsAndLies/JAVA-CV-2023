@@ -6,14 +6,16 @@ import edu.uob.Exceptions.Table.AlreadyExists;
 import edu.uob.Exceptions.Table.NotFound;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Table {
     private static Integer idIndex;
-    private ArrayList<Record> records;
-    private ArrayList<String> colNames;
+    private List<Record> records;
+    private List<String> colNames;
     private String name;
     private Database database;
     private File file;
@@ -28,18 +30,32 @@ public class Table {
         this.file = new File(filePath);
     }
 
+    public Table(String name, List<String> colNames, Database database){
+        idIndex = 1;
+        this.name=createTableName(name);
+        // todo validate the col names?
+        this.colNames=colNames;
+        this.records=new ArrayList<>();
+        // todo: duplicate of above constructor.
+        String filePath = database.getFolder() + File.separator+ this.name + ".tab";
+        this.file = new File(filePath);
+    }
+
     private String createTableName(String name){
         // todo any modifcation needed of the table name?
         return name;
     }
-
-    public Table(String name, ArrayList<String> colNames, Database database){
-        idIndex = 1;
-        // todo validate the col names?
-        this.name=createTableName(name);
-        this.colNames=new ArrayList<>();
-        this.records=new ArrayList<>();
-
+    @Override
+    public String toString() {
+        StringBuilder returnString = new StringBuilder();
+        for (String colName : colNames){
+            returnString.append(colName).append('\t');
+        }
+        returnString.append('\n');
+        for (Record record : records){
+            returnString.append(record.toString());
+        }
+        return returnString.toString();
     }
 
     /* deletes the underlying table file.*/
@@ -59,7 +75,20 @@ public class Table {
             throw new AlreadyExists(name);
         }
         try {
-            this.file.createNewFile();
+            if(!this.file.createNewFile()){
+                throw new InternalError();
+            }
+        } catch (IOException e) {
+            throw new InternalError();
+        }
+        // if there are an colNames then write them to the file.
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String colName : colNames){
+            stringBuilder.append(colName).append("\t");
+        }
+        String toWrite = stringBuilder.toString();
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(toWrite);
         } catch (IOException e) {
             throw new InternalError();
         }

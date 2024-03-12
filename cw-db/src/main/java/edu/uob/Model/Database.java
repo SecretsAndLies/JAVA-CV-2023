@@ -14,7 +14,6 @@ import java.util.Objects;
 public class Database {
 
     private String name;
-
     private File folder;
     private List<Table> tables;
 

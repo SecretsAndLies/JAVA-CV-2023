@@ -30,17 +30,20 @@ public class CommandTests {
     public void testCreateTable() throws GenericException {
         DBServer s = new DBServer();
         // todo: this setup stuff is duplivative. Might want to move it somewhere.
+
         new Parser("CREATE DATABASE test;",s);
         new Parser("USE test;",s);
         new Parser("CREATE TABLE t;",s);
         new Parser("DROP TABLE t;",s);
-        //CREATE TABLE marks (name, mark, pass);
-        // INSERT INTO marks VALUES ('Simon', 65, TRUE);
-        // tests that you can
+        new Parser("CREATE TABLE marks (name, mark, pass);",s);
+        assertNotNull(s.getCurrentDatabase());
+        assertNotNull(s.getCurrentDatabase().getTableByName("marks"));
+        String tableToString =  s.getCurrentDatabase().getTableByName("marks").toString();
+        assertTrue(tableToString.contains("name\tmark\tpass"));
         new Parser("DROP DATABASE test;",s);
-        // tODO: this tests nothing atm. Validate the actual structure?
-
     }
 
+
+    // TODO: test         // INSERT INTO marks VALUES ('Simon', 65, TRUE);
 
 }
