@@ -10,6 +10,7 @@ public abstract class Command {
     List<String> colNames;
     String tableName;
     String databaseName;
+    List<String> valueList;
     String commandType;
     String returnString;
     DBServer server;

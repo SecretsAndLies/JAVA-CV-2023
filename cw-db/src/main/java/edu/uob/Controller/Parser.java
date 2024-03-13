@@ -2,11 +2,14 @@ package edu.uob.Controller;
 
 import edu.uob.Controller.Command.CreateCommand;
 import edu.uob.Controller.Command.DropCommand;
+import edu.uob.Controller.Command.InsertCommand;
 import edu.uob.Controller.Command.UseCommand;
 import edu.uob.DBServer;
 import edu.uob.Exceptions.Command.InvalidCommand;
+import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.GenericException;
 import edu.uob.Exceptions.Command.SemiColonNotFound;
+import edu.uob.Exceptions.Table.InsertionError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +51,9 @@ public class Parser {
             if(this.tokens.size()!=3) throw new InvalidCommand();
             this.returnString = new UseCommand(server,this.tokens.get(1)).getReturnString();
         }
+        if(this.tokens.get(0).equals("INSERT")){
+            parseInsertCommand();
+        }
         if(this.returnString.isEmpty()){
             this.returnString = "[OK]";
         }
@@ -55,6 +61,30 @@ public class Parser {
 
     public String getReturnString() {
         return returnString;
+    }
+
+    public void parseInsertCommand() throws GenericException {
+        //INSERT INTO marks VALUES ('Simon', 65, TRUE);
+        // "INSERT " "INTO " [TableName] " VALUES" "(" <ValueList> ")"
+        // todo: could improve this by having a "word missing" error, and then pass the missing word in?
+        if(!tokens.get(1).equals("INTO")){
+            throw new InvalidCommand("Expected 'INTO'");
+        }
+        if(!tokens.get(3).equals("VALUES")){
+            throw new InvalidCommand("Expected 'VALUES'.");
+        }
+        currentTokenIndex=4;
+        String tableName = tokens.get(2);
+        this.returnString = new InsertCommand(server, parseAttributeList(), tableName).getReturnString();
+        isQueryEnd();
+    }
+
+    // expects currentToken to be set at where the semi colon should be
+    private void isQueryEnd() throws InvalidCommand {
+        if(!tokens.get(currentTokenIndex).equals(";")){
+            // todo: should be a semi colon error.
+            throw new InvalidCommand("Semicolon not found in expected location.");
+        }
     }
 
     private void parseCreateCommand() throws GenericException {
@@ -76,7 +106,7 @@ public class Parser {
             }
         }
     }
-
+    // This method expects currentTokenIndex to be at the opening (.
     public ArrayList<String> parseAttributeList() throws InvalidCommand {
         ArrayList<String> attributes = new ArrayList<>();
         if(!tokens.get(currentTokenIndex).equals("(")){

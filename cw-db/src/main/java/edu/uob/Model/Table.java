@@ -3,6 +3,7 @@ package edu.uob.Model;
 
 import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.Table.AlreadyExists;
+import edu.uob.Exceptions.Table.InsertionError;
 import edu.uob.Exceptions.Table.NotFound;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Table {
     private static Integer idIndex;
@@ -25,7 +27,7 @@ public class Table {
         this.name=createTableName(name);
         this.colNames=new ArrayList<>();
         this.records=new ArrayList<>();
-        // todo check if exists?
+        // todo check if exists and if so read the stuff from memory?
         String filePath = database.getFolder() + File.separator+ this.name + ".tab";
         this.file = new File(filePath);
     }
@@ -34,6 +36,7 @@ public class Table {
         idIndex = 1;
         this.name=createTableName(name);
         // todo validate the col names?
+        colNames.add(0,"id");
         this.colNames=colNames;
         this.records=new ArrayList<>();
         // todo: duplicate of above constructor.
@@ -42,15 +45,16 @@ public class Table {
     }
 
     private String createTableName(String name){
-        // todo any modifcation needed of the table name?
+        // todo validate that the name is valid (no spaces or whatever)?
+        // and modify it if needed.
         return name;
     }
     @Override
     public String toString() {
         StringBuilder returnString = new StringBuilder();
-        for (String colName : colNames){
-            returnString.append(colName).append('\t');
-        }
+        returnString.append(colNames.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining("\t")));
         returnString.append('\n');
         for (Record record : records){
             returnString.append(record.toString());
@@ -81,24 +85,35 @@ public class Table {
         } catch (IOException e) {
             throw new InternalError();
         }
-        // if there are an colNames then write them to the file.
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String colName : colNames){
-            stringBuilder.append(colName).append("\t");
+        saveTable();
+    }
+    // adds the record to the table and increments the id index.
+    public void addRecord(List<String> valueList) throws InternalError, InsertionError {
+        // todo check valid valuelist (right number of cols etc in table.)
+        if(valueList.size()+1 != this.colNames.size()){
+            throw new InsertionError("Trying to too many or two few columns.");
         }
-        String toWrite = stringBuilder.toString();
+        for(int i=0; i<valueList.size(); i++){
+            String value = valueList.get(i);
+            if(value.startsWith("'") && value.endsWith("'")){
+                valueList.set(i,value.replace("'",""));
+            }
+        }
+        Record record = new Record(idIndex,valueList);
+        this.records.add(record);
+        saveTable();
+        idIndex++;
+    }
+
+    // saves the table onto disk.
+    public void saveTable() throws InternalError {
+// if there are an colNames then write them to the file.
+        String toWrite = this.toString();
         try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(toWrite);
         } catch (IOException e) {
             throw new InternalError();
         }
-    }
-
-    // todo: have a think about how records of arbitrary size should be passed into this method.
-    // my guess is I'll need a record type?
-    public void addRecord() {
-        // adds the record to the table and increments the id index.
-        idIndex++;
     }
 
     public void getRecords(){

@@ -27,10 +27,8 @@ public class CommandTests {
     }
 
     @Test
-    public void testCreateTable() throws GenericException {
+    public void testBasicTableCommands() throws GenericException {
         DBServer s = new DBServer();
-        // todo: this setup stuff is duplivative. Might want to move it somewhere.
-
         new Parser("CREATE DATABASE test;",s);
         new Parser("USE test;",s);
         new Parser("CREATE TABLE t;",s);
@@ -40,10 +38,18 @@ public class CommandTests {
         assertNotNull(s.getCurrentDatabase().getTableByName("marks"));
         String tableToString =  s.getCurrentDatabase().getTableByName("marks").toString();
         assertTrue(tableToString.contains("name\tmark\tpass"));
-        new Parser("DROP DATABASE test;",s);
+        new Parser("INSERT INTO marks VALUES ('Simon', 65, TRUE);",s);
+        new Parser("INSERT INTO marks VALUES ('David', 12, FALSE);",s);
+        new Parser("INSERT INTO marks VALUES ('Tony', 123, TRUE);",s);
+        assertTrue(s.getCurrentDatabase().getTableByName("marks").toString().contains(
+                "id\tname\tmark\tpass\n" +
+                        "1\tSimon\t65\tTRUE\n"+
+                        "2\tDavid\t12\tFALSE\n"+
+                        "3\tTony\t123\tTRUE\n"));
+       new Parser("DROP DATABASE test;",s);
     }
 
+    //
 
-    // TODO: test         // INSERT INTO marks VALUES ('Simon', 65, TRUE);
 
 }
