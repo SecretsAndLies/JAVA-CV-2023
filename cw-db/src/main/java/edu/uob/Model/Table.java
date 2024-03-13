@@ -52,6 +52,7 @@ public class Table {
     @Override
     public String toString() {
         StringBuilder returnString = new StringBuilder();
+        returnString.append("[OK]");
         returnString.append(colNames.stream()
                 .map(Object::toString)
                 .collect(Collectors.joining("\t")));

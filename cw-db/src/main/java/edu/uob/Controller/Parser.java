@@ -1,9 +1,6 @@
 package edu.uob.Controller;
 
-import edu.uob.Controller.Command.CreateCommand;
-import edu.uob.Controller.Command.DropCommand;
-import edu.uob.Controller.Command.InsertCommand;
-import edu.uob.Controller.Command.UseCommand;
+import edu.uob.Controller.Command.*;
 import edu.uob.DBServer;
 import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.Database.InternalError;
@@ -54,8 +51,19 @@ public class Parser {
         if(this.tokens.get(0).equals("INSERT")){
             parseInsertCommand();
         }
+        if(this.tokens.get(0).equals("SELECT")){
+            parseSelectCommand();
+        }
         if(this.returnString.isEmpty()){
             this.returnString = "[OK]";
+        }
+    }
+
+    private void parseSelectCommand(){
+        // select * from table;
+        // todo: this is bad. Do this the proper recursive way so you catch the edge cases like select blah from table;
+        if(tokens.size()==5){
+            this.returnString = new SelectCommand(server, tokens.get(3)).getReturnString();
         }
     }
 
@@ -63,7 +71,7 @@ public class Parser {
         return returnString;
     }
 
-    public void parseInsertCommand() throws GenericException {
+    private void parseInsertCommand() throws GenericException {
         //INSERT INTO marks VALUES ('Simon', 65, TRUE);
         // "INSERT " "INTO " [TableName] " VALUES" "(" <ValueList> ")"
         // todo: could improve this by having a "word missing" error, and then pass the missing word in?

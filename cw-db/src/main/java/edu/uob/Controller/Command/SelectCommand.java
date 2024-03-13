@@ -1,5 +1,14 @@
 package edu.uob.Controller.Command;
 
-public class SelectCommand {
-    // <Select>          ::=  "SELECT " <WildAttribList> " FROM " [TableName] | "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
+import edu.uob.DBServer;
+
+public class SelectCommand extends Command {
+    // select * from table
+    public SelectCommand(DBServer server, String tableName) {
+        super(server);
+        this.tableName = tableName;
+        this.returnString=server.getCurrentDatabase().getTableByName(this.tableName).toString();
+    }
+//     "SELECT " <AttribList> " FROM " [TableName]
+    //  | "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
 }

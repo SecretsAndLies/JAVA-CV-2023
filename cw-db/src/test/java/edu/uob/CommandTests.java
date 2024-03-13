@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CommandTests {
+    // todo: switch to random names to avoid duplicate weirdness.
     @Test
     public void testCreateUseDelete() throws GenericException {
         DBServer s = new DBServer();
@@ -47,6 +48,22 @@ public class CommandTests {
                         "2\tDavid\t12\tFALSE\n"+
                         "3\tTony\t123\tTRUE\n"));
        new Parser("DROP DATABASE test;",s);
+    }
+
+    @Test
+    public void selectTest(){
+        DBServer s = new DBServer();
+        s.handleCommand("CREATE DATABASE d;");
+        s.handleCommand("USE d;");
+        s.handleCommand("CREATE table h (col1, col2, col3);");
+        s.handleCommand("INSERT INTO h VALUES ('test', FALSE, 2);");
+        assertTrue(s.handleCommand("SELECT * FROM h;").contains(
+                """
+                        id\tcol1\tcol2\tcol3
+                        1\ttest\tFALSE\t2
+                        """));
+        s.handleCommand("DROP DATABASE d;");
+
     }
 
     //
