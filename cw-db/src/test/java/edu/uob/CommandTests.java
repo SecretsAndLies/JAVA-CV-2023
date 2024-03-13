@@ -22,6 +22,23 @@ public class CommandTests {
     }
 
     @Test
+    public void persistAfterRestart() {
+        DBServer s = new DBServer();
+        String randomName = "Test";
+        s.handleCommand("CREATE DATABASE " + randomName + ";");
+        s.handleCommand("USE " + randomName + ";");
+        s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
+        // Create a new server object
+        DBServer server = new DBServer();
+        server.handleCommand("USE " + randomName + ";");
+        String response = server.handleCommand("SELECT * FROM marks;");
+        assertTrue(response.contains("Simon"), "Simon was added to a table and the server restarted - but Simon was not returned by SELECT *");
+        server.handleCommand("DROP DATABASE " + randomName + ";");
+
+    }
+
+    @Test
     public void testUsingNonExistentDB() {
         DBServer s = new DBServer();
         assertThrows(NotFound.class, () -> new Parser("USE test;",s));

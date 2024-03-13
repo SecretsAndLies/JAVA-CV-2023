@@ -17,19 +17,19 @@ public class Database {
     private File folder;
     private List<Table> tables;
 
-    public Database(String name) {
+    public Database(String name) throws InternalError {
         // todo: file stuff is duplicative.
         String storageFolderPath = Paths.get("databases").toAbsolutePath().toString(); // this is a copy of the line in the server.
         String folderPath = storageFolderPath+File.separator+name;
         folder = new File(folderPath);
-        populateTables();
         this.name = name;
+        populateTables();
     }
     public File getFolder() {
         return folder;
     }
 
-    private void populateTables(){
+    private void populateTables() throws InternalError {
         this.tables = new ArrayList<>();
         if(folder.exists()){
             File[] tableFiles = folder.listFiles();
@@ -37,7 +37,8 @@ public class Database {
                 return;
             }
             for (File file : tableFiles){
-                tables.add(new Table(file.getName(), this));
+                int pos = file.getName().lastIndexOf(".");
+                tables.add(new Table(file.getName().substring(0,pos), this));
             }
         }
     }

@@ -6,11 +6,10 @@ import edu.uob.Exceptions.Table.AlreadyExists;
 import edu.uob.Exceptions.Table.InsertionError;
 import edu.uob.Exceptions.Table.NotFound;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,15 +21,40 @@ public class Table {
     private Database database;
     private File file;
 
-    public Table(String name, Database database) {
+    public Table(String name, Database database) throws InternalError {
         idIndex = 1;
         this.name=createTableName(name);
         this.colNames=new ArrayList<>();
         this.records=new ArrayList<>();
-        // todo check if exists and if so read the stuff from memory?
+        this.database = database;
         String filePath = database.getFolder() + File.separator+ this.name + ".tab";
         this.file = new File(filePath);
+        try {
+            readFile();
+        } catch (IOException e) {
+            throw new InternalError();
+        }
     }
+
+
+    // reads the file into the object.
+    private void readFile() throws IOException {
+        if(!file.exists()){
+            return;
+        }
+        FileReader reader = new FileReader(this.file);
+        BufferedReader buffReader = new BufferedReader(reader);
+        String[] columnNames = buffReader.readLine().split("\t");
+        this.colNames.addAll(Arrays.asList(columnNames));
+        while (buffReader.ready()) {
+            // todo: I do no validation on the files. They could have been modified in memory.
+            String[] row = buffReader.readLine().split("\t");
+            Record record = new Record(idIndex, List.of(row));
+            this.records.add(record);
+        }
+        buffReader.close();
+    }
+
 
     public Table(String name, List<String> colNames, Database database){
         idIndex = 1;
@@ -52,7 +76,6 @@ public class Table {
     @Override
     public String toString() {
         StringBuilder returnString = new StringBuilder();
-        returnString.append("[OK]");
         returnString.append(colNames.stream()
                 .map(Object::toString)
                 .collect(Collectors.joining("\t")));
