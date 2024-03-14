@@ -7,7 +7,8 @@ public class SelectCommand extends Command {
     public SelectCommand(DBServer server, String tableName) {
         super(server);
         this.tableName = tableName;
-        this.returnString=server.getCurrentDatabase().getTableByName(this.tableName).toString();
+        // todo: what happens when this gives an error
+        this.returnString = "[OK]" + server.getCurrentDatabase().getTableByName(this.tableName).toString();
     }
 //     "SELECT " <AttribList> " FROM " [TableName]
     //  | "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
