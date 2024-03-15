@@ -14,5 +14,12 @@ public class Utils {
         return reservedKeywords.contains(keyword.toUpperCase());
     }
 
+    //[PlainText]       ::=  [Letter] | [Digit] | [PlainText] [Letter] | [PlainText] [Digit]
+    public static boolean isPlainText(String word){
+        String REGEX = "^[a-zA-Z0-9]+$";
+        return word.matches(REGEX);
+
+    }
+
 
 }

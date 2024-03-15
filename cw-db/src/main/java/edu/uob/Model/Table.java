@@ -2,9 +2,11 @@ package edu.uob.Model;
 
 
 import edu.uob.Exceptions.Database.InternalError;
+import edu.uob.Exceptions.Table.InvalidName;
 import edu.uob.Exceptions.Table.AlreadyExists;
 import edu.uob.Exceptions.Table.InsertionError;
 import edu.uob.Exceptions.Table.NotFound;
+import edu.uob.Utils.Utils;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -21,7 +23,7 @@ public class Table {
     private Database database;
     private File file;
 
-    public Table(String name, Database database) throws InternalError {
+    public Table(String name, Database database) throws InternalError, InvalidName {
         idIndex = 1;
         this.name=createTableName(name);
         this.colNames=new ArrayList<>();
@@ -56,7 +58,7 @@ public class Table {
     }
 
 
-    public Table(String name, List<String> colNames, Database database){
+    public Table(String name, List<String> colNames, Database database) throws InvalidName {
         idIndex = 1;
         this.name=createTableName(name);
         // todo validate the col names?
@@ -68,10 +70,11 @@ public class Table {
         this.file = new File(filePath);
     }
 
-    private String createTableName(String name){
-        // todo validate that the name is valid (no spaces or whatever)?
-        // and modify it if needed.
-        return name;
+    private String createTableName(String name) throws InvalidName {
+        if(!Utils.isPlainText(name)){
+            throw new InvalidName();
+        }        // and modify it if needed.
+        return name.toLowerCase();
     }
     @Override
     public String toString() {

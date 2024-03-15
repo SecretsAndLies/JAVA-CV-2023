@@ -62,7 +62,10 @@ public class Parser {
 
     private void parseSelectCommand() throws NotFound {
         // select * from table;
+
+        //<"SELECT " <WildAttribList> " FROM " [TableName] | "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
         // todo: this is bad. Do this the proper recursive way so you catch the edge cases like select blah from table;
+        // use your new fancy attribute list thing.
         if (tokens.size() == 5) {
             this.returnString = new SelectCommand(server, tokens.get(3)).getReturnString();
         }
@@ -83,8 +86,12 @@ public class Parser {
             throw new InvalidCommand("Expected 'VALUES'.");
         }
         currentTokenIndex = 4;
+        if (!tokens.get(currentTokenIndex).equals("(")) {
+            // todo: test this throws this command if you don't start attribute list with a (
+            throw new InvalidCommand();
+        }
         String tableName = tokens.get(2);
-        this.returnString = new InsertCommand(server, parseAttributeList(), tableName).getReturnString();
+        this.returnString = new InsertCommand(server, parseAttributeList(")"), tableName).getReturnString();
         isQueryEnd();
     }
 
@@ -107,7 +114,11 @@ public class Parser {
                 throw new InvalidCommand();
             }
             currentTokenIndex = 3;
-            this.returnString = new CreateCommand(server, this.tokens.get(2), parseAttributeList()).getReturnString();
+            if (!tokens.get(currentTokenIndex).equals("(")) {
+                // todo: test this throws this command if you don't start attribute list with a (
+                throw new InvalidCommand();
+            }
+            this.returnString = new CreateCommand(server, this.tokens.get(2), parseAttributeList(")")).getReturnString();
             if (!tokens.get(currentTokenIndex).equals(";")) {
                 // todo test the case of CREATE TABLE marks (name, mark, pass) asdasdads;
                 throw new SemiColonNotFound(query);
@@ -115,16 +126,12 @@ public class Parser {
         }
     }
 
-    // This method expects currentTokenIndex to be at the opening (.
-    public ArrayList<String> parseAttributeList() throws InvalidCommand {
+    // This method expects you to be on the first attribute in the list.
+    public ArrayList<String> parseAttributeList(String stopAt) throws InvalidCommand {
         ArrayList<String> attributes = new ArrayList<>();
-        if (!tokens.get(currentTokenIndex).equals("(")) {
-            // todo: test this throws this command if you don't start attribute list with a (
-            throw new InvalidCommand();
-        }
         // go past (
         currentTokenIndex++;
-        while (!tokens.get(currentTokenIndex).equals(")")) {
+        while (!tokens.get(currentTokenIndex).equals(stopAt)) {
             if (currentTokenIndex == tokens.size() - 1) {
                 // todo: test this throws an error when you have queries like create table t ( asdas ;
                 throw new InvalidCommand();
@@ -137,7 +144,7 @@ public class Parser {
             attributes.add(tokens.get(currentTokenIndex));
             currentTokenIndex++;
         }
-        // go past the final ")"
+        // go past the final ends with token.
         currentTokenIndex++;
         return attributes;
     }

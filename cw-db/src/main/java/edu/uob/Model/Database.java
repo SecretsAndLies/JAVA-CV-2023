@@ -2,8 +2,10 @@ package edu.uob.Model;
 
 import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.Database.AlreadyExists;
+import edu.uob.Exceptions.Database.InvalidName;
 import edu.uob.Exceptions.Database.NotFound;
 import edu.uob.Exceptions.GenericException;
+import edu.uob.Utils.Utils;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -17,19 +19,26 @@ public class Database {
     private File folder;
     private List<Table> tables;
 
-    public Database(String name) throws InternalError {
+    public Database(String name) throws GenericException {
         // todo: file stuff is duplicative.
+        setDBName(name);
         String storageFolderPath = Paths.get("databases").toAbsolutePath().toString(); // this is a copy of the line in the server.
-        String folderPath = storageFolderPath+File.separator+name;
+        String folderPath = storageFolderPath+File.separator+this.name;
         folder = new File(folderPath);
-        this.name = name;
         populateTables();
     }
+    private void setDBName(String name) throws InvalidName {
+        if(!Utils.isPlainText(name)){
+            throw new InvalidName();
+        }
+        this.name = name.toLowerCase();
+    }
+
     public File getFolder() {
         return folder;
     }
 
-    private void populateTables() throws InternalError {
+    private void populateTables() throws InternalError, edu.uob.Exceptions.Table.InvalidName {
         this.tables = new ArrayList<>();
         if(folder.exists()){
             File[] tableFiles = folder.listFiles();

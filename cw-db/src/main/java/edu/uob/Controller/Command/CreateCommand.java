@@ -33,7 +33,7 @@ public class CreateCommand extends Command {
     }
 
     // this is constructor for tables with columns.
-    public CreateCommand(DBServer server, String name, ArrayList<String> attributeList) throws InternalError, AlreadyExists {
+    public CreateCommand(DBServer server, String name, ArrayList<String> attributeList) throws GenericException {
         super(server);
         Database db = this.server.getCurrentDatabase();
         // todo: validate the attribute list.
@@ -42,7 +42,7 @@ public class CreateCommand extends Command {
         db.addTable(t);
     }
 
-    private void createTable(String name) throws AlreadyExists, InternalError {
+    private void createTable(String name) throws GenericException {
         Database db = this.server.getCurrentDatabase();
         Table t = new Table(name, db);
         if(db.getTableByName(name)!=null){
