@@ -13,6 +13,10 @@ public class Record {
         data.addAll(valueList);
     }
 
+    public String getByIndex(int index) {
+        return data.get(index);
+    }
+
     @Override
     public String toString() {
         return data.stream()

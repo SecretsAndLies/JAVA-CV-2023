@@ -6,6 +6,7 @@ import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.GenericException;
 import edu.uob.Exceptions.Command.SemiColonNotFound;
+import edu.uob.Exceptions.Table.ColNotFound;
 import edu.uob.Exceptions.Table.InsertionError;
 import edu.uob.Exceptions.Table.NotFound;
 
@@ -60,15 +61,36 @@ public class Parser {
         }
     }
 
-    private void parseSelectCommand() throws NotFound {
+    private void parseSelectCommand() throws NotFound, InvalidCommand, ColNotFound {
         // select * from table;
 
-        //<"SELECT " <WildAttribList> " FROM " [TableName] | "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
-        // todo: this is bad. Do this the proper recursive way so you catch the edge cases like select blah from table;
+        //<"SELECT " <WildAttribList> " FROM " [TableName] |
+        // "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
         // use your new fancy attribute list thing.
-        if (tokens.size() == 5) {
+        currentTokenIndex = 1;
+        ArrayList<String> colList = parseAttributeList("FROM");
+        if (colList.get(0).equals("*")) {
+            if (colList.size() != 1) {
+                throw new InvalidCommand("* cannot be used with other cols.");
+            }
             this.returnString = new SelectCommand(server, tokens.get(3)).getReturnString();
+            currentTokenIndex = 4;
+        } else {
+//            parseWhereStatement();
+            this.returnString = new SelectCommand(server, tokens.get(currentTokenIndex), colList).getReturnString();
         }
+//        isQueryEnd();
+    }
+
+    private void parseWhereStatement() throws InvalidCommand {
+        if (tokens.get(currentTokenIndex).equals(";")) {
+            return;
+        }
+        if (!tokens.get(currentTokenIndex).equals("WHERE")) {
+            throw new InvalidCommand("Expected WHERE or end of query.");
+        }
+
+        // todo: think about how you parse the conditions list.
     }
 
     public String getReturnString() {
@@ -90,6 +112,8 @@ public class Parser {
             // todo: test this throws this command if you don't start attribute list with a (
             throw new InvalidCommand();
         }
+        // go past (
+        currentTokenIndex++;
         String tableName = tokens.get(2);
         this.returnString = new InsertCommand(server, parseAttributeList(")"), tableName).getReturnString();
         isQueryEnd();
@@ -118,6 +142,8 @@ public class Parser {
                 // todo: test this throws this command if you don't start attribute list with a (
                 throw new InvalidCommand();
             }
+            // go past (
+            currentTokenIndex++;
             this.returnString = new CreateCommand(server, this.tokens.get(2), parseAttributeList(")")).getReturnString();
             if (!tokens.get(currentTokenIndex).equals(";")) {
                 // todo test the case of CREATE TABLE marks (name, mark, pass) asdasdads;
@@ -129,8 +155,6 @@ public class Parser {
     // This method expects you to be on the first attribute in the list.
     public ArrayList<String> parseAttributeList(String stopAt) throws InvalidCommand {
         ArrayList<String> attributes = new ArrayList<>();
-        // go past (
-        currentTokenIndex++;
         while (!tokens.get(currentTokenIndex).equals(stopAt)) {
             if (currentTokenIndex == tokens.size() - 1) {
                 // todo: test this throws an error when you have queries like create table t ( asdas ;

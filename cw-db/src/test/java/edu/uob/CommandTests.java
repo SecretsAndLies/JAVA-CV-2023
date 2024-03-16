@@ -80,9 +80,47 @@ public class CommandTests {
                         [OK]
                         id\tcol1\tcol2\tcol3
                         1\ttest\tFALSE\t2
-                        """), "Expected OK and query results. Not got exact match..");
+                        """), "Expected OK and query results. Got:" + ret);
         String ret2 = s.handleCommand("SELECT * FROM hoo;");
         assertTrue(ret2.contains("[ERROR]: Table hoo not found."), "Got " + ret2 + " Instead of expected string.");
+        s.handleCommand("DROP DATABASE d;");
+    }
+
+    @Test
+    void singleColNameSelect() {
+        DBServer s = new DBServer();
+        s.handleCommand("CREATE DATABASE d;");
+        s.handleCommand("USE d;");
+        s.handleCommand("CREATE table h (Col1, Col2, Col3);");
+        s.handleCommand("INSERT INTO h VALUES ('test1', 11, 2);");
+        s.handleCommand("INSERT INTO h VALUES ('test2', 22, 2);");
+        String ret = s.handleCommand("SELECT col2, col1 FROM h;");
+        System.out.println(ret);
+        assertTrue(ret.contains(
+                """
+                        [OK]
+                        Col2\tCol1\t
+                        11\ttest1\t
+                        22\ttest2\t
+                        """), "Expected OK and query results. Not got exact match..");
+        s.handleCommand("DROP DATABASE d;");
+    }
+
+    @Test
+    public void selectColName() {
+        // this also tests case sensitivity stuff.
+        DBServer s = new DBServer();
+        s.handleCommand("CREATE DATABASE d;");
+        s.handleCommand("USE d;");
+        s.handleCommand("CREATE table h (Col1, Col2, Col3);");
+        s.handleCommand("INSERT INTO h VALUES ('test', FALSE, 2);");
+        String ret = s.handleCommand("SELECT col2, id FROM h;");
+        assertTrue(ret.contains(
+                """
+                        [OK]
+                        Col2\tid\t
+                        FALSE\t1\t
+                        """), "Expected OK and query results. Not got exact match..");
         s.handleCommand("DROP DATABASE d;");
     }
 
