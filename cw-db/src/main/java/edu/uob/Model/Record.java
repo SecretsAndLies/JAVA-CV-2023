@@ -17,6 +17,14 @@ public class Record {
         return data.get(index);
     }
 
+    public void addCol() {
+        data.add("");
+    }
+
+    public void removeCol(int i) {
+        data.remove(i);
+    }
+
     @Override
     public String toString() {
         return data.stream()

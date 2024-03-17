@@ -3,6 +3,7 @@ package edu.uob;
 import edu.uob.Controller.Parser;
 import edu.uob.Exceptions.Database.NotFound;
 import edu.uob.Exceptions.GenericException;
+import edu.uob.Model.Table;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,6 +124,58 @@ public class CommandTests {
                         """), "Expected OK and query results. Not got exact match..");
         s.handleCommand("DROP DATABASE d;");
     }
+
+    @Test
+    public void alterTable() {
+        DBServer s = new DBServer();
+        s.handleCommand("CREATE DATABASE d;");
+        s.handleCommand("USE d;");
+        s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Rob', 35, FALSE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE);");
+        s.handleCommand("ALTER TABLE marks ADD age;");
+        String ret = s.handleCommand("SELEcT * from marks;");
+        assertTrue(ret.contains("id\tname\tmark\tpass\tage"));
+        s.handleCommand("ALTER TABLE marks DROP mark;");
+        ret = s.handleCommand("SELEcT * from marks;");
+        assertTrue(ret.contains("id\tname\tpass\tage"));
+
+        s.handleCommand("DROP DATABASE d;");
+
+    }
+
+    @Test
+    public void selectWithCondition() {
+        DBServer s = new DBServer();
+        s.handleCommand("CREATE DATABASE d;");
+        s.handleCommand("USE d;");
+        s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Rob', 35, FALSE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE);");
+
+
+        String ret = s.handleCommand("SELECT * FROM marks WHERE name != 'Sion';");
+        System.out.println(ret);
+//        id	name	mark	pass
+//1	Simon	65	TRUE
+//3	Rob	35	FALSE
+//4	Chris	20	FALSE
+        s.handleCommand("DROP DATABASE d;");
+    }
+
+
+//    <Condition>       ::=  "(" <Condition> <BoolOperator> <Condition> ")" |
+//    <Condition> <BoolOperator> <Condition> |
+//    "(" [AttributeName] <Comparator> [Value] ")" |
+//    [AttributeName] <Comparator> [Value]
+//
+//<BoolOperator>    ::= "AND" | "OR"
+//
+//<Comparator>      ::=  "==" | ">" | "<" | ">=" | "<=" | "!=" | " LIKE "
 
     //
 

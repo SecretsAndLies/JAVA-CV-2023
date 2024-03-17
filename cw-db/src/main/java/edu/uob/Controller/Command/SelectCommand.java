@@ -27,8 +27,8 @@ public class SelectCommand extends Command {
             throw new NotFound(this.tableName);
         }
         this.returnString = "[OK]\n" + t.getColumns(columns);
-
     }
+
 //     "SELECT " <AttribList> " FROM " [TableName]
     //  | "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
 }

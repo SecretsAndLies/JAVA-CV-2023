@@ -1,6 +1,7 @@
 package edu.uob.Model;
 
 
+import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.Table.*;
 import edu.uob.Utils.Utils;
@@ -55,7 +56,8 @@ public class Table {
         while (buffReader.ready()) {
             // todo: I do no validation on the files. They could have been modified in memory.
             String[] row = buffReader.readLine().split("\t");
-            Record record = new Record(idIndex, List.of(row));
+            // this is nasty, it grabs the first col as the id.
+            Record record = new Record(Integer.valueOf(row[0]), List.of(row).subList(1, row.length));
             this.records.add(record);
         }
         buffReader.close();
@@ -147,6 +149,28 @@ public class Table {
         } catch (IOException e) {
             throw new InternalError();
         }
+    }
+
+    public void addCol(String colName) throws InvalidCommand, InternalError {
+        // todo: duplicate colname handling?
+        if (!Utils.isPlainText(colName)) {
+            throw new InvalidCommand("column name is invalid");
+        }
+        colNames.add(colName);
+        for (Record r : records) {
+            r.addCol();
+        }
+        this.saveTable();
+    }
+
+    public void removeCol(String colName) throws ColNotFound, InternalError {
+        int index = colNames.indexOf(getCaseSensitiveColName(colName));
+        colNames.remove(colName);
+        for (Record r : records) {
+            r.removeCol(index);
+        }
+        this.saveTable();
+
     }
 
     public String getColumns(List<String> colNames) throws ColNotFound {

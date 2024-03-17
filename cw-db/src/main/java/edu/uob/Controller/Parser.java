@@ -8,6 +8,7 @@ import edu.uob.Exceptions.GenericException;
 import edu.uob.Exceptions.Command.SemiColonNotFound;
 import edu.uob.Exceptions.Table.ColNotFound;
 import edu.uob.Exceptions.Table.InsertionError;
+import edu.uob.Exceptions.Table.InvalidName;
 import edu.uob.Exceptions.Table.NotFound;
 
 import java.util.ArrayList;
@@ -56,9 +57,21 @@ public class Parser {
         if (this.tokens.get(0).equals("SELECT")) {
             parseSelectCommand();
         }
+        if (this.tokens.get(0).equals("ALTER")) {
+            parseAlterCommand();
+        }
         if (this.returnString.isEmpty()) {
             this.returnString = "[OK]";
         }
+    }
+
+    private void parseAlterCommand() throws InvalidCommand, InvalidName, InternalError, ColNotFound {
+        //  "ALTER " "TABLE " [TableName] " " <AlterationType> " " [AttributeName]
+        if (!this.tokens.get(1).equals("TABLE")) {
+            throw new InvalidCommand("Expected TABLE");
+        }
+        this.returnString = new AlterCommand(server, tokens.get(2), tokens.get(3), tokens.get(4)).getReturnString();
+
     }
 
     private void parseSelectCommand() throws NotFound, InvalidCommand, ColNotFound {
@@ -66,7 +79,7 @@ public class Parser {
 
         //<"SELECT " <WildAttribList> " FROM " [TableName] |
         // "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
-        // use your new fancy attribute list thing.
+        // todo: this needs some cleaning up before you can do attributes.
         currentTokenIndex = 1;
         ArrayList<String> colList = parseAttributeList("FROM");
         if (colList.get(0).equals("*")) {
