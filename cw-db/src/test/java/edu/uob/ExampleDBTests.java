@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.time.Duration;
 
 public class ExampleDBTests {
@@ -21,14 +23,16 @@ public class ExampleDBTests {
     // Random name generator - useful for testing "bare earth" queries (i.e. where tables don't previously exist)
     private String generateRandomName() {
         String randomName = "";
-        for(int i=0; i<10 ;i++) randomName += (char)( 97 + (Math.random() * 25.0));
+        for (int i = 0; i < 10; i++) randomName += (char) (97 + (Math.random() * 25.0));
         return randomName;
     }
 
     private String sendCommandToServer(String command) {
         // Try to send a command to the server - this call will timeout if it takes too long (in case the server enters an infinite loop)
-        return assertTimeoutPreemptively(Duration.ofMillis(1000), () -> { return server.handleCommand(command);},
-        "Server took too long to respond (probably stuck in an infinite loop)");
+        return assertTimeoutPreemptively(Duration.ofMillis(1000), () -> {
+                    return server.handleCommand(command);
+                },
+                "Server took too long to respond (probably stuck in an infinite loop)");
     }
 
     // A basic test that creates a database, creates a table, inserts some test data, then queries it.
@@ -61,11 +65,11 @@ public class ExampleDBTests {
         sendCommandToServer("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
         String response = sendCommandToServer("SELECT id FROM marks WHERE name == 'Simon';");
         // Convert multi-lined responses into just a single line
-        String singleLine = response.replace("\n"," ").trim();
+        String singleLine = response.replace("\n", " ").trim();
         // Split the line on the space character
         String[] tokens = singleLine.split(" ");
         // Check that the very last token is a number (which should be the ID of the entry)
-        String lastToken = tokens[tokens.length-1];
+        String lastToken = tokens[tokens.length - 1];
         try {
             Integer.parseInt(lastToken);
         } catch (NumberFormatException nfe) {

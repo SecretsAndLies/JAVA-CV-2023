@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class Command {
-    List<Condition> conditions;
     List<String> colNames;
     String tableName;
     String databaseName;
@@ -15,8 +14,8 @@ public abstract class Command {
     String returnString;
     DBServer server;
 
-    public Command(DBServer server){
-        this.returnString="";
+    public Command(DBServer server) {
+        this.returnString = "";
         this.server = server;
     }
 

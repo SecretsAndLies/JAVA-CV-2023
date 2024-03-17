@@ -1,6 +1,7 @@
 package edu.uob.Model;
 
 
+import edu.uob.DBServer;
 import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.Database.ReservedKeyword;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class Table {
     private static Integer idIndex;
-    private final List<Record> records;
+    private List<Record> records;
     private final List<String> colNames;
     private final String name;
     private Database database;
@@ -131,7 +132,6 @@ public class Table {
 
     // adds the record to the table and increments the id index.
     public void addRecord(List<String> valueList) throws InternalError, InsertionError {
-        // todo check valid valuelist (right number of cols etc in table.)
         if (valueList.size() + 1 != this.colNames.size()) {
             throw new InsertionError("Trying to too many or two few columns.");
         }
@@ -147,6 +147,41 @@ public class Table {
         idIndex++;
     }
 
+    // creates an in memory table with the given records.
+    public Table(List<String> cols, Database db, List<Record> records) {
+        this.records = records;
+        this.colNames = cols;
+        this.database = db;
+        this.name = "temp";
+        this.file = null;
+    }
+
+    // creates a new table that's filder .
+    public Table filterWithCondtion(ArrayList<String> condition) throws InternalError, InvalidName {
+        Table table = new Table(this.colNames, this.database, this.records);
+        if (condition.size() != 3) {
+            throw new InternalError("Multiple conditions not supported");
+        }
+        String colName = condition.get(0);
+        String operator = condition.get(1);
+        String value = condition.get(2);
+        if (value.contains("'")) {
+            value = value.replace("'", "");
+        }
+        int colIndex = table.colNames.indexOf(colName);
+        String finalValue = value;
+        if (operator.equals("==")) {
+            // go through the records. Remove any that do not match the condition.
+            table.records.removeIf(record -> !record.getByIndex(colIndex).equals(finalValue));
+        }
+        if (operator.equals("!=")) {
+            // go through the records. Remove any that do match the condition.
+            table.records.removeIf(record -> record.getByIndex(colIndex).equals(finalValue));
+        }
+        return table;
+        // "==" | ">" | "<" | ">=" | "<=" | "!=" | " LIKE "
+
+    }
 
     // saves the table onto disk.
     public void saveTable() throws InternalError {
@@ -160,7 +195,9 @@ public class Table {
     }
 
     public void addCol(String colName) throws InvalidCommand, InternalError {
-        // todo: duplicate colname handling?
+        if (containsColNonCaseSensitive(colName)) {
+            throw new InvalidCommand("trying to add a duplicative column name.");
+        }
         if (!Utils.isPlainText(colName)) {
             throw new InvalidCommand("column name is invalid");
         }
@@ -195,6 +232,17 @@ public class Table {
             colsAsString += "\n";
         }
         return colsAsString;
+    }
+
+    private boolean containsColNonCaseSensitive(String name) {
+        boolean found = false;
+        for (String colName : colNames) {
+            if (colName.equalsIgnoreCase(name)) {
+                found = true;
+                break;
+            }
+        }
+        return found;
     }
 
     private String getCaseSensitiveColName(String name) throws ColNotFound {

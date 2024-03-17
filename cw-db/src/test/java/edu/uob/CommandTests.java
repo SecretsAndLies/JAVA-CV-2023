@@ -96,7 +96,7 @@ public class CommandTests {
         s.handleCommand("INSERT INTO h VALUES ('test1', 11, 2);");
         s.handleCommand("INSERT INTO h VALUES ('test2', 22, 2);");
         String ret = s.handleCommand("SELECT col2, col1 FROM h;");
-        System.out.println(ret);
+        s.handleCommand("DROP DATABASE d;");
         assertTrue(ret.contains(
                 """
                         [OK]
@@ -104,7 +104,6 @@ public class CommandTests {
                         11\ttest1\t
                         22\ttest2\t
                         """), "Expected OK and query results. Not got exact match..");
-        s.handleCommand("DROP DATABASE d;");
     }
 
     @Test
@@ -135,13 +134,23 @@ public class CommandTests {
         s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
         s.handleCommand("INSERT INTO marks VALUES ('Rob', 35, FALSE);");
         s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE);");
+        String rer = s.handleCommand("INSERT INTO marks VALUES 'Chris', 20, FALSE);");
+        assertTrue(rer.contains("ERROR"), "MAlformed query no starting brackets");
+        rer = s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE;");
+        assertTrue(rer.contains("ERROR"), "MAlformed query no ending brackets");
         s.handleCommand("ALTER TABLE marks ADD age;");
         String ret = s.handleCommand("SELEcT * from marks;");
         assertTrue(ret.contains("id\tname\tmark\tpass\tage"));
         s.handleCommand("ALTER TABLE marks DROP mark;");
         ret = s.handleCommand("SELEcT * from marks;");
         assertTrue(ret.contains("id\tname\tpass\tage"));
-
+        ret = s.handleCommand("ALTER TABLE marks ADD Age;");
+        assertTrue(ret.contains("ERROR"), "adding a duplicate column should fail");
+        ret = s.handleCommand("CREATE TABLE t (name, mark, pass) assad;");
+        assertTrue(ret.contains("ERROR"), "extra stuff after attribute list should fail");
+        ret = s.handleCommand("CREATE TABLE j (name, , pass);");
+        // todo: right now my parser doesn't catch this.
+//        assertTrue(ret.contains("ERROR"), "colnames must contain something.");
         s.handleCommand("DROP DATABASE d;");
 
     }
@@ -154,13 +163,71 @@ public class CommandTests {
         s.handleCommand("CREATE TABLE marks (name, mark, pass);");
         s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
         s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
-        s.handleCommand("INSERT INTO marks VALUES ('Rob', 35, FALSE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Rob', 36, FALSE);");
         s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE);");
+        String ret = s.handleCommand("SELECT * FROM marks;");
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        assertTrue(ret.contains("Chris"), "expected output with C but got " + ret);
 
-
-        String ret = s.handleCommand("SELECT * FROM marks WHERE name != 'Sion';");
-        s.handleCommand("DROP DATABASE d;");
+        ret = s.handleCommand("SELECT * FROM marks WHERE name == 'Simon';");
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
         assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE name != 'Sion';");
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE mark <65;");
+        //assertFalse(ret.contains("Simon"), "expected output with no Simon but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE mark >55;");
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE mark <= 65;");
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE mark >= 65;");
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE name like 'on';");
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        //assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
+        //assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE (pass == FALSE) AND (mark > 35);");
+        //assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        //assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE (pass == TRUE) OR (age > 35);");
+        //assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        //assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
+
+        ret = s.handleCommand("SELECT name FROM marks WHERE name != 'Sion';");
+        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE mark <65;");
+        //assertFalse(ret.contains("Simon"), "expected output with no Simon but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE mark >55;");
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE name == 'Simon';");
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE mark <= 65;");
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE mark >= 65;");
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE name like 'on';");
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        //assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
+        //assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE (pass == FALSE) AND (mark > 35);");
+        //assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        //assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE (pass == TRUE) OR (age > 35);");
+        //assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        //assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
+
+
+        s.handleCommand("DROP DATABASE d;");
     }
 
 
@@ -172,6 +239,11 @@ public class CommandTests {
         s.handleCommand("CREATE TABLE marks (name, mark, pass);");
         String ret = s.handleCommand("SELECT test from marks;");
         assertTrue(ret.contains("ERROR"), "Unknown column didn't return error.");
+        ret = s.handleCommand("INSERT INTO marks VALUES ('Simon', 65);");
+        assertTrue(ret.contains("ERROR"), "Inserting too few cols didn't return error.");
+        ret = s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE, TRUE);");
+        assertTrue(ret.contains("ERROR"), "Inserting too many cols didn't return error.");
+
         ret = s.handleCommand("SELECT mark from d;");
         assertTrue(ret.contains("ERROR"), "Unknown table didn't return error.");
         ret = s.handleCommand("CREATE TABLE test (name, pass, Name);");

@@ -20,15 +20,15 @@ public class Database {
     private List<Table> tables;
 
     public Database(String name) throws GenericException {
-        // todo: file stuff is duplicative.
         setDBName(name);
         String storageFolderPath = Paths.get("databases").toAbsolutePath().toString(); // this is a copy of the line in the server.
-        String folderPath = storageFolderPath+File.separator+this.name;
+        String folderPath = storageFolderPath + File.separator + this.name;
         folder = new File(folderPath);
         populateTables();
     }
+
     private void setDBName(String name) throws InvalidName {
-        if(!Utils.isPlainText(name)){
+        if (!Utils.isPlainText(name)) {
             throw new InvalidName();
         }
         this.name = name.toLowerCase();
@@ -40,41 +40,41 @@ public class Database {
 
     private void populateTables() throws InternalError, edu.uob.Exceptions.Table.InvalidName {
         this.tables = new ArrayList<>();
-        if(folder.exists()){
+        if (folder.exists()) {
             File[] tableFiles = folder.listFiles();
-            if(tableFiles==null){
+            if (tableFiles == null) {
                 return;
             }
-            for (File file : tableFiles){
+            for (File file : tableFiles) {
                 int pos = file.getName().lastIndexOf(".");
-                tables.add(new Table(file.getName().substring(0,pos), this));
+                tables.add(new Table(file.getName().substring(0, pos), this));
             }
         }
     }
 
     public void createDatabase() throws GenericException {
-        if(folder.exists()){
+        if (folder.exists()) {
             throw new AlreadyExists(folder.getName());
         }
-        if(!folder.mkdir()){
+        if (!folder.mkdir()) {
             throw new InternalError();
         }
     }
 
-    public boolean exists(){
+    public boolean exists() {
         return folder.exists();
     }
 
     public void dropDatabase() throws GenericException {
-        if(!folder.exists()){
+        if (!folder.exists()) {
             throw new NotFound(folder.getName());
         }
-        for(File f : Objects.requireNonNull(folder.listFiles())){
-            if(!f.delete()) {
+        for (File f : Objects.requireNonNull(folder.listFiles())) {
+            if (!f.delete()) {
                 throw new InternalError();
             }
         }
-        if(!folder.delete()){
+        if (!folder.delete()) {
             throw new InternalError();
         }
     }
@@ -87,9 +87,9 @@ public class Database {
         return tables;
     }
 
-    public Table getTableByName(String name){
-        for (Table t : tables){
-            if(t.getName().equals(name)){
+    public Table getTableByName(String name) {
+        for (Table t : tables) {
+            if (t.getName().equals(name)) {
                 return t;
             }
         }
@@ -102,8 +102,8 @@ public class Database {
     }
 
     public void deleteTable(String name) throws edu.uob.Exceptions.Table.NotFound {
-        for (Table t : tables){
-            if(t.getName().equals(name)){
+        for (Table t : tables) {
+            if (t.getName().equals(name)) {
                 t.delete();
                 return;
             }

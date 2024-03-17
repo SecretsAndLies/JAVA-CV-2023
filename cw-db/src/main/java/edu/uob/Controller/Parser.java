@@ -74,35 +74,54 @@ public class Parser {
 
     }
 
-    private void parseSelectCommand() throws NotFound, InvalidCommand, ColNotFound {
-        // select * from table;
-
+    private void parseSelectCommand() throws NotFound, InvalidCommand, ColNotFound, InternalError, InvalidName {
         //<"SELECT " <WildAttribList> " FROM " [TableName] |
         // "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
-        // todo: this needs some cleaning up before you can do attributes.
+        //<Condition>       ::=  "(" <Condition> <BoolOperator> <Condition> ")" |
+        // <Condition> <BoolOperator> <Condition>
+        // | "(" [AttributeName] <Comparator> [Value] ")"
+        // | [AttributeName] <Comparator> [Value]
+        //<BoolOperator>    ::= "AND" | "OR"
+        //<Comparator>      ::=  "==" | ">" | "<" | ">=" | "<=" | "!=" | " LIKE "
         currentTokenIndex = 1;
         ArrayList<String> colList = parseAttributeList("FROM");
         if (colList.get(0).equals("*")) {
             if (colList.size() != 1) {
                 throw new InvalidCommand("* cannot be used with other cols.");
             }
-            this.returnString = new SelectCommand(server, tokens.get(3)).getReturnString();
             currentTokenIndex = 4;
+            ArrayList<String> conditions = parseWhereStatement();
+            if (conditions.isEmpty()) {
+                this.returnString = new SelectCommand(server, tokens.get(3)).getReturnString();
+            }
+            // todo this won't handle bracketed expresssions.
+            if (conditions.size() == 3) {
+                this.returnString = new SelectCommand(server, tokens.get(3), colList, conditions).getReturnString();
+            }
         } else {
-//            parseWhereStatement();
-            this.returnString = new SelectCommand(server, tokens.get(currentTokenIndex), colList).getReturnString();
+            int tableNameIndex = currentTokenIndex;
+            currentTokenIndex++; // go past the table name.
+            ArrayList<String> conditions = parseWhereStatement();
+            this.returnString = new SelectCommand(server, tokens.get(tableNameIndex), colList, conditions).getReturnString();
         }
-//        isQueryEnd();
+        isQueryEnd();
     }
 
-    private void parseWhereStatement() throws InvalidCommand {
+    private ArrayList<String> parseWhereStatement() throws InvalidCommand {
+        ArrayList<String> condtions = new ArrayList<>();
         if (tokens.get(currentTokenIndex).equals(";")) {
-            return;
+            return condtions;
         }
         if (!tokens.get(currentTokenIndex).equals("WHERE")) {
             throw new InvalidCommand("Expected WHERE or end of query.");
         }
+        currentTokenIndex++; // go past where.
+        while (!tokens.get(currentTokenIndex).equals(";")) {
+            condtions.add(tokens.get(currentTokenIndex));
+            currentTokenIndex++;
+        }
 
+        return condtions;
         // todo: think about how you parse the conditions list.
     }
 
@@ -113,7 +132,6 @@ public class Parser {
     private void parseInsertCommand() throws GenericException {
         //INSERT INTO marks VALUES ('Simon', 65, TRUE);
         // "INSERT " "INTO " [TableName] " VALUES" "(" <ValueList> ")"
-        // todo: could improve this by having a "word missing" error, and then pass the missing word in?
         if (!tokens.get(1).equals("INTO")) {
             throw new InvalidCommand("Expected 'INTO'");
         }
@@ -122,7 +140,6 @@ public class Parser {
         }
         currentTokenIndex = 4;
         if (!tokens.get(currentTokenIndex).equals("(")) {
-            // todo: test this throws this command if you don't start attribute list with a (
             throw new InvalidCommand();
         }
         // go past (
@@ -135,7 +152,6 @@ public class Parser {
     // expects currentToken to be set at where the semi colon should be
     private void isQueryEnd() throws InvalidCommand {
         if (!tokens.get(currentTokenIndex).equals(";")) {
-            // todo: should be a semi colon error.
             throw new InvalidCommand("Semicolon not found in expected location.");
         }
     }
@@ -152,14 +168,12 @@ public class Parser {
             }
             currentTokenIndex = 3;
             if (!tokens.get(currentTokenIndex).equals("(")) {
-                // todo: test this throws this command if you don't start attribute list with a (
                 throw new InvalidCommand();
             }
             // go past (
             currentTokenIndex++;
             this.returnString = new CreateCommand(server, this.tokens.get(2), parseAttributeList(")")).getReturnString();
             if (!tokens.get(currentTokenIndex).equals(";")) {
-                // todo test the case of CREATE TABLE marks (name, mark, pass) asdasdads;
                 throw new SemiColonNotFound(query);
             }
         }
@@ -170,7 +184,6 @@ public class Parser {
         ArrayList<String> attributes = new ArrayList<>();
         while (!tokens.get(currentTokenIndex).equals(stopAt)) {
             if (currentTokenIndex == tokens.size() - 1) {
-                // todo: test this throws an error when you have queries like create table t ( asdas ;
                 throw new InvalidCommand();
             }
             // todo: this would validate weird stuff like "(,,,test,)
