@@ -3,23 +3,22 @@ package edu.uob.Model;
 
 import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.Database.InternalError;
+import edu.uob.Exceptions.Database.ReservedKeyword;
 import edu.uob.Exceptions.Table.*;
 import edu.uob.Utils.Utils;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Table {
     private static Integer idIndex;
-    private List<Record> records;
-    private List<String> colNames;
-    private String name;
+    private final List<Record> records;
+    private final List<String> colNames;
+    private final String name;
     private Database database;
-    private File file;
+    private final File file;
 
     public Table(String name, Database database) throws InternalError, InvalidName {
         idIndex = 1;
@@ -64,14 +63,22 @@ public class Table {
     }
 
 
-    public Table(String name, List<String> colNames, Database database) throws InvalidName {
+    public Table(String name, List<String> colNames, Database database) throws InvalidName, InvalidCommand, ReservedKeyword {
         idIndex = 1;
         this.name = createTableName(name);
-        // todo validate the col names?
+        Set<String> cleanCols = new HashSet<>();
+        for (String colName : colNames) {
+            if (cleanCols.contains(colName.toLowerCase())) {
+                throw new InvalidCommand("Contains duplicate column.");
+            }
+            if (Utils.isReservedKeyword(colName)) {
+                throw new ReservedKeyword(colName);
+            }
+            cleanCols.add(colName);
+        }
         colNames.add(0, "id");
         this.colNames = colNames;
         this.records = new ArrayList<>();
-        // todo: duplicate of above constructor.
         String filePath = database.getFolder() + File.separator + this.name + ".tab";
         this.file = new File(filePath);
     }
@@ -139,6 +146,7 @@ public class Table {
         saveTable();
         idIndex++;
     }
+
 
     // saves the table onto disk.
     public void saveTable() throws InternalError {

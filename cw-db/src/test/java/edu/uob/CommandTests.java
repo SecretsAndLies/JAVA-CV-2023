@@ -159,12 +159,31 @@ public class CommandTests {
 
 
         String ret = s.handleCommand("SELECT * FROM marks WHERE name != 'Sion';");
-        System.out.println(ret);
-//        id	name	mark	pass
-//1	Simon	65	TRUE
-//3	Rob	35	FALSE
-//4	Chris	20	FALSE
         s.handleCommand("DROP DATABASE d;");
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+    }
+
+
+    @Test
+    public void errorTests() {
+        DBServer s = new DBServer();
+        s.handleCommand("CREATE DATABASE d;");
+        s.handleCommand("USE d;");
+        s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        String ret = s.handleCommand("SELECT test from marks;");
+        assertTrue(ret.contains("ERROR"), "Unknown column didn't return error.");
+        ret = s.handleCommand("SELECT mark from d;");
+        assertTrue(ret.contains("ERROR"), "Unknown table didn't return error.");
+        ret = s.handleCommand("CREATE TABLE test (name, pass, Name);");
+        assertTrue(ret.contains("ERROR"), "duplicate colnames should error.");
+        ret = s.handleCommand("CREATE TABLE test (create, pass, Name);");
+        s.handleCommand("DROP DATABASE d;");
+        assertTrue(ret.contains("ERROR"), "creating table with reserved keywords should error..");
+
+        ret = s.handleCommand("USE d;");
+        assertTrue(ret.contains("ERROR"), "can't use a dropped db.");
+
+
     }
 
 
