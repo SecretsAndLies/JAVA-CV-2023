@@ -3,6 +3,7 @@ package edu.uob.Controller.Command;
 import edu.uob.DBServer;
 import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.Database.InternalError;
+import edu.uob.Exceptions.GenericException;
 import edu.uob.Exceptions.Table.ColNotFound;
 import edu.uob.Exceptions.Table.InvalidName;
 import edu.uob.Exceptions.Table.NotFound;
@@ -22,37 +23,38 @@ public class SelectCommand extends Command {
         this.returnString = "[OK]\n" + server.getCurrentDatabase().getTableByName(this.tableName).toString();
     }
 
-    public SelectCommand(DBServer server, String tableName, ArrayList<String> columns) throws NotFound, ColNotFound {
+    public SelectCommand(DBServer server, String tableName, ArrayList<String> columns, ArrayList<String> conditions) throws GenericException {
         super(server);
         this.tableName = tableName;
+        this.conditions = conditions;
+        this.colNames = columns;
         Table t = server.getCurrentDatabase().getTableByName(this.tableName);
+        this.table = t;
         if (t == null) {
             throw new NotFound(this.tableName);
         }
-        this.returnString = "[OK]\n" + t.getColumns(columns);
+        if (columns.get(0).equals("*")) {
+            evalConditions(false);
+        } else {
+            evalConditions(true);
+        }
+
     }
 
-    public SelectCommand(DBServer server, String tableName, ArrayList<String> columns, ArrayList<String> conditions) throws NotFound, ColNotFound, InternalError, InvalidName, InvalidCommand {
-        super(server);
-        this.tableName = tableName;
-        Table t = server.getCurrentDatabase().getTableByName(this.tableName);
-        if (t == null) {
-            throw new NotFound(this.tableName);
+    private void evalConditions(boolean getCols) throws GenericException {
+        if (conditions.isEmpty() && !getCols) {
+            this.returnString = "[OK]\n" + table;
+            return;
         }
-        // todo this would validate too long lists (And is repetitive from above and in the parser method.)
-        //  Ideally you'd have one constructor rather than three and do the evaluation here.
-        if (columns.get(0).equals("*")) {
-            if (conditions.isEmpty()) {
-                this.returnString = "[OK]\n" + t;
-            } else {
-                Table newTable = t.filterWithCondtion(conditions);
-                this.returnString = "[OK]\n" + newTable.toString();
-            }
+        Table newTable = table.filterWithCondtion(conditions);
+        if (conditions.isEmpty()) {
+            this.returnString = "[OK]\n" + newTable.getColumns(colNames);
+        }
+        if (getCols) {
+            this.returnString = "[OK]\n" + newTable.getColumns(colNames);
         } else {
-            // todo: eventually need to do the conditions on this too.
-            this.returnString = "[OK]\n" + t.getColumns(columns);
+            this.returnString = "[OK]\n" + newTable.toString();
         }
-
     }
 
 //     "SELECT " <AttribList> " FROM " [TableName]

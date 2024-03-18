@@ -162,6 +162,9 @@ public class Table {
     // todo this is long.
     public Table filterWithCondtion(ArrayList<String> condition) throws InternalError, InvalidName, InvalidCommand {
         Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
+        if (condition.isEmpty()) {
+            return table;
+        }
         if (condition.size() != 3) {
             throw new InternalError("Multiple conditions not supported");
         }

@@ -74,15 +74,7 @@ public class Parser {
 
     }
 
-    private void parseSelectCommand() throws NotFound, InvalidCommand, ColNotFound, InternalError, InvalidName {
-        //<"SELECT " <WildAttribList> " FROM " [TableName] |
-        // "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>
-        //<Condition>       ::=  "(" <Condition> <BoolOperator> <Condition> ")" |
-        // <Condition> <BoolOperator> <Condition>
-        // | "(" [AttributeName] <Comparator> [Value] ")"
-        // | [AttributeName] <Comparator> [Value]
-        //<BoolOperator>    ::= "AND" | "OR"
-        //<Comparator>      ::=  "==" | ">" | "<" | ">=" | "<=" | "!=" | " LIKE "
+    private void parseSelectCommand() throws GenericException {
         currentTokenIndex = 1;
         ArrayList<String> colList = parseAttributeList("FROM");
         if (colList.get(0).equals("*")) {
@@ -94,10 +86,7 @@ public class Parser {
             if (conditions.isEmpty()) {
                 this.returnString = new SelectCommand(server, tokens.get(3)).getReturnString();
             }
-            // todo this won't handle bracketed expresssions.
-            if (conditions.size() == 3) {
-                this.returnString = new SelectCommand(server, tokens.get(3), colList, conditions).getReturnString();
-            }
+            this.returnString = new SelectCommand(server, tokens.get(3), colList, conditions).getReturnString();
         } else {
             int tableNameIndex = currentTokenIndex;
             currentTokenIndex++; // go past the table name.
@@ -120,9 +109,7 @@ public class Parser {
             condtions.add(tokens.get(currentTokenIndex));
             currentTokenIndex++;
         }
-
         return condtions;
-        // todo: think about how you parse the conditions list.
     }
 
     public String getReturnString() {
