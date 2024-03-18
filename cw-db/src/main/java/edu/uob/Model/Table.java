@@ -158,7 +158,7 @@ public class Table {
 
     // creates a new table that's filder .
     public Table filterWithCondtion(ArrayList<String> condition) throws InternalError, InvalidName {
-        Table table = new Table(this.colNames, this.database, this.records);
+        Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
         if (condition.size() != 3) {
             throw new InternalError("Multiple conditions not supported");
         }
@@ -171,13 +171,32 @@ public class Table {
         int colIndex = table.colNames.indexOf(colName);
         String finalValue = value;
         if (operator.equals("==")) {
-            // go through the records. Remove any that do not match the condition.
             table.records.removeIf(record -> !record.getByIndex(colIndex).equals(finalValue));
         }
         if (operator.equals("!=")) {
-            // go through the records. Remove any that do match the condition.
             table.records.removeIf(record -> record.getByIndex(colIndex).equals(finalValue));
         }
+        if (operator.equals("LIKE")) {
+            table.records.removeIf(record -> !record.getByIndex(colIndex).contains(finalValue));
+        }
+        if (operator.equals("<")) {
+            table.records.removeIf(record ->
+                    !(Integer.parseInt(record.getByIndex(colIndex)) < (Integer.parseInt(finalValue))));
+        }
+        if (operator.equals(">")) {
+            table.records.removeIf(record ->
+                    !(Integer.parseInt(record.getByIndex(colIndex)) > (Integer.parseInt(finalValue))));
+        }
+        if (operator.equals("<=")) {
+            table.records.removeIf(record ->
+                    !(Integer.parseInt(record.getByIndex(colIndex)) <= (Integer.parseInt(finalValue))));
+
+        }
+        if (operator.equals(">=")) {
+            table.records.removeIf(record ->
+                    !(Integer.parseInt(record.getByIndex(colIndex)) >= (Integer.parseInt(finalValue))));
+        }
+
         return table;
         // "==" | ">" | "<" | ">=" | "<=" | "!=" | " LIKE "
 
