@@ -158,7 +158,8 @@ public class Table {
         this.file = null;
     }
 
-    // creates a new table that's filder .
+    // creates a new table that's filder
+    // todo this is long.
     public Table filterWithCondtion(ArrayList<String> condition) throws InternalError, InvalidName, InvalidCommand {
         Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
         if (condition.size() != 3) {
@@ -181,34 +182,32 @@ public class Table {
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
                     return !(Integer.parseInt(recordValue) < Integer.parseInt(finalValue));
                 }
-                return false;
+                return true;
             });
             case ">" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
                     return !(Integer.parseInt(recordValue) > Integer.parseInt(finalValue));
                 }
-                return false;
+                return true;
             });
             case "<=" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
                     return !(Integer.parseInt(recordValue) <= Integer.parseInt(finalValue));
                 }
-                return false;
+                return true;
             });
             case ">=" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
                     return !(Integer.parseInt(recordValue) >= Integer.parseInt(finalValue));
                 }
-                return false;
+                return true;
             });
             default -> throw new InvalidCommand("Invalid operator.");
         }
-
         return table;
-
     }
 
     // saves the table onto disk.
