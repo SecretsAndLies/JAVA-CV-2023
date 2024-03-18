@@ -1,6 +1,7 @@
 package edu.uob.Controller.Command;
 
 import edu.uob.DBServer;
+import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.Table.ColNotFound;
 import edu.uob.Exceptions.Table.InvalidName;
@@ -31,7 +32,7 @@ public class SelectCommand extends Command {
         this.returnString = "[OK]\n" + t.getColumns(columns);
     }
 
-    public SelectCommand(DBServer server, String tableName, ArrayList<String> columns, ArrayList<String> conditions) throws NotFound, ColNotFound, InternalError, InvalidName {
+    public SelectCommand(DBServer server, String tableName, ArrayList<String> columns, ArrayList<String> conditions) throws NotFound, ColNotFound, InternalError, InvalidName, InvalidCommand {
         super(server);
         this.tableName = tableName;
         Table t = server.getCurrentDatabase().getTableByName(this.tableName);

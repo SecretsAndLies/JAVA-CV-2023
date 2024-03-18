@@ -13,6 +13,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static edu.uob.Utils.Utils.isNumeric;
+
 public class Table {
     private static Integer idIndex;
     private List<Record> records;
@@ -157,7 +159,7 @@ public class Table {
     }
 
     // creates a new table that's filder .
-    public Table filterWithCondtion(ArrayList<String> condition) throws InternalError, InvalidName {
+    public Table filterWithCondtion(ArrayList<String> condition) throws InternalError, InvalidName, InvalidCommand {
         Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
         if (condition.size() != 3) {
             throw new InternalError("Multiple conditions not supported");
@@ -170,35 +172,42 @@ public class Table {
         }
         int colIndex = table.colNames.indexOf(colName);
         String finalValue = value;
-        if (operator.equals("==")) {
-            table.records.removeIf(record -> !record.getByIndex(colIndex).equals(finalValue));
-        }
-        if (operator.equals("!=")) {
-            table.records.removeIf(record -> record.getByIndex(colIndex).equals(finalValue));
-        }
-        if (operator.equals("LIKE")) {
-            table.records.removeIf(record -> !record.getByIndex(colIndex).contains(finalValue));
-        }
-        if (operator.equals("<")) {
-            table.records.removeIf(record ->
-                    !(Integer.parseInt(record.getByIndex(colIndex)) < (Integer.parseInt(finalValue))));
-        }
-        if (operator.equals(">")) {
-            table.records.removeIf(record ->
-                    !(Integer.parseInt(record.getByIndex(colIndex)) > (Integer.parseInt(finalValue))));
-        }
-        if (operator.equals("<=")) {
-            table.records.removeIf(record ->
-                    !(Integer.parseInt(record.getByIndex(colIndex)) <= (Integer.parseInt(finalValue))));
-
-        }
-        if (operator.equals(">=")) {
-            table.records.removeIf(record ->
-                    !(Integer.parseInt(record.getByIndex(colIndex)) >= (Integer.parseInt(finalValue))));
+        switch (operator) {
+            case "==" -> table.records.removeIf(record -> !record.getByIndex(colIndex).equals(finalValue));
+            case "!=" -> table.records.removeIf(record -> record.getByIndex(colIndex).equals(finalValue));
+            case "LIKE" -> table.records.removeIf(record -> !record.getByIndex(colIndex).contains(finalValue));
+            case "<" -> table.records.removeIf(record -> {
+                String recordValue = record.getByIndex(colIndex);
+                if (isNumeric(recordValue) && isNumeric(finalValue)) {
+                    return !(Integer.parseInt(recordValue) < Integer.parseInt(finalValue));
+                }
+                return false;
+            });
+            case ">" -> table.records.removeIf(record -> {
+                String recordValue = record.getByIndex(colIndex);
+                if (isNumeric(recordValue) && isNumeric(finalValue)) {
+                    return !(Integer.parseInt(recordValue) > Integer.parseInt(finalValue));
+                }
+                return false;
+            });
+            case "<=" -> table.records.removeIf(record -> {
+                String recordValue = record.getByIndex(colIndex);
+                if (isNumeric(recordValue) && isNumeric(finalValue)) {
+                    return !(Integer.parseInt(recordValue) <= Integer.parseInt(finalValue));
+                }
+                return false;
+            });
+            case ">=" -> table.records.removeIf(record -> {
+                String recordValue = record.getByIndex(colIndex);
+                if (isNumeric(recordValue) && isNumeric(finalValue)) {
+                    return !(Integer.parseInt(recordValue) >= Integer.parseInt(finalValue));
+                }
+                return false;
+            });
+            default -> throw new InvalidCommand("Invalid operator.");
         }
 
         return table;
-        // "==" | ">" | "<" | ">=" | "<=" | "!=" | " LIKE "
 
     }
 

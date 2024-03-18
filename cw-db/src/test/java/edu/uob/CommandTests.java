@@ -188,6 +188,8 @@ public class CommandTests {
         assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
         assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
         assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE name < 5;");
+        System.out.println(ret);
         ret = s.handleCommand("SELECT * FROM marks WHERE (pass == FALSE) AND (mark > 35);");
 //        assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
 //        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
