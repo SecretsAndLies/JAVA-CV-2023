@@ -83,10 +83,6 @@ public class Database {
         return name;
     }
 
-    public List<Table> getTables() {
-        return tables;
-    }
-
     public Table getTableByName(String name) {
         for (Table t : tables) {
             if (t.getName().equals(name)) {

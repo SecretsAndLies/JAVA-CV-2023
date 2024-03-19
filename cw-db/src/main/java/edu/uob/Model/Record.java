@@ -21,6 +21,10 @@ public class Record {
         data.add("");
     }
 
+    public void setColVal(int colIndex, String colValue) {
+        data.set(colIndex, colValue);
+    }
+
     public void removeCol(int i) {
         data.remove(i);
     }

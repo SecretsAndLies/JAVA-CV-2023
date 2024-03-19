@@ -28,7 +28,7 @@ public abstract class Command {
     }
 
     public void setTable(String tableName) throws NotFound {
-        Table t = server.getCurrentDatabase().getTableByName(this.tableName);
+        Table t = server.getCurrentDatabase().getTableByName(tableName);
         this.table = t;
         if (t == null) {
             throw new NotFound(this.tableName);

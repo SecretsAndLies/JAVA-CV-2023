@@ -156,6 +156,61 @@ public class CommandTests {
 
     }
 
+    @Test
+    public void testUpdate() {
+        DBServer s = new DBServer();
+        s.handleCommand("CREATE DATABASE d;");
+        s.handleCommand("USE d;");
+        s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Rob', 36, FALSE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE);");
+        String ret = s.handleCommand("UPDATE marks SET mark = 35 WHERE name == 'Simon';");
+        assertTrue(ret.contains("OK"));
+        ret = s.handleCommand("SELECT * FROM marks;");
+        assertTrue(ret.contains("Simon\t35"));
+        s.handleCommand("DROP DATABASE d;");
+
+    }
+
+    @Test
+    public void testReserved() {
+        // todo one of these test causes an error message (it's fine just ugly)
+        DBServer s = new DBServer();
+        String ret;
+        ret = s.handleCommand("CREATE DATABASE table;");
+        assertTrue(ret.contains("ERROR"), "Expected reserved keyword error, got " + ret);
+        ret = s.handleCommand("DROP DATABASE d;");
+        assertTrue(ret.contains("ERROR"), "Expected reserved keyword error, got " + ret);
+        ret = s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        assertTrue(ret.contains("ERROR"), "Expected error, got " + ret);
+        ret = s.handleCommand("CREATE DATABASE d;");
+        assertTrue(ret.contains("OK"), "Expected reserved keyword error, got " + ret);
+        ret = s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        assertTrue(ret.contains("ERROR"), "Expected error, got " + ret);
+
+        ret = s.handleCommand("USE d;");
+        assertTrue(ret.contains("OK"), "Expected reserved keyword error, got " + ret);
+        ret = s.handleCommand("CREATE TABLE table (name, mark, pass);");
+        assertTrue(ret.contains("ERROR"), "Expected reserved keyword error, got " + ret);
+        ret = s.handleCommand("CREATE TABLE table (name, like, pass);");
+        assertTrue(ret.contains("ERROR"), "Expected reserved keyword error, got " + ret);
+        ret = s.handleCommand("DROP TABLE table;");
+        assertTrue(ret.contains("ERROR"), "Expected reserved keyword error, got " + ret);
+        ret = s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        assertTrue(ret.contains("OK"), "Expected OK, got " + ret);
+        ret = s.handleCommand("INSERT INTO ;");
+        assertTrue(ret.contains("ERROR"), "Expected error, got " + ret);
+        ret = s.handleCommand(" ;");
+        assertTrue(ret.contains("ERROR"), "Expected error, got " + ret);
+        ret = s.handleCommand("");
+        assertTrue(ret.contains("ERROR"), "Expected error, got " + ret);
+
+        s.handleCommand("DROP DATABASE d;");
+
+    }
+
     // todo: test all commands without semi colons.
     @Test
     public void testDelete() {

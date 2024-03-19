@@ -4,6 +4,7 @@ package edu.uob.Model;
 import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.Database.ReservedKeyword;
+import edu.uob.Exceptions.GenericException;
 import edu.uob.Exceptions.Table.*;
 import edu.uob.Utils.Utils;
 
@@ -97,7 +98,11 @@ public class Table {
     private String createTableName(String name) throws InvalidName {
         if (!Utils.isPlainText(name)) {
             throw new InvalidName();
-        }        // and modify it if needed.
+        }
+        if (Utils.isReservedKeyword(name)) {
+            throw new InvalidName();
+        }
+        // todo modify it if needed.
         return name.toLowerCase();
     }
 
@@ -277,6 +282,93 @@ public class Table {
                 return false;
             });
             default -> throw new InvalidCommand("Invalid operator.");
+        }
+        return table;
+    }
+
+    // todo: obviously this is horrible.
+    public Table updateWithConditions(ArrayList<String> condition, String colToUpdate, String valueToUpdate) throws GenericException {
+        Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
+        if (condition.isEmpty()) {
+            return table;
+        }
+        if (condition.size() != 3) {
+            throw new InternalError("Multiple conditions not supported");
+        }
+        String colName = condition.get(0);
+        String operator = condition.get(1);
+        String value = condition.get(2);
+        if (value.contains("'")) {
+            value = value.replace("'", "");
+        }
+        int colIndex = table.colNames.indexOf(colName);
+        int colToUpdateIndex = table.colNames.indexOf(colToUpdate);
+
+        if (colIndex == -1 || colToUpdateIndex == -1) {
+            throw new InvalidCommand("Column doesn't exist.");
+        }
+        String finalValue = value;
+        switch (operator) {
+            case "==":
+                for (Record record : table.records) {
+                    if (record.getByIndex(colIndex).equals(finalValue)) {
+                        record.setColVal(colToUpdateIndex, valueToUpdate);
+                    }
+                }
+                break;
+            case "!=":
+                for (Record record : table.records) {
+                    if (!record.getByIndex(colIndex).equals(finalValue)) {
+                        record.setColVal(colToUpdateIndex, valueToUpdate);
+                    }
+                }
+                break;
+            case "LIKE":
+                for (Record record : table.records) {
+                    if (record.getByIndex(colIndex).contains(finalValue)) {
+                        record.setColVal(colToUpdateIndex, valueToUpdate);
+                    }
+                }
+                break;
+            case "<":
+                for (Record record : table.records) {
+                    String recordValue = record.getByIndex(colIndex);
+                    if (isNumeric(recordValue) && isNumeric(finalValue) &&
+                            (Integer.parseInt(recordValue) < Integer.parseInt(finalValue))) {
+                        record.setColVal(colToUpdateIndex, valueToUpdate);
+                    }
+                }
+                break;
+            case ">":
+                for (Record record : table.records) {
+                    String recordValue = record.getByIndex(colIndex);
+                    if (isNumeric(recordValue) && isNumeric(finalValue) &&
+                            (Integer.parseInt(recordValue) > Integer.parseInt(finalValue))) {
+                        record.setColVal(colToUpdateIndex, valueToUpdate);
+                    }
+                }
+                break;
+            case "<=":
+                for (Record record : table.records) {
+                    String recordValue = record.getByIndex(colIndex);
+                    if (isNumeric(recordValue) && isNumeric(finalValue) &&
+                            (Integer.parseInt(recordValue) <= Integer.parseInt(finalValue))) {
+                        record.setColVal(colToUpdateIndex, valueToUpdate);
+                    }
+                }
+                break;
+            case ">=":
+                for (Record record : table.records) {
+                    String recordValue = record.getByIndex(colIndex);
+                    if (isNumeric(recordValue) && isNumeric(finalValue) &&
+                            (Integer.parseInt(recordValue) >= Integer.parseInt(finalValue))) {
+                        record.setColVal(colToUpdateIndex, valueToUpdate);
+                    }
+                }
+                break;
+            default:
+                throw new InvalidCommand("Invalid operator.");
+
         }
         return table;
     }

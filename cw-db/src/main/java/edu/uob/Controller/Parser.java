@@ -32,6 +32,9 @@ public class Parser {
 
     private void parseCommand(String query) throws GenericException {
         this.query = query;
+        if (this.tokens.size() < 2) {
+            throw new InvalidCommand();
+        }
         int last_element_index = this.tokens.size() - 1;
         String last_element = this.tokens.get(last_element_index);
         if (!last_element.equals(";")) {
@@ -59,20 +62,46 @@ public class Parser {
                 parseAlterCommand();
                 break;
             case "DELETE":
-                parseDeleteCommmand();
+                parseDeleteCommand();
                 break;
-            default:
-                // Handle the case where none of the above commands match.
-                // Only set to "[OK]" if it's still empty, to avoid overwriting meaningful return strings.
-                if (this.returnString.isEmpty()) {
-                    this.returnString = "[OK]";
-                }
+            case "UPDATE":
+                parseUpdateCommand();
+                break;
+            case "JOIN":
+                parseJoinCommand();
                 break;
         }
+        if (this.returnString.isEmpty()) {
+            this.returnString = "[OK]";
+        }
+    }
+
+    public void parseUpdateCommand() throws GenericException {
+        //UPDATE marks SET age = 35 WHERE name == 'Simon';
+        if (!this.tokens.get(2).equals("SET")) {
+            throw new InvalidCommand("Expected SET");
+        }
+        currentTokenIndex = 3;
+        ArrayList<String> nameValueList = parseNameValueList();
+        ArrayList<String> conditions = parseWhereStatement();
+        this.returnString = new UpdateCommand(server, conditions, tokens.get(1), nameValueList).getReturnString();
+    }
+
+    public ArrayList<String> parseNameValueList() {
+        // todo: perhaps this should return a list of lists?
+        ArrayList<String> nameValue = new ArrayList<>();
+        while (!this.tokens.get(currentTokenIndex).equals("WHERE")) {
+            nameValue.add(this.tokens.get(currentTokenIndex));
+            currentTokenIndex++;
+        }
+        return nameValue;
+    }
+
+    public void parseJoinCommand() {
 
     }
 
-    private void parseDeleteCommmand() throws GenericException {
+    private void parseDeleteCommand() throws GenericException {
         // DELETE from marks WHERE age > 36;
         if (!this.tokens.get(1).equals("FROM")) {
             throw new InvalidCommand("Expected FROM");
