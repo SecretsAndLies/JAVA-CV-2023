@@ -1,7 +1,6 @@
 package edu.uob.Model;
 
 
-import edu.uob.DBServer;
 import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.Database.ReservedKeyword;
@@ -9,13 +8,14 @@ import edu.uob.Exceptions.Table.*;
 import edu.uob.Utils.Utils;
 
 import java.io.*;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static edu.uob.Utils.Utils.isNumeric;
 
 public class Table {
+
+
     private static Integer idIndex;
     private List<Record> records;
     private final List<String> colNames;
@@ -37,6 +37,7 @@ public class Table {
             throw new InternalError();
         }
     }
+
 
     // an in memory table
 //    public Table(ArrayList<String> colNames, ArrayList<ArrayList<String>> data){
@@ -65,6 +66,13 @@ public class Table {
         buffReader.close();
     }
 
+    public List<Record> getRecords() {
+        return records;
+    }
+
+    public void setRecords(List<Record> records) {
+        this.records = records;
+    }
 
     public Table(String name, List<String> colNames, Database database) throws InvalidName, InvalidCommand, ReservedKeyword {
         idIndex = 1;
@@ -158,9 +166,9 @@ public class Table {
         this.file = null;
     }
 
-    // creates a new table that's filder
+    // creates a new table that's filter
     // todo this is long.
-    public Table filterWithCondtion(ArrayList<String> condition) throws InternalError, InvalidName, InvalidCommand {
+    public Table filterWithCondition(ArrayList<String> condition) throws InternalError, InvalidCommand {
         Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
         if (condition.isEmpty()) {
             return table;
@@ -175,6 +183,9 @@ public class Table {
             value = value.replace("'", "");
         }
         int colIndex = table.colNames.indexOf(colName);
+        if (colIndex == -1) {
+            throw new InvalidCommand("Column doesn't exist.");
+        }
         String finalValue = value;
         switch (operator) {
             case "==" -> table.records.removeIf(record -> !record.getByIndex(colIndex).equals(finalValue));
@@ -207,6 +218,63 @@ public class Table {
                     return !(Integer.parseInt(recordValue) >= Integer.parseInt(finalValue));
                 }
                 return true;
+            });
+            default -> throw new InvalidCommand("Invalid operator.");
+        }
+        return table;
+    }
+
+    // todo: highly repetitive. Obviously need to change.
+    public Table filterWithCondtionReverse(ArrayList<String> condition) throws InternalError, InvalidName, InvalidCommand {
+        Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
+        if (condition.isEmpty()) {
+            return table;
+        }
+        if (condition.size() != 3) {
+            throw new InternalError("Multiple conditions not supported");
+        }
+        String colName = condition.get(0);
+        String operator = condition.get(1);
+        String value = condition.get(2);
+        if (value.contains("'")) {
+            value = value.replace("'", "");
+        }
+        int colIndex = table.colNames.indexOf(colName);
+        if (colIndex == -1) {
+            throw new InvalidCommand("Column doesn't exist.");
+        }
+        String finalValue = value;
+        switch (operator) {
+            case "==" -> table.records.removeIf(record -> record.getByIndex(colIndex).equals(finalValue));
+            case "!=" -> table.records.removeIf(record -> !record.getByIndex(colIndex).equals(finalValue));
+            case "LIKE" -> table.records.removeIf(record -> record.getByIndex(colIndex).contains(finalValue));
+            case "<" -> table.records.removeIf(record -> {
+                String recordValue = record.getByIndex(colIndex);
+                if (isNumeric(recordValue) && isNumeric(finalValue)) {
+                    return (Integer.parseInt(recordValue) < Integer.parseInt(finalValue));
+                }
+                return false;
+            });
+            case ">" -> table.records.removeIf(record -> {
+                String recordValue = record.getByIndex(colIndex);
+                if (isNumeric(recordValue) && isNumeric(finalValue)) {
+                    return (Integer.parseInt(recordValue) > Integer.parseInt(finalValue));
+                }
+                return false;
+            });
+            case "<=" -> table.records.removeIf(record -> {
+                String recordValue = record.getByIndex(colIndex);
+                if (isNumeric(recordValue) && isNumeric(finalValue)) {
+                    return (Integer.parseInt(recordValue) <= Integer.parseInt(finalValue));
+                }
+                return false;
+            });
+            case ">=" -> table.records.removeIf(record -> {
+                String recordValue = record.getByIndex(colIndex);
+                if (isNumeric(recordValue) && isNumeric(finalValue)) {
+                    return (Integer.parseInt(recordValue) >= Integer.parseInt(finalValue));
+                }
+                return false;
             });
             default -> throw new InvalidCommand("Invalid operator.");
         }
@@ -253,15 +321,15 @@ public class Table {
         for (String colName : colNames) {
             cols.add(getCol(colName));
         }
-        String colsAsString = "";
+        StringBuilder colsAsString = new StringBuilder();
 
         for (int i = 0; i < cols.get(0).size(); i++) {
-            for (int j = 0; j < cols.size(); j++) {
-                colsAsString += cols.get(j).get(i) + "\t";
+            for (List<String> col : cols) {
+                colsAsString.append(col.get(i)).append("\t");
             }
-            colsAsString += "\n";
+            colsAsString.append("\n");
         }
-        return colsAsString;
+        return colsAsString.toString();
     }
 
     private boolean containsColNonCaseSensitive(String name) {

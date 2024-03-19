@@ -37,32 +37,54 @@ public class Parser {
         if (!last_element.equals(";")) {
             throw new SemiColonNotFound(query);
         }
-        if (this.tokens.get(0).equals("CREATE")) {
-            parseCreateCommand();
+        switch (this.tokens.get(0)) {
+            case "CREATE":
+                parseCreateCommand();
+                break;
+            case "DROP":
+                if (this.tokens.size() != 4) throw new InvalidCommand();
+                this.returnString = new DropCommand(server, this.tokens.get(1), this.tokens.get(2)).getReturnString();
+                break;
+            case "USE":
+                if (this.tokens.size() != 3) throw new InvalidCommand();
+                this.returnString = new UseCommand(server, this.tokens.get(1)).getReturnString();
+                break;
+            case "INSERT":
+                parseInsertCommand();
+                break;
+            case "SELECT":
+                parseSelectCommand();
+                break;
+            case "ALTER":
+                parseAlterCommand();
+                break;
+            case "DELETE":
+                parseDeleteCommmand();
+                break;
+            default:
+                // Handle the case where none of the above commands match.
+                // Only set to "[OK]" if it's still empty, to avoid overwriting meaningful return strings.
+                if (this.returnString.isEmpty()) {
+                    this.returnString = "[OK]";
+                }
+                break;
         }
-        if (this.tokens.get(0).equals("DROP")) {
-            // DROP TABLE t;
-            // DROP DATABASE d;
-            if (this.tokens.size() != 4) throw new InvalidCommand();
-            this.returnString = new DropCommand(server, this.tokens.get(1), this.tokens.get(2)).getReturnString();
+
+    }
+
+    private void parseDeleteCommmand() throws GenericException {
+        // DELETE from marks WHERE age > 36;
+        if (!this.tokens.get(1).equals("FROM")) {
+            throw new InvalidCommand("Expected FROM");
         }
-        if (this.tokens.get(0).equals("USE")) {
-            // USE markbook;
-            if (this.tokens.size() != 3) throw new InvalidCommand();
-            this.returnString = new UseCommand(server, this.tokens.get(1)).getReturnString();
+        if (!this.tokens.get(3).equals("WHERE")) {
+            throw new InvalidCommand("Expected WHERE");
         }
-        if (this.tokens.get(0).equals("INSERT")) {
-            parseInsertCommand();
-        }
-        if (this.tokens.get(0).equals("SELECT")) {
-            parseSelectCommand();
-        }
-        if (this.tokens.get(0).equals("ALTER")) {
-            parseAlterCommand();
-        }
-        if (this.returnString.isEmpty()) {
-            this.returnString = "[OK]";
-        }
+        currentTokenIndex = 3;
+        ArrayList<String> conditions = parseWhereStatement();
+        isQueryEnd();
+        this.returnString = new DeleteCommand(server, tokens.get(2), tokens.get(4), conditions).getReturnString();
+
     }
 
     private void parseAlterCommand() throws InvalidCommand, InvalidName, InternalError, ColNotFound {
@@ -71,6 +93,8 @@ public class Parser {
             throw new InvalidCommand("Expected TABLE");
         }
         this.returnString = new AlterCommand(server, tokens.get(2), tokens.get(3), tokens.get(4)).getReturnString();
+        currentTokenIndex = 4;
+        isQueryEnd();
 
     }
 

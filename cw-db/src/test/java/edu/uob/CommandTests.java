@@ -150,8 +150,47 @@ public class CommandTests {
         ret = s.handleCommand("CREATE TABLE t (name, mark, pass) assad;");
         assertTrue(ret.contains("ERROR"), "extra stuff after attribute list should fail");
         ret = s.handleCommand("CREATE TABLE j (name, , pass);");
+        s.handleCommand("DROP DATABASE d;");
         // todo: right now my parser doesn't catch this.
 //        assertTrue(ret.contains("ERROR"), "colnames must contain something.");
+
+    }
+
+    // todo: test all commands without semi colons.
+    @Test
+    public void testDelete() {
+        DBServer s = new DBServer();
+        s.handleCommand("CREATE DATABASE d;");
+        s.handleCommand("USE d;");
+        s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Rob', 36, FALSE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE);");
+        String ret = s.handleCommand("DELETE from marks WHERE name == 'Chris';");
+        assertTrue(ret.contains("OK"), "Expected OK response to delete query.");
+        ret = s.handleCommand("SELECT * FROM marks;");
+        assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
+        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        ret = s.handleCommand("DELETE from marks WHERE age > 36;");
+        assertTrue(ret.contains("ERROR"), "Attempted to query non existent col and got no error.");
+        s.handleCommand("DELETE from marks WHERE mark > 36;");
+        ret = s.handleCommand("SELECT * FROM marks;");
+        assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        s.handleCommand("DELETE from marks WHERE name == 'David';");
+        ret = s.handleCommand("SELECT * FROM marks;");
+        assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        s.handleCommand("DELETE from marks WHERE mark <=36;");
+        ret = s.handleCommand("SELECT * FROM marks;");
+        assertTrue(ret.contains("name\tmark\tpass"), "expected output with headers but got " + ret);
+        assertFalse(ret.contains("Rob"), "expected output with no Rob but got " + ret);
+        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        assertFalse(ret.contains("Simon"), "expected output with no Simon but got " + ret);
         s.handleCommand("DROP DATABASE d;");
 
     }
@@ -198,7 +237,7 @@ public class CommandTests {
         assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
         assertFalse(ret.contains("FALSE"), "expected output with no FALSE but got " + ret);
         ret = s.handleCommand("SELECT * FROM marks WHERE (pass == FALSE) AND (mark > 35);");
-        System.out.println(ret);
+        //System.out.println(ret);
 
         //        assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
 //        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);

@@ -1,11 +1,7 @@
 package edu.uob.Controller.Command;
 
 import edu.uob.DBServer;
-import edu.uob.Exceptions.Command.InvalidCommand;
-import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.GenericException;
-import edu.uob.Exceptions.Table.ColNotFound;
-import edu.uob.Exceptions.Table.InvalidName;
 import edu.uob.Exceptions.Table.NotFound;
 import edu.uob.Model.Table;
 
@@ -28,25 +24,17 @@ public class SelectCommand extends Command {
         this.tableName = tableName;
         this.conditions = conditions;
         this.colNames = columns;
-        Table t = server.getCurrentDatabase().getTableByName(this.tableName);
-        this.table = t;
-        if (t == null) {
-            throw new NotFound(this.tableName);
-        }
-        if (columns.get(0).equals("*")) {
-            evalConditions(false);
-        } else {
-            evalConditions(true);
-        }
-
+        setTable(this.tableName);
+        evalConditions(!columns.get(0).equals("*"));
     }
+// todo: fix repetitive use of Ok with enum.
 
     private void evalConditions(boolean getCols) throws GenericException {
         if (conditions.isEmpty() && !getCols) {
             this.returnString = "[OK]\n" + table;
             return;
         }
-        Table newTable = table.filterWithCondtion(conditions);
+        Table newTable = table.filterWithCondition(conditions);
         if (conditions.isEmpty()) {
             this.returnString = "[OK]\n" + newTable.getColumns(colNames);
         }

@@ -1,18 +1,18 @@
 package edu.uob.Controller.Command;
 
 import edu.uob.DBServer;
+import edu.uob.Exceptions.Table.NotFound;
 import edu.uob.Model.Table;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public abstract class Command {
     List<String> colNames;
     String tableName;
     String databaseName;
+    String colName;
     List<String> valueList;
-    String commandType;
     String returnString;
     DBServer server;
     ArrayList<String> conditions;
@@ -25,5 +25,13 @@ public abstract class Command {
 
     public String getReturnString() {
         return returnString;
+    }
+
+    public void setTable(String tableName) throws NotFound {
+        Table t = server.getCurrentDatabase().getTableByName(this.tableName);
+        this.table = t;
+        if (t == null) {
+            throw new NotFound(this.tableName);
+        }
     }
 }
