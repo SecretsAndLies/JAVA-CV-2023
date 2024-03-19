@@ -17,6 +17,10 @@ public class Record {
         return data.get(index);
     }
 
+    public ArrayList<String> copyData() {
+        return new ArrayList<>(this.data);
+    }
+
     public void addCol() {
         data.add("");
     }

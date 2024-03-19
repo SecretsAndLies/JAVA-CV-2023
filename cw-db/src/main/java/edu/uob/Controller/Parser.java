@@ -10,6 +10,7 @@ import edu.uob.Exceptions.Table.ColNotFound;
 import edu.uob.Exceptions.Table.InsertionError;
 import edu.uob.Exceptions.Table.InvalidName;
 import edu.uob.Exceptions.Table.NotFound;
+import edu.uob.Model.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,6 @@ public class Parser {
         this.returnString = "";
         this.server = server;
         parseCommand(query);
-
     }
 
     private void parseCommand(String query) throws GenericException {
@@ -97,8 +97,18 @@ public class Parser {
         return nameValue;
     }
 
-    public void parseJoinCommand() {
+    public void parseJoinCommand() throws GenericException {
+        //JOIN coursework AND marks ON submission AND id;
+        if (!tokens.get(2).equals("AND") || !tokens.get(6).equals("AND")) {
+            throw new InvalidCommand("Expecting AND");
+        }
+        if (!tokens.get(4).equals("ON")) {
+            throw new InvalidCommand("Expecting ON");
+        }
+        Table leftTable = server.getCurrentDatabase().getTableByName(tokens.get(1));
+        Table rightTable = server.getCurrentDatabase().getTableByName(tokens.get(3));
 
+        this.returnString = "[OK]\n" + leftTable.joinTable(rightTable, this.tokens.get(5), this.tokens.get(7)).toString();
     }
 
     private void parseDeleteCommand() throws GenericException {

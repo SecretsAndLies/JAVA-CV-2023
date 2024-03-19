@@ -19,6 +19,8 @@ public class Table {
 
     private static Integer idIndex;
     private List<Record> records;
+
+
     private final List<String> colNames;
     private final String name;
     private Database database;
@@ -39,7 +41,9 @@ public class Table {
         }
     }
 
-
+    public List<String> getColNames() {
+        return colNames;
+    }
     // an in memory table
 //    public Table(ArrayList<String> colNames, ArrayList<ArrayList<String>> data){
 //        this.colNames=colNames;
@@ -143,6 +147,18 @@ public class Table {
             throw new InternalError();
         }
         saveTable();
+    }
+
+    public void secretAddRecord(List<String> valueList) {
+        for (int i = 0; i < valueList.size(); i++) {
+            String value = valueList.get(i);
+            if (value.startsWith("'") && value.endsWith("'")) {
+                valueList.set(i, value.replace("'", ""));
+            }
+        }
+        Record record = new Record(idIndex, valueList);
+        this.records.add(record);
+        idIndex++;
     }
 
     // adds the record to the table and increments the id index.
@@ -371,6 +387,72 @@ public class Table {
 
         }
         return table;
+    }
+
+    // For JOINs: discard the ids from the original tables
+// discard the columns that the tables were matched on
+// create a new unique id for each of row of the table produced
+// attribute names are prepended with name of table from which they originated
+
+//    JOIN coursework AND marks ON submission AND id;
+//[OK]
+//    id	coursework.task	marks.name	marks.mark	marks.pass
+//1	OXO			Rob		35		FALSE
+//2	DB			Simon		65		TRUE
+//3	OXO			Chris		20		FALSE
+//4	STAG			Sion		55		TRUE
+
+    public Table(ArrayList<String> colNames) {
+        this.colNames = colNames;
+        this.records = new ArrayList<>();
+        this.name = null;
+        this.file = null;
+    }
+
+    public Table joinTable(Table otherTable, String leftCol, String rightCol) throws GenericException {
+        ArrayList<String> returnColNames = new ArrayList<>();
+        // we minus 1 because we remove the id.
+        int leftColIndex = this.colNames.indexOf(leftCol);
+        int rightColIndex = this.colNames.indexOf(rightCol);
+        // todo lots of duplication here.
+        returnColNames.add("id");
+        for (String name : this.colNames) {
+            if (name.equals("id") || name.equals(leftCol)) {
+                continue;
+            }
+            returnColNames.add(this.name + "." + name);
+        }
+        for (String name : otherTable.getColNames()) {
+            if (name.equals("id") || name.equals(rightCol)) {
+                continue;
+            }
+            returnColNames.add(otherTable.name + "." + name);
+        }
+        Table joinTable = new Table(returnColNames);
+        for (Record record : this.records) {
+            for (Record rightRecord : otherTable.getRecords()) {
+                if (record.getByIndex(leftColIndex).equals(rightRecord.getByIndex(rightColIndex))) {
+                    ArrayList<String> leftRecordData = record.copyData();
+                    ArrayList<String> rightRecordData = rightRecord.copyData();
+                    if (leftColIndex == 0) {
+                        leftRecordData.remove(leftColIndex);
+                    } else {
+                        leftRecordData.remove(leftColIndex);
+                        leftRecordData.remove(0);
+                    }
+                    if (rightColIndex == 0) {
+                        rightRecordData.remove(rightColIndex);
+                    } else {
+                        rightRecordData.remove(rightColIndex);
+                        rightRecordData.remove(0);
+                    }
+                    leftRecordData.addAll(rightRecordData);
+                    joinTable.secretAddRecord(leftRecordData);
+                }
+            }
+        }
+
+        return joinTable;
     }
 
     // saves the table onto disk.

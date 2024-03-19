@@ -171,8 +171,38 @@ public class CommandTests {
         ret = s.handleCommand("SELECT * FROM marks;");
         assertTrue(ret.contains("Simon\t35"));
         s.handleCommand("DROP DATABASE d;");
+    }
+
+    @Test
+    public void testJoin() {
+        DBServer s = new DBServer();
+        s.handleCommand("CREATE DATABASE d;");
+        s.handleCommand("USE d;");
+        s.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
+        s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
+        s.handleCommand("CREATE TABLE coursework (task, submission);");
+        s.handleCommand("INSERT INTO coursework VALUES ('OXO', 3);");
+        s.handleCommand("INSERT INTO coursework VALUES ('DB', 1);");
+        s.handleCommand("INSERT INTO coursework VALUES ('OXO', 4);");
+        s.handleCommand("INSERT INTO coursework VALUES ('STAG', 2);");
+        String beforeMarks = s.handleCommand("SELECT * FROM marks;");
+        String beforeCoursework = s.handleCommand("SELECT * FROM coursework;");
+        String ret = s.handleCommand("JOIN coursework AND marks ON submission AND id;");
+        assertEquals("""
+                [OK]
+                id\tcoursework.task\tmarks.name\tmarks.mark\tmarks.pass
+                5\tDB\tSimon\t65\tTRUE
+                6\tSTAG\tSion\t55\tTRUE
+                """, ret);
+        String afterMarks = s.handleCommand("SELEcT * from marks;");
+        String afterCoursework = s.handleCommand("SELEcT * from coursework;");
+        assertEquals(afterMarks, beforeMarks, "Expected no change but table changed.");
+        assertEquals(afterCoursework, beforeCoursework, "Expected no change but table changed.");
+        s.handleCommand("DROP DATABASE d;");
 
     }
+
 
     @Test
     public void testReserved() {
