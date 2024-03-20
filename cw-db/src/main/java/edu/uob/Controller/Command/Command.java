@@ -17,6 +17,7 @@ public abstract class Command {
     DBServer server;
     ArrayList<String> conditions;
     Table table;
+    int currentToken;
 
     public Command(DBServer server) {
         this.returnString = "";

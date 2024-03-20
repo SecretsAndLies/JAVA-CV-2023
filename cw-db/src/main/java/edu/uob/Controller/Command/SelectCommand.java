@@ -1,7 +1,10 @@
 package edu.uob.Controller.Command;
 
 import edu.uob.DBServer;
+import edu.uob.Exceptions.Command.InvalidCommand;
+import edu.uob.Exceptions.Database.InternalError;
 import edu.uob.Exceptions.GenericException;
+import edu.uob.Exceptions.Table.ColNotFound;
 import edu.uob.Exceptions.Table.NotFound;
 import edu.uob.Model.Table;
 
@@ -25,10 +28,15 @@ public class SelectCommand extends Command {
         this.conditions = conditions;
         this.colNames = columns;
         setTable(this.tableName);
+        this.currentToken = 0;
         evalConditions(!columns.get(0).equals("*"));
     }
 // todo: fix repetitive use of Ok with enum.
 
+    // "(" <Condition> <BoolOperator> <Condition> ")" |
+// <Condition> <BoolOperator> <Condition> |
+// "(" [AttributeName] <Comparator> [Value] ")"
+// | [AttributeName] <Comparator> [Value]
     private void evalConditions(boolean getCols) throws GenericException {
         if (conditions.isEmpty() && !getCols) {
             this.returnString = "[OK]\n" + table;
@@ -44,6 +52,7 @@ public class SelectCommand extends Command {
             this.returnString = "[OK]\n" + newTable.toString();
         }
     }
+
 
 //     "SELECT " <AttribList> " FROM " [TableName]
     //  | "SELECT " <WildAttribList> " FROM " [TableName] " WHERE " <Condition>

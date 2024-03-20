@@ -40,6 +40,13 @@ public class Parser {
         if (!last_element.equals(";")) {
             throw new SemiColonNotFound(query);
         }
+        performCommandActions();
+        if (this.returnString.isEmpty()) {
+            this.returnString = "[OK]";
+        }
+    }
+
+    private void performCommandActions() throws GenericException {
         switch (this.tokens.get(0)) {
             case "CREATE":
                 parseCreateCommand();
@@ -71,9 +78,6 @@ public class Parser {
                 parseJoinCommand();
                 break;
         }
-        if (this.returnString.isEmpty()) {
-            this.returnString = "[OK]";
-        }
     }
 
     public void parseUpdateCommand() throws GenericException {
@@ -89,7 +93,7 @@ public class Parser {
         this.returnString = new UpdateCommand(server, conditions, tokens.get(1), nameValueList).getReturnString();
     }
 
-    public ArrayList<String> parseNameValueList() {
+    public ArrayList<String> parseNameValueList() throws InvalidCommand {
         // todo: perhaps this should return a list of lists?
         ArrayList<String> nameValue = new ArrayList<>();
         while (!this.tokens.get(currentTokenIndex).equals("WHERE")) {
@@ -162,19 +166,19 @@ public class Parser {
     }
 
     private ArrayList<String> parseWhereStatement() throws InvalidCommand {
-        ArrayList<String> condtions = new ArrayList<>();
+        ArrayList<String> conditions = new ArrayList<>();
         if (tokens.get(currentTokenIndex).equals(";")) {
-            return condtions;
+            return conditions;
         }
         if (!tokens.get(currentTokenIndex).equals("WHERE")) {
             throw new InvalidCommand("Expected WHERE or end of query.");
         }
         currentTokenIndex++; // go past where.
         while (!tokens.get(currentTokenIndex).equals(";")) {
-            condtions.add(tokens.get(currentTokenIndex));
+            conditions.add(tokens.get(currentTokenIndex));
             currentTokenIndex++;
         }
-        return condtions;
+        return conditions;
     }
 
     public String getReturnString() {
@@ -238,7 +242,9 @@ public class Parser {
             if (currentTokenIndex == tokens.size() - 1) {
                 throw new InvalidCommand();
             }
-            // todo: this would validate weird stuff like "(,,,test,)
+            if (this.tokens.get(currentTokenIndex).equals(this.tokens.get(currentTokenIndex - 1))) {
+                throw new InvalidCommand("two identical tokens in a where clause. Double comma perhaps?");
+            }
             if (tokens.get(currentTokenIndex).equals(",")) {
                 currentTokenIndex++;
                 continue;

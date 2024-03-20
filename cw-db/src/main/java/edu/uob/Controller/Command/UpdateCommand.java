@@ -18,25 +18,31 @@ public class UpdateCommand extends Command {
         evalupdate(this.valueList);
     }
 
-    private void evalupdate(List<String> nameValueList) throws GenericException {
+    private void checkErorors(List<String> nameValueList) throws InvalidCommand {
         if (conditions.isEmpty()) {
             throw new InvalidCommand("update command must include conditions.");
         }
         if (nameValueList.isEmpty()) {
             throw new InvalidCommand("update command must include columns and data to update..");
         }
-        if (nameValueList.size() < 3) {
-            // you might be at the end of the query.
-            return;
+        if (nameValueList.size() > 3 && !nameValueList.contains(",")) {
+            throw new InvalidCommand("Multiple parameters must contain comma");
         }
-
+        if (nameValueList.size() < 3) {
+            throw new InvalidCommand("Too few parameters");
+        }
         if (!nameValueList.get(1).equals("=")) {
             throw new InvalidCommand("Expected =");
         }
+    }
 
+    private void evalupdate(List<String> nameValueList) throws GenericException {
+        checkErorors(nameValueList);
         String colToUpdate = nameValueList.get(0);
         String value = nameValueList.get(2).replace("'", "");
-
+        if (value.equals(",")) {
+            throw new InvalidCommand();
+        }
         this.table = this.table.updateWithConditions(conditions, colToUpdate, value);
         if (nameValueList.size() > 3 && (nameValueList.get(3).equals(","))) {
             evalupdate(nameValueList.subList(4, nameValueList.size()));
