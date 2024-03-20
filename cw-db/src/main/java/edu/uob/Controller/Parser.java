@@ -132,7 +132,7 @@ public class Parser {
             throw new InvalidCommand("Expected TABLE");
         }
         this.returnString = new AlterCommand(server, tokens.get(2), tokens.get(3), tokens.get(4)).getReturnString();
-        currentTokenIndex = 4;
+        currentTokenIndex = 5;
         isQueryEnd();
 
     }

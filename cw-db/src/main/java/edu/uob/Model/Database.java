@@ -85,7 +85,7 @@ public class Database {
 
     public Table getTableByName(String name) {
         for (Table t : tables) {
-            if (t.getName().equals(name)) {
+            if (t.getName().equals(name.toLowerCase())) {
                 return t;
             }
         }
@@ -99,8 +99,9 @@ public class Database {
 
     public void deleteTable(String name) throws edu.uob.Exceptions.Table.NotFound {
         for (Table t : tables) {
-            if (t.getName().equals(name)) {
+            if (t.getName().equals(name.toLowerCase())) {
                 t.delete();
+                tables.remove(t);
                 return;
             }
         }

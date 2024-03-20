@@ -203,7 +203,7 @@ public class Table {
         if (value.contains("'")) {
             value = value.replace("'", "");
         }
-        int colIndex = table.colNames.indexOf(colName);
+        int colIndex = table.colNames.indexOf(colName.toLowerCase());
         if (colIndex == -1) {
             throw new InvalidCommand("Column doesn't exist.");
         }
@@ -409,11 +409,22 @@ public class Table {
         this.file = null;
     }
 
+    public int getColIndex(String searchCol) {
+        int rightColIndex = -1;
+        for (int i = 0; i < this.colNames.size(); i++) {
+            if (this.colNames.get(i).equalsIgnoreCase(searchCol)) {
+                rightColIndex = i;
+                break;
+            }
+        }
+        return rightColIndex;
+    }
+
     public Table joinTable(Table otherTable, String leftCol, String rightCol) throws GenericException {
         ArrayList<String> returnColNames = new ArrayList<>();
         // we minus 1 because we remove the id.
-        int leftColIndex = this.colNames.indexOf(leftCol);
-        int rightColIndex = this.colNames.indexOf(rightCol);
+        int leftColIndex = this.getColIndex(leftCol);
+        int rightColIndex = otherTable.getColIndex(rightCol);
         // todo lots of duplication here.
         returnColNames.add("id");
         for (String name : this.colNames) {
