@@ -78,6 +78,8 @@ public class Parser {
 
     public void parseUpdateCommand() throws GenericException {
         //UPDATE marks SET age = 35 WHERE name == 'Simon';
+        //UPDATE marks SET age = 35, name = 'The Dude' WHERE name == 'Simon';
+
         if (!this.tokens.get(2).equals("SET")) {
             throw new InvalidCommand("Expected SET");
         }

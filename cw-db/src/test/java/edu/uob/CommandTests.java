@@ -170,6 +170,19 @@ public class CommandTests {
         assertTrue(ret.contains("OK"));
         ret = s.handleCommand("SELECT * FROM marks;");
         assertTrue(ret.contains("Simon\t35"));
+        ret = s.handleCommand("UPDATE marks SET mark = 75, name = 'The Dude' WHERE name == 'Simon';");
+        assertTrue(ret.contains("OK"));
+        ret = s.handleCommand("SELECT * FROM marks;");
+        assertTrue(ret.contains("The Dude\t75"));
+        ret = s.handleCommand("UPDATE marks SET pass = TRUE, name = 'Coolness', mark = 30 WHERE mark < 75;");
+        assertTrue(ret.contains("OK"));
+        ret = s.handleCommand("SELECT * FROM marks;");
+        assertTrue(ret.contains("[OK]\n" +
+                "id\tname\tmark\tpass\n" +
+                "1\tThe Dude\t75\tTRUE\n" +
+                "2\tCoolness\t30\tTRUE\n" +
+                "3\tCoolness\t30\tTRUE\n" +
+                "4\tCoolness\t30\tTRUE\n"));
         s.handleCommand("DROP DATABASE d;");
     }
 

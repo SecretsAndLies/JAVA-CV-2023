@@ -6,6 +6,7 @@ import edu.uob.Exceptions.GenericException;
 import edu.uob.Exceptions.Table.NotFound;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class UpdateCommand extends Command {
 
@@ -14,25 +15,31 @@ public class UpdateCommand extends Command {
         setTable(tableName);
         this.conditions = conditions;
         this.valueList = nameValueList;
-        evalupdate();
+        evalupdate(this.valueList);
     }
 
-    private void evalupdate() throws GenericException {
+    private void evalupdate(List<String> nameValueList) throws GenericException {
         if (conditions.isEmpty()) {
             throw new InvalidCommand("update command must include conditions.");
         }
-        if (valueList.isEmpty()) {
+        if (nameValueList.isEmpty()) {
             throw new InvalidCommand("update command must include columns and data to update..");
         }
+        if (nameValueList.size() < 3) {
+            // you might be at the end of the query.
+            return;
+        }
 
-        if (!this.valueList.get(1).equals("=")) {
+        if (!nameValueList.get(1).equals("=")) {
             throw new InvalidCommand("Expected =");
         }
 
-        String colToUpdate = this.valueList.get(0);
-        String value = this.valueList.get(2);
+        String colToUpdate = nameValueList.get(0);
+        String value = nameValueList.get(2).replace("'", "");
 
         this.table = this.table.updateWithConditions(conditions, colToUpdate, value);
-
+        if (nameValueList.size() > 3 && (nameValueList.get(3).equals(","))) {
+            evalupdate(nameValueList.subList(4, nameValueList.size()));
+        }
     }
 }
