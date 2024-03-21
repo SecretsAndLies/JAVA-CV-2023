@@ -412,12 +412,20 @@ public class CommandTests {
         assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
         assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
         assertFalse(ret.contains("FALSE"), "expected output with no FALSE but got " + ret);
-        ret = s.handleCommand("SELECT * FROM marks WHERE (pass == FALSE) AND (mark > 35);");
-        //System.out.println(ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE (mark >= 65;");
+        assertTrue(ret.contains("ERROR"), "expected error but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE (mark >= 65) AND (mark >= 65;");
+        assertTrue(ret.contains("ERROR"), "expected error but got " + ret);
 
-        //        assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
-//        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
-//        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE pass == FALSE AND mark > 35;");
+        assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        String ret2 = s.handleCommand("SELECT * FROM marks WHERE (pass == FALSE) AND (mark > 35);");
+        assertEquals(ret, ret2);
+        String ret3 = s.handleCommand("SELECT * FROM marks WHERE pass == FALSE AND (mark > 35);");
+        assertEquals(ret, ret3);
+
         ret = s.handleCommand("SELECT * FROM marks WHERE (pass == TRUE) OR (age > 35);");
         //assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
         //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);

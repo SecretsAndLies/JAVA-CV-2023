@@ -9,6 +9,7 @@ import edu.uob.Exceptions.Table.NotFound;
 import edu.uob.Model.Table;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class SelectCommand extends Command {
     // select * from table
@@ -29,19 +30,32 @@ public class SelectCommand extends Command {
         this.colNames = columns;
         setTable(this.tableName);
         this.currentToken = 0;
-        evalConditions(!columns.get(0).equals("*"));
+        evalConditions(!columns.get(0).equals("*"), this.conditions);
     }
 
     // "(" <Condition> <BoolOperator> <Condition> ")" |
 // <Condition> <BoolOperator> <Condition> |
 // "(" [AttributeName] <Comparator> [Value] ")"
 // | [AttributeName] <Comparator> [Value]
-    private void evalConditions(boolean getCols) throws GenericException {
+    private void evalConditions(boolean getCols, ArrayList<String> conditions) throws GenericException {
         if (conditions.isEmpty() && !getCols) {
             this.returnString = "[OK]\n" + table;
             return;
         }
-        Table newTable = table.filterWithCondition(conditions);
+        // your brackets have no power here.
+        if (Collections.frequency(conditions, ")") != Collections.frequency(conditions, "(")) {
+            throw new InvalidCommand("Wrong number of parenthesis.");
+        }
+        conditions.removeIf(e -> e.equals(")"));
+        conditions.removeIf(e -> e.equals("("));
+        Table newTable;
+        if (conditions.size() == 7) {
+            // this is AND implicitly.
+            newTable = table.filterWithCondition(new ArrayList<>(conditions.subList(0, 3)));
+            newTable = newTable.filterWithCondition(new ArrayList<>(conditions.subList(4, conditions.size())));
+        } else {
+            newTable = table.filterWithCondition(conditions);
+        }
         if (conditions.isEmpty()) {
             this.returnString = "[OK]\n" + newTable.getColumns(colNames);
         }
