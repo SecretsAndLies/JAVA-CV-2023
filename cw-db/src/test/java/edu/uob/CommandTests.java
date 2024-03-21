@@ -381,6 +381,8 @@ public class CommandTests {
         s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
         s.handleCommand("INSERT INTO marks VALUES ('Rob', 36, FALSE);");
         s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE);");
+        s.handleCommand("INSERT INTO marks VALUES ('YoungFail', 77, FALSE);");
+
         String ret = "";
         ret = s.handleCommand("SELECT * FROM marks;");
         assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
@@ -426,38 +428,39 @@ public class CommandTests {
         String ret3 = s.handleCommand("SELECT * FROM marks WHERE pass == FALSE AND (mark > 35);");
         assertEquals(ret, ret3);
 
-        ret = s.handleCommand("SELECT * FROM marks WHERE (pass == TRUE) OR (age > 35);");
-        //assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
-        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
-        //assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
+        ret = s.handleCommand("SELECT * FROM marks WHERE (pass == TRUE) OR (mark > 35);");
+        assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
+        assertFalse(ret.contains("Chris"), "expected output no Chris but got " + ret);
 
         ret = s.handleCommand("SELECT name FROM marks WHERE name != 'Sion';");
-        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
         ret = s.handleCommand("SELECT name FROM marks WHERE mark <65;");
-        //assertFalse(ret.contains("Simon"), "expected output with no Simon but got " + ret);
+        assertFalse(ret.contains("Simon"), "expected output with no Simon but got " + ret);
         ret = s.handleCommand("SELECT name FROM marks WHERE mark >55;");
-        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
-        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
         ret = s.handleCommand("SELECT name FROM marks WHERE name == 'Simon';");
-        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
-        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
         ret = s.handleCommand("SELECT name FROM marks WHERE mark <= 65;");
-        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
         ret = s.handleCommand("SELECT name FROM marks WHERE mark >= 65;");
-        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
-        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
         ret = s.handleCommand("SELECT name FROM marks WHERE name like 'on';");
-        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
-        //assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
-        //assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
+        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
         ret = s.handleCommand("SELECT name FROM marks WHERE (pass == FALSE) AND (mark > 35);");
-        //assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
-        //assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
-        //assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
-        ret = s.handleCommand("SELECT name FROM marks WHERE (pass == TRUE) OR (age > 35);");
-        //assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
-        //assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
-        //assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
+        assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
+        assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
+        ret = s.handleCommand("SELECT name FROM marks WHERE (pass == TRUE) OR (mark > 35);");
+        assertTrue(ret.contains("Rob"), "expected output with Rob but got " + ret);
+        assertTrue(ret.contains("Simon"), "expected output with Simon but got " + ret);
+        assertTrue(ret.contains("Sion"), "expected output with Sion but got " + ret);
 
 
         s.handleCommand("DROP DATABASE d;");

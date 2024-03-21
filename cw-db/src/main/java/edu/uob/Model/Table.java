@@ -511,6 +511,14 @@ public class Table {
         this.saveTable();
     }
 
+    public void mergeTable(Table otherTable) {
+        for (Record r : otherTable.records) {
+            if (!this.records.contains(r)) {
+                this.records.add(r);
+            }
+        }
+    }
+
     public void removeCol(String colName) throws ColNotFound, InternalError {
         int index = colNames.indexOf(getCaseSensitiveColName(colName));
         colNames.remove(colName);

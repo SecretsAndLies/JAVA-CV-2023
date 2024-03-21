@@ -33,6 +33,7 @@ public class SelectCommand extends Command {
         evalConditions(!columns.get(0).equals("*"), this.conditions);
     }
 
+
     // "(" <Condition> <BoolOperator> <Condition> ")" |
 // <Condition> <BoolOperator> <Condition> |
 // "(" [AttributeName] <Comparator> [Value] ")"
@@ -50,9 +51,16 @@ public class SelectCommand extends Command {
         conditions.removeIf(e -> e.equals("("));
         Table newTable;
         if (conditions.size() == 7) {
-            // this is AND implicitly.
-            newTable = table.filterWithCondition(new ArrayList<>(conditions.subList(0, 3)));
-            newTable = newTable.filterWithCondition(new ArrayList<>(conditions.subList(4, conditions.size())));
+            if (conditions.get(3).equals("AND")) {
+                Table tempTable = table.filterWithCondition(new ArrayList<>(conditions.subList(0, 3)));
+                newTable = tempTable.filterWithCondition(new ArrayList<>(conditions.subList(4, conditions.size())));
+            } else if (conditions.get(3).equals("OR")) {
+                newTable = table.filterWithCondition(new ArrayList<>(conditions.subList(0, 3)));
+                Table tempTable2 = table.filterWithCondition(new ArrayList<>(conditions.subList(4, conditions.size())));
+                newTable.mergeTable(tempTable2);
+            } else {
+                throw new InvalidCommand("Expected AND or OR");
+            }
         } else {
             newTable = table.filterWithCondition(conditions);
         }
