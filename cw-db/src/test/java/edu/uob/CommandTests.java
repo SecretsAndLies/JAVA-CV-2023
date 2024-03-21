@@ -226,6 +226,8 @@ public class CommandTests {
         s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
         s.handleCommand("INSERT INTO marks VALUES ('Rob', 36, FALSE);");
         s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE);");
+        String stuff = s.handleCommand("INSERT INTO marks VALUES (Chris, 20, FALSE);");
+        assertTrue(stuff.contains("ERROR"));
         String ret;
         ret = s.handleCommand("UPDATE marks SET mark = 35 WHERE name == 'Simon';");
         assertTrue(ret.contains("OK"));
@@ -263,6 +265,8 @@ public class CommandTests {
     public void testJoin() {
         DBServer s = new DBServer();
         s.handleCommand("CREATE DATABASE d;");
+        String stuff = s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
+        assertTrue(stuff.contains("ERROR"));
         s.handleCommand("USE d;");
         s.handleCommand("CREATE TABLE marks (name, mark, pass);");
         s.handleCommand("INSERT INTO marks VALUES ('Simon', 65, TRUE);");
@@ -272,6 +276,7 @@ public class CommandTests {
         s.handleCommand("INSERT INTO coursework VALUES ('DB', 1);");
         s.handleCommand("INSERT INTO coursework VALUES ('OXO', 4);");
         s.handleCommand("INSERT INTO coursework VALUES ('STAG', 2);");
+
         String beforeMarks = s.handleCommand("SELECT * FROM marks;");
         String beforeCoursework = s.handleCommand("SELECT * FROM coursework;");
         String ret = s.handleCommand("JOIN coursework AND marks ON submission AND id;");

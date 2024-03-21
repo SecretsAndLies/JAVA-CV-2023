@@ -31,7 +31,6 @@ public class SelectCommand extends Command {
         this.currentToken = 0;
         evalConditions(!columns.get(0).equals("*"));
     }
-// todo: fix repetitive use of Ok with enum.
 
     // "(" <Condition> <BoolOperator> <Condition> ")" |
 // <Condition> <BoolOperator> <Condition> |

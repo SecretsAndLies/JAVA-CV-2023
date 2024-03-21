@@ -41,9 +41,6 @@ public class CreateCommand extends Command {
         if (server.getCurrentDatabase() == null) {
             throw new InvalidCommand("Database not set, try USE and the database you want");
         }
-
-        // todo: validate the attribute list.
-        // validates that table doesn't already exist in the db.
         Table t = new Table(name, attributeList, db);
         db.addTable(t);
     }

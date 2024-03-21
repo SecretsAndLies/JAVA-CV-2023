@@ -41,6 +41,10 @@ public class Table {
         }
     }
 
+    public static void setIdIndex(int idIndex) {
+        Table.idIndex = idIndex;
+    }
+
     public List<String> getColNames() {
         return colNames;
     }
@@ -149,7 +153,7 @@ public class Table {
         saveTable();
     }
 
-    public void secretAddRecord(List<String> valueList) {
+    public void secretAddRecord(List<String> valueList) throws InvalidCommand {
         for (int i = 0; i < valueList.size(); i++) {
             String value = valueList.get(i);
             if (value.startsWith("'") && value.endsWith("'")) {
@@ -162,20 +166,36 @@ public class Table {
     }
 
     // adds the record to the table and increments the id index.
-    public void addRecord(List<String> valueList) throws InternalError, InsertionError {
+    public void addRecord(List<String> valueList) throws InternalError, InsertionError, InvalidCommand {
         if (valueList.size() + 1 != this.colNames.size()) {
             throw new InsertionError("Trying to too many or two few columns.");
         }
+        replaceStringQuotes(valueList);
+        saveTable();
+        idIndex++;
+    }
+
+    private void replaceStringQuotes(List<String> valueList) throws InvalidCommand {
         for (int i = 0; i < valueList.size(); i++) {
             String value = valueList.get(i);
             if (value.startsWith("'") && value.endsWith("'")) {
                 valueList.set(i, value.replace("'", ""));
+            } else {
+                boolean isDouble;
+                try {
+                    double d = Double.parseDouble(value);
+                    isDouble = true;
+                } catch (NumberFormatException nfe) {
+                    isDouble = false;
+                }
+
+                if (!(value.equals("TRUE") || value.equals("FALSE") || isDouble)) {
+                    throw new InvalidCommand("Value should be a quoted string or TRUE, FALSE or a number.");
+                }
             }
         }
         Record record = new Record(idIndex, valueList);
         this.records.add(record);
-        saveTable();
-        idIndex++;
     }
 
     // creates an in memory table with the given records.

@@ -25,17 +25,11 @@ public class DropCommand extends Command {
                 server.setCurrentDatabase(null);
             }
         } else if (location.equals("TABLE")) {
-            // todo: why do you need to store these things in the overall command structure?
             server.getCurrentDatabase().deleteTable(name);
         } else {
-            // todo: test thatkeyword isn't DATABASE or TABLE throws this error.
             throw new InvalidCommand();
         }
 
     }
 
-    // todo this is intended as the constructor for the table...
-    public DropCommand(DBServer server, String location, String name, ArrayList<String> columns) {
-        super(server);
-    }
 }
