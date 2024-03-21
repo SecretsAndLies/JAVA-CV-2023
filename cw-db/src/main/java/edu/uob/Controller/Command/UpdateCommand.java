@@ -3,7 +3,6 @@ package edu.uob.Controller.Command;
 import edu.uob.DBServer;
 import edu.uob.Exceptions.Command.InvalidCommand;
 import edu.uob.Exceptions.GenericException;
-import edu.uob.Exceptions.Table.NotFound;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ public class UpdateCommand extends Command {
         setTable(tableName);
         this.conditions = conditions;
         this.valueList = nameValueList;
-        evalupdate(this.valueList);
+        evalUpdate(this.valueList);
     }
 
     private void checkErorors(List<String> nameValueList) throws InvalidCommand {
@@ -36,7 +35,7 @@ public class UpdateCommand extends Command {
         }
     }
 
-    private void evalupdate(List<String> nameValueList) throws GenericException {
+    private void evalUpdate(List<String> nameValueList) throws GenericException {
         checkErorors(nameValueList);
         String colToUpdate = nameValueList.get(0);
         String value = nameValueList.get(2).replace("'", "");
@@ -45,7 +44,7 @@ public class UpdateCommand extends Command {
         }
         this.table = this.table.updateWithConditions(conditions, colToUpdate, value);
         if (nameValueList.size() > 3 && (nameValueList.get(3).equals(","))) {
-            evalupdate(nameValueList.subList(4, nameValueList.size()));
+            evalUpdate(nameValueList.subList(4, nameValueList.size()));
         }
     }
 }
