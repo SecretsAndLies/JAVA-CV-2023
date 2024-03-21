@@ -44,12 +44,8 @@ public class SelectCommand extends Command {
             return;
         }
         // your brackets have no power here.
-        if (Collections.frequency(conditions, ")") != Collections.frequency(conditions, "(")) {
-            throw new InvalidCommand("Wrong number of parenthesis.");
-        }
-        conditions.removeIf(e -> e.equals(")"));
-        conditions.removeIf(e -> e.equals("("));
         Table newTable;
+        DeleteCommand.checkParenNumber(conditions);
         if (conditions.size() == 7) {
             if (conditions.get(3).equals("AND")) {
                 Table tempTable = table.filterWithCondition(new ArrayList<>(conditions.subList(0, 3)));

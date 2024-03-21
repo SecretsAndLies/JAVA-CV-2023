@@ -235,28 +235,28 @@ public class Table {
             case "<" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
-                    return !(Integer.parseInt(recordValue) < Integer.parseInt(finalValue));
+                    return !(Float.parseFloat(recordValue) < Float.parseFloat(finalValue));
                 }
                 return true;
             });
             case ">" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
-                    return !(Integer.parseInt(recordValue) > Integer.parseInt(finalValue));
+                    return !(Float.parseFloat(recordValue) > Float.parseFloat(finalValue));
                 }
                 return true;
             });
             case "<=" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
-                    return !(Integer.parseInt(recordValue) <= Integer.parseInt(finalValue));
+                    return !(Float.parseFloat(recordValue) <= Float.parseFloat(finalValue));
                 }
                 return true;
             });
             case ">=" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
-                    return !(Integer.parseInt(recordValue) >= Integer.parseInt(finalValue));
+                    return !(Float.parseFloat(recordValue) >= Float.parseFloat(finalValue));
                 }
                 return true;
             });
@@ -292,28 +292,28 @@ public class Table {
             case "<" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
-                    return (Integer.parseInt(recordValue) < Integer.parseInt(finalValue));
+                    return (Float.parseFloat(recordValue) < Float.parseFloat(finalValue));
                 }
                 return false;
             });
             case ">" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
-                    return (Integer.parseInt(recordValue) > Integer.parseInt(finalValue));
+                    return (Float.parseFloat(recordValue) > Float.parseFloat(finalValue));
                 }
                 return false;
             });
             case "<=" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
-                    return (Integer.parseInt(recordValue) <= Integer.parseInt(finalValue));
+                    return (Float.parseFloat(recordValue) <= Float.parseFloat(finalValue));
                 }
                 return false;
             });
             case ">=" -> table.records.removeIf(record -> {
                 String recordValue = record.getByIndex(colIndex);
                 if (isNumeric(recordValue) && isNumeric(finalValue)) {
-                    return (Integer.parseInt(recordValue) >= Integer.parseInt(finalValue));
+                    return (Float.parseFloat(recordValue) >= Float.parseFloat(finalValue));
                 }
                 return false;
             });
@@ -370,7 +370,7 @@ public class Table {
                 for (Record record : table.records) {
                     String recordValue = record.getByIndex(colIndex);
                     if (isNumeric(recordValue) && isNumeric(finalValue) &&
-                            (Integer.parseInt(recordValue) < Integer.parseInt(finalValue))) {
+                            (Float.parseFloat(recordValue) < Float.parseFloat(finalValue))) {
                         record.setColVal(colToUpdateIndex, valueToUpdate);
                     }
                 }
@@ -379,7 +379,7 @@ public class Table {
                 for (Record record : table.records) {
                     String recordValue = record.getByIndex(colIndex);
                     if (isNumeric(recordValue) && isNumeric(finalValue) &&
-                            (Integer.parseInt(recordValue) > Integer.parseInt(finalValue))) {
+                            (Float.parseFloat(recordValue) > Float.parseFloat(finalValue))) {
                         record.setColVal(colToUpdateIndex, valueToUpdate);
                     }
                 }
@@ -388,7 +388,7 @@ public class Table {
                 for (Record record : table.records) {
                     String recordValue = record.getByIndex(colIndex);
                     if (isNumeric(recordValue) && isNumeric(finalValue) &&
-                            (Integer.parseInt(recordValue) <= Integer.parseInt(finalValue))) {
+                            (Float.parseFloat(recordValue) <= Float.parseFloat(finalValue))) {
                         record.setColVal(colToUpdateIndex, valueToUpdate);
                     }
                 }
@@ -397,7 +397,7 @@ public class Table {
                 for (Record record : table.records) {
                     String recordValue = record.getByIndex(colIndex);
                     if (isNumeric(recordValue) && isNumeric(finalValue) &&
-                            (Integer.parseInt(recordValue) >= Integer.parseInt(finalValue))) {
+                            (Float.parseFloat(recordValue) >= Float.parseFloat(finalValue))) {
                         record.setColVal(colToUpdateIndex, valueToUpdate);
                     }
                 }

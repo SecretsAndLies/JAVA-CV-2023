@@ -367,6 +367,21 @@ public class CommandTests {
         assertFalse(ret.contains("Chris"), "expected output with no Chris but got " + ret);
         assertFalse(ret.contains("Sion"), "expected output with no Sion but got " + ret);
         assertFalse(ret.contains("Simon"), "expected output with no Simon but got " + ret);
+        s.handleCommand("CREATE TABLE stuff (string, bool, num);");
+        s.handleCommand("INSERT INTO stuff VALUES ('sad', FALSE, 53.2);");
+        s.handleCommand("INSERT INTO stuff VALUES ('bba', FALSE, 53.1);");
+        s.handleCommand("INSERT INTO stuff VALUES ('bobby', FALSE, 54.9);");
+        s.handleCommand("INSERT INTO stuff VALUES ('tony', FALSE, 53.2);");
+        ret = s.handleCommand("DELETE from stuff WHERE num<53.2;");
+        assertTrue(ret.contains("OK"));
+        ret = s.handleCommand("SELECT * FROM stuff;");
+        assertTrue(ret.contains("sad"));
+        assertFalse(ret.contains("bba"));
+        ret = s.handleCommand("DELETE from stuff WHERE num<53.2 OR bool == FALSE;");
+        assertFalse(ret.contains("sad"));
+        assertFalse(ret.contains("bobby"));
+        assertFalse(ret.contains("tony"));
+        assertFalse(ret.contains("bba"));
         s.handleCommand("DROP DATABASE d;");
 
     }
