@@ -7,3 +7,5 @@ public class AlreadyExists extends GenericException {
         super("A table with the name " +name+ " already exists. Rename your table.");
     }
 }
+
+

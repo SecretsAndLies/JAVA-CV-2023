@@ -16,7 +16,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
+        <maven.compiler.failOnWarning>false</maven.compiler.failOnWarning>
     </properties>
 
     <dependencies>

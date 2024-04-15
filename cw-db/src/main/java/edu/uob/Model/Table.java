@@ -15,12 +15,8 @@ import java.util.stream.Collectors;
 import static edu.uob.Utils.Utils.isNumeric;
 
 public class Table {
-
-
     private static Integer idIndex;
     private List<Record> records;
-
-
     private final List<String> colNames;
     private final String name;
     private Database database;
@@ -48,13 +44,6 @@ public class Table {
     public List<String> getColNames() {
         return colNames;
     }
-    // an in memory table
-//    public Table(ArrayList<String> colNames, ArrayList<ArrayList<String>> data){
-//        this.colNames=colNames;
-//        // loop through data. Create a record from the first item of each.
-//        Record record = new Record(idIndex,)
-//    }
-
 
     // reads the file into the object.
     private void readFile() throws IOException {
@@ -207,16 +196,18 @@ public class Table {
         this.file = null;
     }
 
+    private void checkConditionLength(ArrayList<String> condition) throws InternalError {
+        if (condition.size() != 3) {
+            throw new InternalError("Multiple conditions not supported");
+        }
+    }
     // creates a new table that's filter
-    // todo this is long.
     public Table filterWithCondition(ArrayList<String> condition) throws InternalError, InvalidCommand {
         Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
         if (condition.isEmpty()) {
             return table;
         }
-        if (condition.size() != 3) {
-            throw new InternalError("Multiple conditions not supported");
-        }
+        checkConditionLength(condition);
         String colName = condition.get(0);
         String operator = condition.get(1);
         String value = condition.get(2);
@@ -228,6 +219,11 @@ public class Table {
             throw new InvalidCommand("Column doesn't exist.");
         }
         String finalValue = value;
+        executeFilterWithCondition(operator,colIndex,finalValue,table);
+        return table;
+    }
+
+    private void executeFilterWithCondition (String operator, int colIndex, String finalValue, Table table) throws InvalidCommand {
         switch (operator) {
             case "==" -> table.records.removeIf(record -> !record.getByIndex(colIndex).equals(finalValue));
             case "!=" -> table.records.removeIf(record -> record.getByIndex(colIndex).equals(finalValue));
@@ -262,29 +258,9 @@ public class Table {
             });
             default -> throw new InvalidCommand("Invalid operator.");
         }
-        return table;
     }
 
-    // todo: highly repetitive. Obviously need to change.
-    public Table filterWithCondtionReverse(ArrayList<String> condition) throws InternalError, InvalidName, InvalidCommand {
-        Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
-        if (condition.isEmpty()) {
-            return table;
-        }
-        if (condition.size() != 3) {
-            throw new InternalError("Multiple conditions not supported");
-        }
-        String colName = condition.get(0);
-        String operator = condition.get(1);
-        String value = condition.get(2);
-        if (value.contains("'")) {
-            value = value.replace("'", "");
-        }
-        int colIndex = table.colNames.indexOf(colName);
-        if (colIndex == -1) {
-            throw new InvalidCommand("Column doesn't exist.");
-        }
-        String finalValue = value;
+    private void executeFilterWithConditionReverse (String operator, int colIndex, String finalValue, Table table) throws InvalidCommand {
         switch (operator) {
             case "==" -> table.records.removeIf(record -> record.getByIndex(colIndex).equals(finalValue));
             case "!=" -> table.records.removeIf(record -> !record.getByIndex(colIndex).equals(finalValue));
@@ -319,11 +295,10 @@ public class Table {
             });
             default -> throw new InvalidCommand("Invalid operator.");
         }
-        return table;
     }
 
-    // todo: obviously this is horrible.
-    public Table updateWithConditions(ArrayList<String> condition, String colToUpdate, String valueToUpdate) throws GenericException {
+
+    public Table filterWithCondtionReverse(ArrayList<String> condition) throws InternalError, InvalidName, InvalidCommand {
         Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
         if (condition.isEmpty()) {
             return table;
@@ -338,89 +313,137 @@ public class Table {
             value = value.replace("'", "");
         }
         int colIndex = table.colNames.indexOf(colName);
+        if (colIndex == -1) {
+            throw new InvalidCommand("Column doesn't exist.");
+        }
+        String finalValue = value;
+        executeFilterWithConditionReverse(operator,colIndex,finalValue,table);
+        return table;
+    }
+
+    private void updateEquals(int colIndex, String finalValue,
+                              Table table, int colToUpdateIndex, String valueToUpdate){
+        for (Record record : table.records) {
+            if (record.getByIndex(colIndex).equals(finalValue)) {
+                record.setColVal(colToUpdateIndex, valueToUpdate);
+            }
+        }
+    }
+
+    private void updateNotEquals(int colIndex, String finalValue,
+                                 Table table, int colToUpdateIndex, String valueToUpdate){
+        for (Record record : table.records) {
+            if (!record.getByIndex(colIndex).equals(finalValue)) {
+                record.setColVal(colToUpdateIndex, valueToUpdate);
+            }
+        }
+    }
+    private void updateLike(int colIndex, String finalValue,
+                                 Table table, int colToUpdateIndex, String valueToUpdate) {
+        for (Record record : table.records) {
+            if (record.getByIndex(colIndex).contains(finalValue)) {
+                record.setColVal(colToUpdateIndex, valueToUpdate);
+            }
+        }
+    }
+    private void updateLT(int colIndex, String finalValue,
+                            Table table, int colToUpdateIndex, String valueToUpdate) {
+        for (Record record : table.records) {
+            String recordValue = record.getByIndex(colIndex);
+            if (isNumeric(recordValue) && isNumeric(finalValue) &&
+                    (Float.parseFloat(recordValue) < Float.parseFloat(finalValue))) {
+                record.setColVal(colToUpdateIndex, valueToUpdate);
+            }
+        }
+    }
+    private void updateGT(int colIndex, String finalValue,
+                          Table table, int colToUpdateIndex, String valueToUpdate) {
+        for (Record record : table.records) {
+            String recordValue = record.getByIndex(colIndex);
+            if (isNumeric(recordValue) && isNumeric(finalValue) &&
+                    (Float.parseFloat(recordValue) > Float.parseFloat(finalValue))) {
+                record.setColVal(colToUpdateIndex, valueToUpdate);
+            }
+        }
+    }
+    private void updateGTEqual(int colIndex, String finalValue,
+                          Table table, int colToUpdateIndex, String valueToUpdate) {
+        for (Record record : table.records) {
+            String recordValue = record.getByIndex(colIndex);
+            if (isNumeric(recordValue) && isNumeric(finalValue) &&
+                    (Float.parseFloat(recordValue) >= Float.parseFloat(finalValue))) {
+                record.setColVal(colToUpdateIndex, valueToUpdate);
+            }
+        }
+    }
+    private void updateLTEqual(int colIndex, String finalValue,
+                          Table table, int colToUpdateIndex, String valueToUpdate) {
+        for (Record record : table.records) {
+            String recordValue = record.getByIndex(colIndex);
+            if (isNumeric(recordValue) && isNumeric(finalValue) &&
+                    (Float.parseFloat(recordValue) <= Float.parseFloat(finalValue))) {
+                record.setColVal(colToUpdateIndex, valueToUpdate);
+            }
+        }
+    }
+
+    private void executeUpdateWithCondtions (String operator, int colIndex, String finalValue,
+                                             Table table, int colToUpdateIndex, String valueToUpdate)
+            throws InvalidCommand {
+        switch (operator) {
+            case "==" -> {
+                updateEquals(colIndex,finalValue,table,colToUpdateIndex,valueToUpdate);
+            }
+            case "!=" -> {
+                updateNotEquals(colIndex,finalValue,table,colToUpdateIndex,valueToUpdate);
+            }
+            case "LIKE" -> {
+                updateLike(colIndex,finalValue,table,colToUpdateIndex,valueToUpdate);
+            }
+            case "<" -> {
+                updateLT(colIndex,finalValue,table,colToUpdateIndex,valueToUpdate);
+            }
+            case ">" -> {
+                updateGT(colIndex,finalValue,table,colToUpdateIndex,valueToUpdate);
+            }
+            case "<=" -> {
+                updateLTEqual(colIndex,finalValue,table,colToUpdateIndex,valueToUpdate);
+            }
+            case ">=" -> {
+                updateGTEqual(colIndex,finalValue,table,colToUpdateIndex,valueToUpdate);
+            }
+            default -> throw new InvalidCommand("Invalid operator.");
+        }
+    }
+
+    private void checkCondition(ArrayList<String> condition) throws InternalError {
+        if (condition.size() != 3) {
+            throw new InternalError("Multiple conditions not supported");
+        }
+    }
+    public Table updateWithConditions(ArrayList<String> condition, String colToUpdate, String valueToUpdate) throws GenericException {
+        Table table = new Table(this.colNames, this.database, new ArrayList<>(records));
+        if (condition.isEmpty()) {
+            return table;
+        }
+        checkCondition(condition);
+        String colName = condition.get(0);
+        String operator = condition.get(1);
+        String value = condition.get(2);
+        if (value.contains("'")) {
+            value = value.replace("'", "");
+        }
+        int colIndex = table.colNames.indexOf(colName);
         int colToUpdateIndex = table.colNames.indexOf(colToUpdate);
 
         if (colIndex == -1 || colToUpdateIndex == -1) {
             throw new InvalidCommand("Column doesn't exist.");
         }
         String finalValue = value;
-        switch (operator) {
-            case "==":
-                for (Record record : table.records) {
-                    if (record.getByIndex(colIndex).equals(finalValue)) {
-                        record.setColVal(colToUpdateIndex, valueToUpdate);
-                    }
-                }
-                break;
-            case "!=":
-                for (Record record : table.records) {
-                    if (!record.getByIndex(colIndex).equals(finalValue)) {
-                        record.setColVal(colToUpdateIndex, valueToUpdate);
-                    }
-                }
-                break;
-            case "LIKE":
-                for (Record record : table.records) {
-                    if (record.getByIndex(colIndex).contains(finalValue)) {
-                        record.setColVal(colToUpdateIndex, valueToUpdate);
-                    }
-                }
-                break;
-            case "<":
-                for (Record record : table.records) {
-                    String recordValue = record.getByIndex(colIndex);
-                    if (isNumeric(recordValue) && isNumeric(finalValue) &&
-                            (Float.parseFloat(recordValue) < Float.parseFloat(finalValue))) {
-                        record.setColVal(colToUpdateIndex, valueToUpdate);
-                    }
-                }
-                break;
-            case ">":
-                for (Record record : table.records) {
-                    String recordValue = record.getByIndex(colIndex);
-                    if (isNumeric(recordValue) && isNumeric(finalValue) &&
-                            (Float.parseFloat(recordValue) > Float.parseFloat(finalValue))) {
-                        record.setColVal(colToUpdateIndex, valueToUpdate);
-                    }
-                }
-                break;
-            case "<=":
-                for (Record record : table.records) {
-                    String recordValue = record.getByIndex(colIndex);
-                    if (isNumeric(recordValue) && isNumeric(finalValue) &&
-                            (Float.parseFloat(recordValue) <= Float.parseFloat(finalValue))) {
-                        record.setColVal(colToUpdateIndex, valueToUpdate);
-                    }
-                }
-                break;
-            case ">=":
-                for (Record record : table.records) {
-                    String recordValue = record.getByIndex(colIndex);
-                    if (isNumeric(recordValue) && isNumeric(finalValue) &&
-                            (Float.parseFloat(recordValue) >= Float.parseFloat(finalValue))) {
-                        record.setColVal(colToUpdateIndex, valueToUpdate);
-                    }
-                }
-                break;
-            default:
-                throw new InvalidCommand("Invalid operator.");
-
-        }
+        executeUpdateWithCondtions ( operator,  colIndex,  finalValue,
+                 table,  colToUpdateIndex,  valueToUpdate);
         return table;
     }
-
-    // For JOINs: discard the ids from the original tables
-// discard the columns that the tables were matched on
-// create a new unique id for each of row of the table produced
-// attribute names are prepended with name of table from which they originated
-
-//    JOIN coursework AND marks ON submission AND id;
-//[OK]
-//    id	coursework.task	marks.name	marks.mark	marks.pass
-//1	OXO			Rob		35		FALSE
-//2	DB			Simon		65		TRUE
-//3	OXO			Chris		20		FALSE
-//4	STAG			Sion		55		TRUE
 
     public Table(ArrayList<String> colNames) {
         this.colNames = colNames;
@@ -440,26 +463,7 @@ public class Table {
         return rightColIndex;
     }
 
-    public Table joinTable(Table otherTable, String leftCol, String rightCol) throws GenericException {
-        ArrayList<String> returnColNames = new ArrayList<>();
-        // we minus 1 because we remove the id.
-        int leftColIndex = this.getColIndex(leftCol);
-        int rightColIndex = otherTable.getColIndex(rightCol);
-        // todo lots of duplication here.
-        returnColNames.add("id");
-        for (String name : this.colNames) {
-            if (name.equals("id") || name.equals(leftCol)) {
-                continue;
-            }
-            returnColNames.add(this.name + "." + name);
-        }
-        for (String name : otherTable.getColNames()) {
-            if (name.equals("id") || name.equals(rightCol)) {
-                continue;
-            }
-            returnColNames.add(otherTable.name + "." + name);
-        }
-        Table joinTable = new Table(returnColNames);
+    private void executeJoin(Table otherTable, int leftColIndex, int rightColIndex, Table joinTable) throws InvalidCommand {
         for (Record record : this.records) {
             for (Record rightRecord : otherTable.getRecords()) {
                 if (record.getByIndex(leftColIndex).equals(rightRecord.getByIndex(rightColIndex))) {
@@ -482,7 +486,28 @@ public class Table {
                 }
             }
         }
+    }
 
+    public Table joinTable(Table otherTable, String leftCol, String rightCol) throws GenericException {
+        ArrayList<String> returnColNames = new ArrayList<>();
+        // we minus 1 because we remove the id.
+        int leftColIndex = this.getColIndex(leftCol);
+        int rightColIndex = otherTable.getColIndex(rightCol);
+        returnColNames.add("id");
+        for (String name : this.colNames) {
+            if (name.equals("id") || name.equals(leftCol)) {
+                continue;
+            }
+            returnColNames.add(this.name + "." + name);
+        }
+        for (String name : otherTable.getColNames()) {
+            if (name.equals("id") || name.equals(rightCol)) {
+                continue;
+            }
+            returnColNames.add(otherTable.name + "." + name);
+        }
+        Table joinTable = new Table(returnColNames);
+        executeJoin(otherTable,  leftColIndex,  rightColIndex,  joinTable);
         return joinTable;
     }
 
@@ -584,11 +609,3 @@ public class Table {
         return col;
     }
 }
-
-/*
-   You should treat column names as case insensitive for querying, but you should
-   preserve the case when storing them (i.e. do NOT convert them to lower case).
-   This is so that the user can define attribute names using CamelCase if they
-   wish (which is a useful aid to readability).
-
- */

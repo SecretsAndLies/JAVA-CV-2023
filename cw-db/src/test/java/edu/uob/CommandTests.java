@@ -192,20 +192,19 @@ public class CommandTests {
         s.handleCommand("INSERT INTO marks VALUES ('Sion', 55, TRUE);");
         s.handleCommand("INSERT INTO marks VALUES ('Rob', 36, FALSE);");
         s.handleCommand("INSERT INTO marks VALUES ('Chris', 20, FALSE);");
-//        String ret1 = s.handleCommand("SELEcT * from marks where name == 'Simon' OR mark == 20;");
-//        System.out.println(ret1);
-        // todo: test AND as the first token.
-//        assertTrue(ret1.contains("Simon"));
-//        assertTrue(ret1.contains("Chris"));
+        String ret11 = s.handleCommand("SELEcT * from marks where AND mark == 20;");
+        assertTrue(ret11.contains("ERROR"), "AMND should cause error.");
+       String ret1 = s.handleCommand("SELEcT * from marks where name == 'Simon' OR mark == 20;");
+        assertTrue(ret1.contains("Simon"));
+        assertTrue(ret1.contains("Chris"));
         String ret2 = s.handleCommand("SELEcT * from marks where name == 'Simon' OR mark == 20;");
-        System.out.println(ret2);
-//        assertEquals(ret1, ret2);
-//        String ret = s.handleCommand("SELEcT * from marks where (name == 'Simon' OR (mark == 20);");
-//        assertTrue(ret.contains("ERROR"), "Bracket missing should error.");
-//        String ret3 = s.handleCommand("SELEcT * from marks where (age <= 55) AND (pass == TRUE);");
-////        assertTrue(ret3.contains("Sion"));
-////        assertFalse(ret3.contains("Rob"));
-//        String ret4 = s.handleCommand("SELEcT * from marks where (age <= 55 AND pass == TRUE) OR name == 'Simon';");
+        assertEquals(ret1, ret2);
+        String ret = s.handleCommand("SELEcT * from marks where (name == 'Simon' OR (mark == 20);");
+        assertTrue(ret.contains("ERROR"), "Bracket missing should error.");
+        String ret3 = s.handleCommand("SELEcT * from marks where (mark <= 55) AND (pass == TRUE);");
+        assertTrue(ret3.contains("Sion"));
+        assertFalse(ret3.contains("Rob"));
+//        String ret4 = s.handleCommand("SELEcT * from marks where (mark <= 55 AND pass == TRUE) OR name == 'Simon';");
 //        assertTrue(ret4.contains("Sion"));
 //        assertTrue(ret4.contains("Simon"));
 //        assertFalse(ret4.contains("Rob"));
@@ -258,6 +257,8 @@ public class CommandTests {
                 3\tCoolness\t30\tTRUE
                 4\tCoolness\t30\tTRUE
                 """));
+        ret = s.handleCommand("UPDATE marks SET mark = 35 WHERE name == 'Coolness' OR mark = 75;");
+        System.out.println(ret);
         s.handleCommand("DROP DATABASE d;");
     }
 
