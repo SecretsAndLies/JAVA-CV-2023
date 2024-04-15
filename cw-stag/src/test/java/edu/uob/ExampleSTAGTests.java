@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.nio.file.Paths;
-import java.io.IOException;
 import java.time.Duration;
 
 class ExampleSTAGTests {
@@ -82,9 +81,14 @@ class ExampleSTAGTests {
     }
 
     @Test
-    void testParser(){
-      Parser p = new Parser();
-      p.parseActions();
+    void testActionsParser(){
+      ActionsParser p = new ActionsParser("basic-actions.xml");
+      p.print();
+    }
+
+    @Test
+    void testEntityParser(){
+      EntityParser e = new EntityParser("basic-entities.dot");
     }
 
 }
