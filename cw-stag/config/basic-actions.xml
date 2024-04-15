@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <triggers>
+            <keyphrase>open</keyphrase>
+            <keyphrase>unlock</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>trapdoor</entity>
+            <entity>key</entity>
+        </subjects>
+        <consumed>
+            <entity>key</entity>
+        </consumed>
+        <produced>
+            <entity>cellar</entity>
+        </produced>
+        <narration>You unlock the trapdoor and see steps leading down into a cellar</narration>
+    </action>
+
+    <action>
+        <triggers>
+            <keyphrase>chop</keyphrase>
+            <keyphrase>cut</keyphrase>
+            <keyphrase>cutdown</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>tree</entity>
+            <entity>axe</entity>
+        </subjects>
+        <consumed>
+            <entity>tree</entity>
+        </consumed>
+        <produced>
+            <entity>log</entity>
+        </produced>
+        <narration>You cut down the tree with the axe</narration>
+    </action>
+
+    <action>
+        <triggers>
+            <keyphrase>drink</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>potion</entity>
+        </subjects>
+        <consumed>
+            <entity>potion</entity>
+        </consumed>
+        <produced>
+            <entity>health</entity>
+        </produced>
+        <narration>You drink the potion and your health improves</narration>
+    </action>
+
+    <action>
+        <triggers>
+            <keyphrase>fight</keyphrase>
+            <keyphrase>hit</keyphrase>
+            <keyphrase>attack</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>elf</entity>
+        </subjects>
+        <consumed>
+            <entity>health</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You attack the elf, but he fights back and you lose some health</narration>
+    </action>
+
+</actions>

@@ -1,0 +1,65 @@
+digraph layout {
+    /* ortho splines just makes the arrows into straight lines (rather than curvy ones !) */
+    splines = ortho;
+    node [shape = "rect"];
+
+    subgraph locations {
+        subgraph cluster001 {
+            node [shape = "none"];
+            cabin [description = "A log cabin in the woods"];
+            subgraph artefacts {
+                node [shape = "diamond"];
+                axe [description = "A razor sharp axe"];
+                potion [description = "Magic potion"];
+            }
+            subgraph furniture {
+                node [shape = "hexagon"];
+                trapdoor [description = "Wooden trapdoor"];
+            }
+        }
+
+        subgraph cluster002 {
+            node [shape = "none"];
+            forest [description = "A dark forest"];
+            subgraph artefacts {
+                node [shape = "diamond"];
+                key [description = "Brass key"];
+            }
+            subgraph furniture {
+                node [shape = "hexagon"];
+                tree [description = "A big tree"];
+            }
+        }
+
+        subgraph cluster003 {
+            node [shape = "none"];
+            cellar [description = "A dusty cellar"]
+            subgraph characters {
+                node [shape = "ellipse"];
+                elf [description = "Angry Elf"];
+            }
+        }
+
+        subgraph cluster999 {
+            node [shape = "none"];
+            storeroom [description = "Storage for any entities not placed in the game"]
+            subgraph characters {
+                node [shape = "ellipse"];
+            }
+            subgraph artefacts {
+                node [shape = "diamond"];
+                log [description = "A heavy wooden log"];
+            }
+            subgraph furniture {
+                node [shape = "hexagon"];
+            }
+        }
+    }
+
+    subgraph paths {
+        cabin -> forest;
+        forest -> cabin;
+        cellar -> cabin;
+    }
+
+}
