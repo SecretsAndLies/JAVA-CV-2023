@@ -30,6 +30,7 @@ public class Parser {
                 if(i%2==0){
                     continue;
                 }
+                // create a new action.
                 Element action = (Element)actions.item(i);
                 System.out.println("Triggers:");
                 Element triggers = (Element)action.getElementsByTagName("triggers").item(0);
