@@ -1,4 +1,4 @@
-package edu.uob;
+package edu.uob.GameEntities;
 
 public abstract class GameEntity
 {

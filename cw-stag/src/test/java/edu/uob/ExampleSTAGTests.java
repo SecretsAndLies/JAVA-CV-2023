@@ -65,5 +65,26 @@ class ExampleSTAGTests {
   }
 
   // Add more unit tests or integration tests here.
+  @Test
+  void testInventory()
+  {
+      // or inv for short.
+  }
+
+    @Test
+    void testDrop()
+    {
+    }
+
+    @Test
+    void testHealth()
+    {
+    }
+
+    @Test
+    void testParser(){
+      Parser p = new Parser();
+      p.parseActions();
+    }
 
 }
