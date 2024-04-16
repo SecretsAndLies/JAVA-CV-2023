@@ -55,6 +55,27 @@ public class Location extends GameEntity {
         return new ArrayList<>(accessibleLocations.keySet().stream().toList());
     }
 
+    private String getCharactersString(HashMap<String, Character> characters) {
+        if (characters.isEmpty()) {
+            return "";
+        }
+        final String[] charactersString = {"You can see characters: "};
+        characters.forEach((key, value) -> {
+            charactersString[0] = charactersString[0] + " " + key + " " + value;
+        });
+        return charactersString[0];
+    }
+
+    public String getDescriptionOfLocation(Player currentPlayer) {
+        HashMap<String, Character> characterCopy = new HashMap<>(characters);
+        characterCopy.remove(currentPlayer.getName());
+        return "You are in " + getDescription() +
+                ". You can see " + artifacts.values() +
+                " " + furniture.values() + " " +
+                getCharactersString(characterCopy) +
+                " Locations accessible from here are: " + getAccessibleLocationNames();
+    }
+
     @Override
     public String toString() {
         // todo: at some point you'll wanna clean up this string. (the thing says it should include names and descrpitons?)

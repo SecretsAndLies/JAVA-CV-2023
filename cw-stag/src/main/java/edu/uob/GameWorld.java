@@ -21,19 +21,18 @@ public class GameWorld {
     public String handleCommand(String command) {
         // if the player has never been seen before, add them to list of players, and put them in start location
         String response = "";
-        // todo adding like this causes players to see themselves.
-        // entityParser.getStartLocation().addCharacterToLocation(player);
         String[] commandParts = command.split(":");
         String playerName = commandParts[0];
         String[] commandText = tokenizeCommandText(commandParts[1]);
         Player player;
         player = players.get(playerName);
         if (player == null) {
-            player = new Player(playerName, "Another player.", entityParser.getStartLocation());
+            player = new Player(playerName, "another player", entityParser.getStartLocation());
             players.put(playerName, player);
+            entityParser.getStartLocation().addCharacterToLocation(player);
         }
         if (commandText[0].equals("look")) {
-            response = player.getLocation().toString();
+            response = player.getLocation().getDescriptionOfLocation(player);
         }
         if (commandText[0].equals("inv") || commandText[0].equals("inventory")) {
             response = player.getInventoryString();

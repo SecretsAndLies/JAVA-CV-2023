@@ -1,7 +1,5 @@
 package edu.uob;
 
-import edu.uob.parsers.ActionsParser;
-import edu.uob.parsers.EntityParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -81,24 +79,25 @@ class ExampleSTAGTests {
         assertTrue(response.contains("key"), "Failed attempt to use 'goto' command to move to the forest - there is no key in the current location");
     }
 
+    @Test
+    void testMultiplePlayers() {
+        String response;
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("see characters"));
+        response = sendCommandToServer("bryan: look");
+        assertTrue(response.contains("see characters"));
+        assertTrue(response.contains("simon"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("bryan"));
+        assertTrue(response.contains("see characters"));
+
+    }
+
     // Add more unit tests or integration tests here.
 
     @Test
     void testHealth() {
     }
 
-    @Test
-    void testActionsParser() {
-        File actionsFile = Paths.get("config" + File.separator + "basic-actions.xml").toAbsolutePath().toFile();
-        ActionsParser p = new ActionsParser(actionsFile);
-        p.print();
-    }
-
-    @Test
-    void testEntityParser() {
-        File entitiesFile = Paths.get("config" + File.separator + "basic-entities.dot").toAbsolutePath().toFile();
-        EntityParser e = new EntityParser(entitiesFile);
-
-    }
 
 }
