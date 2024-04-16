@@ -11,10 +11,7 @@ public abstract class GameEntity {
 
     @Override
     public String toString() {
-        return
-                "name='" + name + '\'' +
-                        ", description='" + description
-                ;
+        return description;
     }
 
     public String getName() {

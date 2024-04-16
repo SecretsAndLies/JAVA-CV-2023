@@ -7,12 +7,6 @@ public class Item extends GameEntity {
         super(name, description);
         this.isCollectable = isCollectable;
     }
-
-    @Override
-    public String toString() {
-        return "Item{" +
-                super.toString() +
-                ", isCollectable=" + isCollectable +
-                '}';
-    }
 }
+
+

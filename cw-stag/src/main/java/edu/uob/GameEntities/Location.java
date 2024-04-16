@@ -1,47 +1,67 @@
 package edu.uob.GameEntities;
 
+import edu.uob.GameException;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Location extends GameEntity {
     public boolean isStartLocation;
-    private ArrayList<Item> artifacts;
-    private ArrayList<Item> furniture;
-    private ArrayList<Character> characters;
-    private ArrayList<Location> accessibleLocations;
+    private HashMap<String, Item> artifacts;
+    private HashMap<String, Item> furniture;
+    private HashMap<String, Character> characters;
+    private HashMap<String, Location> accessibleLocations;
 
 
     public Location(String name, String description, boolean isStartLocation,
-                    ArrayList<Item> artifacts, ArrayList<Item> furniture, ArrayList<Character> characters) {
+                    HashMap<String, Item> artifacts, HashMap<String, Item> furniture, HashMap<String, Character> characters) {
         super(name, description);
         this.isStartLocation = isStartLocation;
         this.artifacts = artifacts;
         this.furniture = furniture;
         this.characters = characters;
-        this.accessibleLocations = new ArrayList<>();
+        this.accessibleLocations = new HashMap<>();
+    }
+
+    //Determines if this location is connected to the given location.
+
+    public Location getConnectedLocation(String name) throws GameException {
+        Location location = accessibleLocations.get(name);
+        if (location == null) {
+            throw new GameException("Location not accessible.");
+        }
+        return location;
+    }
+
+    public void addCharacterToLocation(Character character) {
+        characters.put(character.getName(), character);
+    }
+
+    public void addArtifactToLocation(Item item) {
+        artifacts.put(item.getName(), item);
+    }
+
+    public Item removeItemFromLocation(String itemName) {
+        Item item = artifacts.get(itemName);
+        artifacts.remove(itemName);
+        return item;
     }
 
     public void addAccessibleLocation(Location location) {
-        accessibleLocations.add(location);
+        accessibleLocations.put(location.getName(), location);
     }
 
     public ArrayList<String> getAccessibleLocationNames() {
-        ArrayList<String> listOfNames = new ArrayList<>();
-        for (Location location : accessibleLocations) {
-            listOfNames.add(location.getName());
-        }
-        return listOfNames;
+        return new ArrayList<>(accessibleLocations.keySet().stream().toList());
     }
 
     @Override
     public String toString() {
-        return "Location{" +
-                " name=" + getName() +
-                ", description=" + getDescription() +
-                ", isStartLocation=" + isStartLocation +
-                ", artifacts=" + artifacts +
-                ", furniture=" + furniture +
-                ", characters=" + characters +
-                ", accessibleLocations=" + getAccessibleLocationNames() +
-                '}';
+        // todo: at some point you'll wanna clean up this string. (the thing says it should include names and descrpitons?)
+        return "You are in " + getDescription() +
+                ". You can see " + artifacts.values() +
+                " " + furniture.values() + " " +
+                characters.values() +
+                " Locations accessible from here are: " + getAccessibleLocationNames();
     }
 }
