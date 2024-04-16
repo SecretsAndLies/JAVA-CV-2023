@@ -1,9 +1,18 @@
 package edu.uob.GameEntities;
 
-public class Item extends GameEntity{
+public class Item extends GameEntity {
+    boolean isCollectable;
 
-    // this is an Artifact or a Furniture, defined by if it's collectable or not.
-    public Item(String name, String description) {
+    public Item(String name, String description, boolean isCollectable) {
         super(name, description);
+        this.isCollectable = isCollectable;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                super.toString() +
+                ", isCollectable=" + isCollectable +
+                '}';
     }
 }

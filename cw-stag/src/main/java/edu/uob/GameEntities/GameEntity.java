@@ -1,23 +1,27 @@
 package edu.uob.GameEntities;
 
-public abstract class GameEntity
-{
+public abstract class GameEntity {
     private String name;
     private String description;
 
-    public GameEntity(String name, String description)
-    {
+    public GameEntity(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    public String getName()
-    {
+    @Override
+    public String toString() {
+        return
+                "name='" + name + '\'' +
+                        ", description='" + description
+                ;
+    }
+
+    public String getName() {
         return name;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 }
