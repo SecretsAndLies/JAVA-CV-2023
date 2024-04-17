@@ -1,6 +1,7 @@
 package edu.uob;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class GameAction
@@ -16,6 +17,11 @@ public class GameAction
         this.produced = new ArrayList<>(produced);
         this.narration = narration;
     }
+
+    public boolean actionContainsAllSubjects(ArrayList<String> subjects){
+        return new HashSet<>(this.subjects).containsAll(subjects);
+    }
+
 
     public String toString(){
         return "Subjects: " + subjects.toString() + "\n" +

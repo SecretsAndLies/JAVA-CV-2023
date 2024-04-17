@@ -8,14 +8,34 @@ public class Player extends Character {
 
 
     Location location;
+
     HashMap<String, Item> inventory;
+    int health;
 
     public Player(String name, String description, Location location) {
         super(name, description);
         this.location = location;
         inventory = new HashMap<>();
+        health=3;
     }
 
+    // searches environment (including player inventory) for item returns true if found.
+    public boolean environmentIncludesItemName(String item){
+        if(inventory.containsKey(item)){
+            return true;
+        }
+        if(location.getArtifacts().containsKey(item)){
+            return true;
+        }
+        if(location.getFurniture().containsKey(item)){
+            return true;
+        }
+        return false;
+    }
+
+    public String getHealthString(){
+        return "your health is "+health;
+    }
     public String getItemFromCurrentLocation(String itemName) {
         Item item = location.removeItemFromLocation(itemName);
         if (item == null) {
@@ -24,6 +44,10 @@ public class Player extends Character {
         }
         inventory.put(itemName, item);
         return itemName + " added to your inventory.";
+    }
+
+    public HashMap<String, Item> getInventory() {
+        return inventory;
     }
 
     public String gotoLocation(String locationName) {

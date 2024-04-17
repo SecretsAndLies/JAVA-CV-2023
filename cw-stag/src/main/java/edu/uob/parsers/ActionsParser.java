@@ -32,6 +32,10 @@ public class ActionsParser {
         return actions;
     }
 
+    public HashSet<GameAction> getActionByKeyPhrase(String keyPhrase){
+        return this.actions.get(keyPhrase);
+    }
+
     // todo: too long. Needs to be broken up into mehtods.
     private void parse() {
         try {

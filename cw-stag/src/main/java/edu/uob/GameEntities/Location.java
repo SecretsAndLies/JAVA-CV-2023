@@ -76,6 +76,26 @@ public class Location extends GameEntity {
                 " Locations accessible from here are: " + getAccessibleLocationNames();
     }
 
+    public boolean isStartLocation() {
+        return isStartLocation;
+    }
+
+    public HashMap<String, Item> getArtifacts() {
+        return artifacts;
+    }
+
+    public HashMap<String, Item> getFurniture() {
+        return furniture;
+    }
+
+    public HashMap<String, Character> getCharacters() {
+        return characters;
+    }
+
+    public HashMap<String, Location> getAccessibleLocations() {
+        return accessibleLocations;
+    }
+
     @Override
     public String toString() {
         // todo: at some point you'll wanna clean up this string. (the thing says it should include names and descrpitons?)

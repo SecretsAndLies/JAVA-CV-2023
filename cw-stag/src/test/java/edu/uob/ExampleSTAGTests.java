@@ -90,7 +90,55 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("bryan"));
         assertTrue(response.contains("see characters"));
+    }
 
+    @Test
+    void testCutDown(){
+        String response;
+        response = sendCommandToServer("simon: get axe");
+        // note you do not have to get axe in order to use it if it's in the same room. Can't test this here need to write a new game file.
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: cutdown tree with axe");
+        assertTrue(response.contains("You cut down the tree with the axe"));
+        response = sendCommandToServer("simon: look");
+        // log should now be in the level and tree should be gone.
+        assertTrue(response.contains("log"));
+        assertFalse(response.contains("tree"));
+    }
+
+    @Test
+    void testOpen(){
+        String response;
+        response = sendCommandToServer("simon: open trapdoor");
+        System.out.println(response);
+        // should be a fail message because you don't have the key.
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: get key");
+        response = sendCommandToServer("simon: goto cabin");
+        response = sendCommandToServer("simon: open trapdoor");
+        System.out.println(response);
+        assertTrue(response.contains("You unlock the trapdoor and see steps leading down into a cellar"));
+    }
+
+    @Test
+    void testDrink(){
+        String response;
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: get key");
+        response = sendCommandToServer("simon: goto cabin");
+        response = sendCommandToServer("simon: get potion");
+        response = sendCommandToServer("simon: open trapdoor");
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: attack elf");
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("2"));
+        response = sendCommandToServer("simon: drink potion");
+        assertTrue(response.contains("You drink the potion and your health improves"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
     }
 
     // Add more unit tests or integration tests here.
