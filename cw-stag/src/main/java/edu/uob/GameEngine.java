@@ -20,7 +20,7 @@ public class GameEngine {
         players = new HashMap<>();
     }
 
-    public String handleCommand(String command) {
+    public String handleCommand(String command) throws GameException {
         String response = "";
         String[] commandParts = command.split(":");
         String playerName = commandParts[0];
@@ -29,7 +29,7 @@ public class GameEngine {
         // if the player has never been seen before, add them to list of players, and put them in start location
         player = players.get(playerName);
         if (player == null) {
-            player = new Player(playerName, "another player", entityParser.getStartLocation());
+            player = new Player(playerName, "another player", entityParser.getStartLocation(), entityParser.getGameLocations());
             players.put(playerName, player);
             entityParser.getStartLocation().addCharacterToLocation(player);
         }
@@ -64,7 +64,7 @@ public class GameEngine {
     // open trapdoor with key
     // unlock trapdoor
     // unlock trapdoor with key
-    private String handleComplexCommand(String[] commandText, Player player){
+    private String handleComplexCommand(String[] commandText, Player player) throws GameException {
         ArrayList<String> actionKeywords=getActionKeywords(commandText);
         // is there ONE actionkeyword only. If not error.
         if(actionKeywords.size()!=1){
@@ -77,25 +77,22 @@ public class GameEngine {
             // (eg: open)
             return "Can't execute this action.";
         }
-
         HashSet<GameAction> allActions = actionsParser.getActionByKeyPhrase(actionKeyWord);
         ArrayList<GameAction> potentialActions = new ArrayList<>();
         for (GameAction action : allActions){
             // take the list of subjects. If an action does not contain ALL of the given subjects, exclude it
-            // note that this could be a subset.
             if(!action.actionContainsAllSubjects(subjects)){
                 continue;
             }
+            // todo: include locations here.
             if(isActionPossible(action,player)){
                 potentialActions.add(action);
             }
         }
         if(potentialActions.size()!=1){
-            return "I'm not sure what action you'd like to do.";
+            return "I can't do that.";
         }
-
         return executeAction(potentialActions.get(0), player);
-
     }
 
 
@@ -104,14 +101,24 @@ public class GameEngine {
     // TODO: returns true if this action is possible for this player to complete at the moment
     // ie: do they have the required items.
     private boolean isActionPossible(GameAction action, Player player){
+        // get the items in the location and players inventory
+        for(String itemName : action.subjects){
+            if(!player.environmentIncludesItemName(itemName)){
+                return false;
+            }
+        }
         return true;
     }
 
-    private String executeAction(GameAction action, Player player){
-        // take the action and implement its effects
-        // delete the items that are consumed (player.consumeItem) - this can be in the location or inventory.
+    // take the action and implement its effects
+    private String executeAction(GameAction action, Player player) throws GameException {
         // produce the items that should be produced
-        // (note that if the item is a location - then move the player to that location.)
+        for(String item : action.produced){
+            player.produceItem(item);
+        }
+        for(String item : action.consumed) {
+            player.consumeItem(item);
+        }
         return action.narration;
     }
 

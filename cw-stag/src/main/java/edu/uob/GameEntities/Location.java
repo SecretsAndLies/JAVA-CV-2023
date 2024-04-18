@@ -33,12 +33,26 @@ public class Location extends GameEntity {
         return location;
     }
 
+    // remvoes the item from this location and gives it to the caller
+    public Item takeItem(String itemName){
+        Item item = artifacts.remove(itemName);
+        if(item==null){
+            item = furniture.remove(itemName);
+        }
+        return item;
+    }
+
     public void addCharacterToLocation(Character character) {
         characters.put(character.getName(), character);
     }
 
-    public void addArtifactToLocation(Item item) {
-        artifacts.put(item.getName(), item);
+    public void addItemToLocation(Item item) {
+        if(item.isCollectable) {
+            artifacts.put(item.getName(), item);
+        }
+        else{
+            furniture.put(item.getName(),item);
+        }
     }
 
     public Item removeItemFromLocation(String itemName) {
@@ -49,6 +63,10 @@ public class Location extends GameEntity {
 
     public void addAccessibleLocation(Location location) {
         accessibleLocations.put(location.getName(), location);
+    }
+
+    public void removeAccessibleLocation(String name) {
+        accessibleLocations.remove(name);
     }
 
     public ArrayList<String> getAccessibleLocationNames() {
@@ -73,6 +91,7 @@ public class Location extends GameEntity {
                 ". You can see " + artifacts.values() +
                 " " + furniture.values() + " " +
                 getCharactersString(characterCopy) +
+                // todo: turn this into a prettier list - key: value
                 " Locations accessible from here are: " + getAccessibleLocationNames();
     }
 

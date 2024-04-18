@@ -96,6 +96,8 @@ class ExampleSTAGTests {
     void testCutDown(){
         String response;
         response = sendCommandToServer("simon: get axe");
+        response = sendCommandToServer("simon: inv");
+        assertTrue(response.contains("axe"));
         // note you do not have to get axe in order to use it if it's in the same room. Can't test this here need to write a new game file.
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: cutdown tree with axe");
@@ -109,27 +111,37 @@ class ExampleSTAGTests {
     @Test
     void testOpen(){
         String response;
-        response = sendCommandToServer("simon: open trapdoor");
-        System.out.println(response);
-        // should be a fail message because you don't have the key.
+//        response = sendCommandToServer("simon: open trapdoor");
+//        // todo: this isn't a great error. Ideally you'd be like "You need a key to open the trapdoor."
+//        assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: get key");
+        response = sendCommandToServer("simon: inv");
+        assertTrue(response.contains("key"));
         response = sendCommandToServer("simon: goto cabin");
+        // todo: locations doesn't work yet.
         response = sendCommandToServer("simon: open trapdoor");
-        System.out.println(response);
         assertTrue(response.contains("You unlock the trapdoor and see steps leading down into a cellar"));
+        response = sendCommandToServer("simon: goto cellar");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("cellar"));
+        assertFalse(response.contains("cabin"));
+
     }
 
     @Test
-    void testDrink(){
+    void testDrinkandHealth(){
         String response;
+        response = sendCommandToServer("simon: get axe");
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: get key");
+        response = sendCommandToServer("simon: chop tree");
         response = sendCommandToServer("simon: goto cabin");
         response = sendCommandToServer("simon: get potion");
         response = sendCommandToServer("simon: open trapdoor");
+        response = sendCommandToServer("simon: goto cellar");
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: attack elf");
@@ -139,13 +151,26 @@ class ExampleSTAGTests {
         assertTrue(response.contains("You drink the potion and your health improves"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: attack elf");
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("2"));
+        response = sendCommandToServer("simon: attack elf");
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("1"));
+        response = sendCommandToServer("simon: attack elf");
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("cabin"));
+        assertFalse(response.contains("cellar"));
+        response = sendCommandToServer("simon: goto cellar");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("axe"),"Expecting a dropped axe but found "+response);
+        // todo: test that continuing to attack results in the player being placed at the start.
+        // todo: test that the other player isn't affected.
+
     }
 
-    // Add more unit tests or integration tests here.
-
-    @Test
-    void testHealth() {
-    }
-
+// todo: test a file with a two word keyphrase (eg: cut down instead of cutdown)
 
 }

@@ -11,7 +11,7 @@ public abstract class GameEntity {
 
     @Override
     public String toString() {
-        return description;
+        return name + " : " + description;
     }
 
     public String getName() {

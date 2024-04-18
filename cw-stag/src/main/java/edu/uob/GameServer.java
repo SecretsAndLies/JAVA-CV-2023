@@ -36,7 +36,15 @@ public final class GameServer {
      * @param command The incoming command to be processed
      */
     public String handleCommand(String command) {
-        return gameEngine.handleCommand(command);
+        try {
+            return gameEngine.handleCommand(command);
+        }
+        catch (GameException gameException){
+            return gameException.getMessage();
+        }
+//        catch (Exception exception){
+//            return "Something went wrong.";
+//        }
     }
 
     /**

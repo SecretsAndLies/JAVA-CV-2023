@@ -8,15 +8,67 @@ public class Player extends Character {
 
 
     Location location;
-
+    private HashMap<String, Location> gameLocations;
+    Location startLocation;
     HashMap<String, Item> inventory;
     int health;
+    int START_HEALTH = 3;
 
-    public Player(String name, String description, Location location) {
+    public Player(String name, String description, Location location, HashMap<String, Location> gameLocations) {
         super(name, description);
         this.location = location;
+        this.startLocation=location;
         inventory = new HashMap<>();
-        health=3;
+        this.gameLocations=gameLocations;
+        health=START_HEALTH;
+    }
+
+    // consume item from inventory or location.
+    public void consumeItem(String itemName){
+        if(itemName.equals("health")){
+            this.reduceHealth();
+                    return;
+        }
+        // todo: confirm this approach is OK - ie does the lack of unique checks cause issues?
+        inventory.remove(itemName);
+        location.getFurniture().remove(itemName);
+        location.getArtifacts().remove(itemName);
+        location.removeAccessibleLocation(itemName);
+    }
+
+    public void reduceHealth(){
+        health--;
+        if(health==0){
+            // drop all items in current location
+            for(Item item : inventory.values()) {
+                location.addItemToLocation(item);
+            }
+            // move player to start location.
+            this.location=startLocation;
+            health=START_HEALTH;
+        }
+    }
+
+
+    // Gets item from the storeroom and adds to the room.
+    // can also get a location from the locations list and add it as an accessible location.
+    public void produceItem(String itemName) throws GameException {
+        Location storeroom = getStoreRoom();
+        if(storeroom==null){
+            throw new GameException("Storeroom not found");
+        }
+        // search the storeroom for the item you need. Delete that item
+        Item item = storeroom.takeItem(itemName);
+        location.addItemToLocation(item);
+    }
+
+    private Location getStoreRoom(){
+        for(Location location : gameLocations.values()){
+            if(location.getName().equals("storeroom")){
+                return location;
+            }
+        }
+        return null;
     }
 
     // searches environment (including player inventory) for item returns true if found.
@@ -65,7 +117,7 @@ public class Player extends Character {
             return (itemName + " isn't in your inventory.");
 
         }
-        location.addArtifactToLocation(item);
+        location.addItemToLocation(item);
         inventory.remove(itemName);
         return item + " has been dropped on the ground. I guess you didn't want it?";
     }
