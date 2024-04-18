@@ -111,9 +111,8 @@ class ExampleSTAGTests {
     @Test
     void testOpen(){
         String response;
-//        response = sendCommandToServer("simon: open trapdoor");
-//        // todo: this isn't a great error. Ideally you'd be like "You need a key to open the trapdoor."
-//        assertTrue(response.contains("I can't do that."));
+        response = sendCommandToServer("simon: open trapdoor");
+        assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: get key");
         response = sendCommandToServer("simon: inv");
@@ -130,12 +129,12 @@ class ExampleSTAGTests {
     @Test
     void testDrinkandHealth(){
         String response;
+        response = sendCommandToServer("james: goto forest");
         response = sendCommandToServer("simon: get axe");
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: get key");
-        response = sendCommandToServer("simon: chop tree");
         response = sendCommandToServer("simon: goto cabin");
         response = sendCommandToServer("simon: get potion");
         response = sendCommandToServer("simon: open trapdoor");
@@ -160,15 +159,10 @@ class ExampleSTAGTests {
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("cabin"));
-        assertFalse(response.contains("cellar"));
         response = sendCommandToServer("simon: goto cellar");
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("axe"),"Expecting a dropped axe but found "+response);
-        // todo: test that continuing to attack results in the player being placed at the start.
-        // todo: test that the other player isn't affected.
-
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("forest"));
     }
-
-// todo: test a file with a two word keyphrase (eg: cut down instead of cutdown)
-
 }

@@ -27,7 +27,7 @@ public class Player extends Character {
     public void consumeItem(String itemName){
         if(itemName.equals("health")){
             this.reduceHealth();
-                    return;
+            return;
         }
         // todo: confirm this approach is OK - ie does the lack of unique checks cause issues?
         inventory.remove(itemName);
@@ -50,10 +50,21 @@ public class Player extends Character {
     }
 
 
+    public void increaseHealth(){
+        if(health==3){
+            return;
+        }
+        health++;
+    }
+
     // Gets item from the storeroom and adds to the room.
     // can also get a location from the locations list and add it as an accessible location.
     public void produceItem(String itemName) throws GameException {
         // if item is a location
+        if(itemName.equals("health")){
+            increaseHealth();
+            return;
+        }
         Location location = getLocationByName(itemName);
         if(location!=null){
             this.location.addAccessibleLocation(location);
@@ -66,7 +77,7 @@ public class Player extends Character {
         }
         // search the storeroom for the item you need. Delete that item
         Item item = storeroom.takeItem(itemName);
-        location.addItemToLocation(item);
+        this.location.addItemToLocation(item);
     }
 
     private Location getLocationByName(String name){
@@ -87,6 +98,9 @@ public class Player extends Character {
             return true;
         }
         if(location.getFurniture().containsKey(item)){
+            return true;
+        }
+        if(location.getCharacters().containsKey(item)){
             return true;
         }
         return false;

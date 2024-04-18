@@ -33,7 +33,7 @@ public class Location extends GameEntity {
         return location;
     }
 
-    // remvoes the item from this location and gives it to the caller
+    // removes the item from this location and gives it to the caller
     public Item takeItem(String itemName){
         Item item = artifacts.remove(itemName);
         if(item==null){
