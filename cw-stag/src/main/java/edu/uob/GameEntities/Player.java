@@ -53,7 +53,14 @@ public class Player extends Character {
     // Gets item from the storeroom and adds to the room.
     // can also get a location from the locations list and add it as an accessible location.
     public void produceItem(String itemName) throws GameException {
-        Location storeroom = getStoreRoom();
+        // if item is a location
+        Location location = getLocationByName(itemName);
+        if(location!=null){
+            this.location.addAccessibleLocation(location);
+            return;
+        }
+
+        Location storeroom = getLocationByName("storeroom");
         if(storeroom==null){
             throw new GameException("Storeroom not found");
         }
@@ -62,9 +69,9 @@ public class Player extends Character {
         location.addItemToLocation(item);
     }
 
-    private Location getStoreRoom(){
+    private Location getLocationByName(String name){
         for(Location location : gameLocations.values()){
-            if(location.getName().equals("storeroom")){
+            if(location.getName().equals(name)){
                 return location;
             }
         }

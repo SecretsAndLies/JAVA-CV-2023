@@ -84,7 +84,6 @@ public class GameEngine {
             if(!action.actionContainsAllSubjects(subjects)){
                 continue;
             }
-            // todo: include locations here.
             if(isActionPossible(action,player)){
                 potentialActions.add(action);
             }

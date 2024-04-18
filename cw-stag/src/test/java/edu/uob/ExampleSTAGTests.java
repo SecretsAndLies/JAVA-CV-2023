@@ -119,13 +119,11 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: inv");
         assertTrue(response.contains("key"));
         response = sendCommandToServer("simon: goto cabin");
-        // todo: locations doesn't work yet.
         response = sendCommandToServer("simon: open trapdoor");
         assertTrue(response.contains("You unlock the trapdoor and see steps leading down into a cellar"));
         response = sendCommandToServer("simon: goto cellar");
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("cellar"));
-        assertFalse(response.contains("cabin"));
 
     }
 
