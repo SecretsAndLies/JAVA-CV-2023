@@ -6,13 +6,12 @@ import java.util.HashMap;
 
 public class Player extends Character {
 
-
-    Location location;
+    private Location location;
     private HashMap<String, Location> gameLocations;
-    Location startLocation;
-    HashMap<String, Item> inventory;
-    int health;
-    int START_HEALTH = 3;
+    private Location startLocation;
+    private HashMap<String, Item> inventory;
+    private int health;
+    private final int START_HEALTH = 3;
 
     public Player(String name, String description, Location location, HashMap<String, Location> gameLocations) {
         super(name, description);
@@ -21,6 +20,18 @@ public class Player extends Character {
         inventory = new HashMap<>();
         this.gameLocations=gameLocations;
         health=START_HEALTH;
+    }
+
+    public HashMap<String, Location> getGameLocations() {
+        return gameLocations;
+    }
+
+    public Location getStartLocation() {
+        return startLocation;
+    }
+
+    public int getHealth() {
+        return health;
     }
 
     // consume item from inventory or location.

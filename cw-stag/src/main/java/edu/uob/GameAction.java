@@ -6,10 +6,10 @@ import java.util.List;
 
 public class GameAction
 {
-    List<String> subjects;
-    List<String> consumed;
-    List<String> produced;
-    String narration;
+    private List<String> subjects;
+    private List<String> consumed;
+    private List<String> produced;
+    private String narration;
 
     public GameAction(List<String> subjects, List<String> consumed, List<String> produced, String narration) {
         this.subjects = new ArrayList<>(subjects);
@@ -22,6 +22,21 @@ public class GameAction
         return new HashSet<>(this.subjects).containsAll(subjects);
     }
 
+    public List<String> getSubjects() {
+        return subjects;
+    }
+
+    public List<String> getConsumed() {
+        return consumed;
+    }
+
+    public List<String> getProduced() {
+        return produced;
+    }
+
+    public String getNarration() {
+        return narration;
+    }
 
     public String toString(){
         return "Subjects: " + subjects.toString() + "\n" +

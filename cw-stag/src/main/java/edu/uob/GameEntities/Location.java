@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Location extends GameEntity {
-    public boolean isStartLocation;
+    private boolean isStartLocation;
     private HashMap<String, Item> artifacts;
     private HashMap<String, Item> furniture;
     private HashMap<String, Character> characters;
@@ -47,7 +47,7 @@ public class Location extends GameEntity {
     }
 
     public void addItemToLocation(Item item) {
-        if(item.isCollectable) {
+        if(item.isCollectable()) {
             artifacts.put(item.getName(), item);
         }
         else{

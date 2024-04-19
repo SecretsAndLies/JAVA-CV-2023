@@ -6,12 +6,13 @@ import edu.uob.parsers.EntityParser;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class GameEngine {
-    ActionsParser actionsParser;
-    EntityParser entityParser;
+    private ActionsParser actionsParser;
+    private EntityParser entityParser;
     private HashMap<String, Player> players;
 
     public GameEngine(File entitiesFile, File actionsFile) {
@@ -60,6 +61,18 @@ public class GameEngine {
         return response;
     }
 
+    public ActionsParser getActionsParser() {
+        return actionsParser;
+    }
+
+    public EntityParser getEntityParser() {
+        return entityParser;
+    }
+
+    public HashMap<String, Player> getPlayers() {
+        return players;
+    }
+
     // open trapdoor
     // open trapdoor with key
     // unlock trapdoor
@@ -101,7 +114,7 @@ public class GameEngine {
     // ie: do they have the required items.
     private boolean isActionPossible(GameAction action, Player player){
         // get the items in the location and players inventory
-        for(String itemName : action.subjects){
+        for(String itemName : action.getSubjects()){
             if(!player.environmentIncludesItemName(itemName)){
                 return false;
             }
@@ -112,13 +125,13 @@ public class GameEngine {
     // take the action and implement its effects
     private String executeAction(GameAction action, Player player) throws GameException {
         // produce the items that should be produced
-        for(String item : action.produced){
+        for(String item : action.getProduced()){
             player.produceItem(item);
         }
-        for(String item : action.consumed) {
+        for(String item : action.getConsumed()) {
             player.consumeItem(item);
         }
-        return action.narration;
+        return action.getNarration();
     }
 
     // get all the subjects mentioned in the command
@@ -146,8 +159,28 @@ public class GameEngine {
 
 
     private String[] tokenizeCommandText(String commandParts) {
-        // todo make more robust - handle double whitespaces etc.
+        // Remove any whitespace at the beginning and end of the query
+        commandParts = commandParts.strip();
+
+       // remove special characters "a a," becomes a a
+        commandParts = commandParts.replaceAll("[^a-zA-Z0-9\\s]"," ");
+
+        // replace multiple spaces with single space a   a becomes a a
+        commandParts = commandParts.replaceAll(" +"," ");
+
+        // gets the actions that contain multiple words, ordered by most to least words
+        ArrayList<String> mutliWordActions = actionsParser.getMultiWordActions();
+        // replace those actions in the command with -. So cut down becomes cut-down
+        for(String action : mutliWordActions){
+            commandParts = commandParts.replaceAll(action,action.replace(" ", "-"));
+        }
+        // split the strings up by spaces - so cut-down test becomes cut-down, test
         String[] commandText = commandParts.toLowerCase().strip().split(" ");
+
+        // reform the valid commands  so cut-down, test becomes cut down, test
+        for(int i=0; i<commandText.length; i++){
+            commandText[i] = commandText[i].replaceAll("-", " ");
+        }
         return commandText;
     }
 }

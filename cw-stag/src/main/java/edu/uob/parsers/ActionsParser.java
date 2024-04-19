@@ -11,10 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class ActionsParser {
 
@@ -32,11 +29,31 @@ public class ActionsParser {
         return actions;
     }
 
+    // gets the list of actions that contain multiple words, ordered by word number desc.
+    public ArrayList<String> getMultiWordActions() {
+        ArrayList<String> multiWordActions = new ArrayList<>();
+        for(String keyphrase : actions.keySet()) {
+            if(keyphrase.split(" ").length>1){
+                multiWordActions.add(keyphrase);
+            }
+        }
+        multiWordActions.sort(new wordLenComparator());
+        return multiWordActions;
+    }
+
     public HashSet<GameAction> getActionByKeyPhrase(String keyPhrase){
         return this.actions.get(keyPhrase);
     }
 
-    // todo: too long. Needs to be broken up into mehtods.
+    static class wordLenComparator implements java.util.Comparator<String> {
+        @Override
+        public int compare(String a, String b) {
+            return  b.split(" ").length - a.split(" ").length;
+        }
+    }
+
+
+        // todo: too long. Needs to be broken up into mehtods.
     private void parse() {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

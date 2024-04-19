@@ -132,6 +132,7 @@ class ExampleSTAGTests {
         response = sendCommandToServer("james: goto forest");
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: get axe");
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: get key");
         response = sendCommandToServer("simon: goto cabin");
@@ -294,6 +295,9 @@ class ExampleSTAGTests {
         assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: drink POTION axe");
         assertTrue(response.contains("I can't do that."));
+        response = sendCommandToServer("simon: drink axe POTION");
+        assertTrue(response.contains("I can't do that."));
+
         response = sendCommandToServer("simon: drink pOTION");
         assertTrue(response.contains("You drink the potion and your health improves"));
         response = sendCommandToServer("simon: health");
