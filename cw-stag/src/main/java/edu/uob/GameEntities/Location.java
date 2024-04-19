@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Location extends GameEntity {
-    private boolean isStartLocation;
-    private HashMap<String, Item> artifacts;
-    private HashMap<String, Item> furniture;
-    private HashMap<String, Character> characters;
-    private HashMap<String, Location> accessibleLocations;
+    private final boolean isStartLocation;
+    private final HashMap<String, Item> artifacts;
+    private final HashMap<String, Item> furniture;
+    private final HashMap<String, Character> characters;
+    private final HashMap<String, Location> accessibleLocations;
 
 
     public Location(String name, String description, boolean isStartLocation,
@@ -42,11 +42,16 @@ public class Location extends GameEntity {
         return item;
     }
 
+    public Character takeCharacterFromLocation(String characterName){
+        return characters.remove(characterName);
+    }
+
     public void addCharacterToLocation(Character character) {
         characters.put(character.getName(), character);
     }
 
     public void addItemToLocation(Item item) {
+        // not adding characters to location.
         if(item.isCollectable()) {
             artifacts.put(item.getName(), item);
         }

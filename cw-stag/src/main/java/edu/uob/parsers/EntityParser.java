@@ -18,13 +18,11 @@ import java.util.NoSuchElementException;
 
 public class EntityParser {
 
-    private HashMap<String, Location> gameLocations;
+    private final HashMap<String, Location> gameLocations;
 
     private Location startLocation;
-    private File file;
 
     public EntityParser(File file) throws NoSuchElementException {
-        this.file = file;
         gameLocations = new HashMap<>();
 
         try {
@@ -65,7 +63,7 @@ public class EntityParser {
         String locationName = locationDetails.getId().getId();
         String locationDescription = locationDetails.getAttribute("description");
         // the first location is the start.
-        Boolean isStartLocation = (i == 0);
+        boolean isStartLocation = (i == 0);
 
         HashMap<String, Item> artifacts = getArtifacts(locationSubgraphs);
         HashMap<String, Item> furniture = getFurniture(locationSubgraphs);

@@ -86,7 +86,11 @@ public class Player extends Character {
         if(storeroom==null){
             throw new GameException("Storeroom not found");
         }
-        // search the storeroom for the item you need. Delete that item
+        Character character = storeroom.takeCharacterFromLocation(itemName);
+        if(character!=null){
+            this.location.addCharacterToLocation(character);
+            return;
+        }
         Item item = storeroom.takeItem(itemName);
         this.location.addItemToLocation(item);
     }
@@ -159,7 +163,7 @@ public class Player extends Character {
             return "Your inventory is empty.";
         }
         // todo clean this up.
-        return "Your inventory contains: " + inventory.toString();
+        return "Your inventory contains: " + inventory;
     }
 
     public Location getLocation() {

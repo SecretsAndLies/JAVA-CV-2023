@@ -2,7 +2,7 @@ package edu.uob.GameEntities;
 
 public class Item extends GameEntity {
 
-    private boolean isCollectable;
+    private final boolean isCollectable;
 
     public Item(String name, String description, boolean isCollectable) {
         super(name, description);

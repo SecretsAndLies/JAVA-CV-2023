@@ -6,14 +6,13 @@ import edu.uob.parsers.EntityParser;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class GameEngine {
-    private ActionsParser actionsParser;
-    private EntityParser entityParser;
-    private HashMap<String, Player> players;
+    private final ActionsParser actionsParser;
+    private final EntityParser entityParser;
+    private final HashMap<String, Player> players;
 
     public GameEngine(File entitiesFile, File actionsFile) {
         actionsParser = new ActionsParser(actionsFile);
@@ -35,23 +34,42 @@ public class GameEngine {
             entityParser.getStartLocation().addCharacterToLocation(player);
         }
 
-        // todo: this is too permissive linguistically
+        // todo: this is too repetitive...
+        String invalidLength =  "Can't understand this command";
         if (commandText[0].equals("look")) {
+            if(commandIsInvalidLength(commandText,1)){
+                return invalidLength;
+            }
             response = player.getLocation().getDescriptionOfLocation(player);
         }
         else if (commandText[0].equals("inv") || commandText[0].equals("inventory")) {
+            if(commandIsInvalidLength(commandText,1)){
+                return invalidLength;
+            }
             response = player.getInventoryString();
         }
         else if (commandText[0].equals("get")) {
+            if(commandIsInvalidLength(commandText,2)){
+                return invalidLength;
+            }
             response = player.getItemFromCurrentLocation(commandText[1]);
         }
         else if (commandText[0].equals("drop")) {
+            if(commandIsInvalidLength(commandText,2)){
+                return invalidLength;
+            }
             response = player.dropItemInLocation(commandText[1]);
         }
         else if (commandText[0].equals("goto")) {
+            if(commandIsInvalidLength(commandText,2)){
+                return invalidLength;
+            }
             response = player.gotoLocation(commandText[1]);
         }
         else if (commandText[0].equals("health")) {
+            if(commandIsInvalidLength(commandText,1)){
+                return invalidLength;
+            }
             response = player.getHealthString();
         }
         else{
@@ -61,16 +79,8 @@ public class GameEngine {
         return response;
     }
 
-    public ActionsParser getActionsParser() {
-        return actionsParser;
-    }
-
-    public EntityParser getEntityParser() {
-        return entityParser;
-    }
-
-    public HashMap<String, Player> getPlayers() {
-        return players;
+    private boolean commandIsInvalidLength(String[] command, int length){
+        return command.length != length;
     }
 
     // open trapdoor

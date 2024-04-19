@@ -6,10 +6,10 @@ import java.util.List;
 
 public class GameAction
 {
-    private List<String> subjects;
-    private List<String> consumed;
-    private List<String> produced;
-    private String narration;
+    private final List<String> subjects;
+    private final List<String> consumed;
+    private final List<String> produced;
+    private final String narration;
 
     public GameAction(List<String> subjects, List<String> consumed, List<String> produced, String narration) {
         this.subjects = new ArrayList<>(subjects);

@@ -274,11 +274,13 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: get axe");
         assertTrue(response.contains("axe added to your inventory"));
         // composite command failure.
-//        response = sendCommandToServer("simon: get key and open door");
-        // todo: this should be a failure.
-//        System.out.println(response);
+        response = sendCommandToServer("simon: get key and open door");
+        assertTrue(response.contains("Can't understand this command"));
+        response = sendCommandToServer("simon: inv");
+        assertFalse(response.contains("key"));
         response = sendCommandToServer("simon: get key");
         assertTrue(response.contains("key added to your inventory"));
+        assertTrue(response.contains("key"));
         response = sendCommandToServer("simon: goto cabin");
         assertTrue(response.contains("log cabin"));
         response = sendCommandToServer("simon: get potion");
@@ -323,8 +325,7 @@ class ExampleSTAGTests {
         response = sendCommandToServer("james may: look");
         assertTrue(response.contains("forest"));
         response = sendCommandToServer("simon: goto      cabin");
-//        assertTrue(response.contains("cabin"));
-        // todo: this fails with the extra spacing.
- 
+        assertTrue(response.contains("cabin"));
+
     }
 }
