@@ -14,7 +14,6 @@ class ComplexSTAGTests {
     private GameServer server;
 
     // tODO: https://pmd.github.io/ check with
-    // todo: Go back through the spec and create comments for tests that you want. (eg: word choice, capitalization.)
 
     // Create a new server _before_ every @Test
     @BeforeEach
@@ -54,7 +53,6 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: get axe");
         response = sendCommandToServer("simon: inv");
         assertTrue(response.contains("axe"));
-        // todo: write a game file where you use an object in the same room as the subject - shoudlnt' ahve to be in inv to use..
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: slice it down tree with axe");
         assertTrue(response.contains("You cut down the tree with the axe"));
@@ -68,8 +66,9 @@ class ComplexSTAGTests {
     @Test
     void testPlayingTheGame() {
         String response;
+        response = sendCommandToServer("simon: axe get");
+        assertTrue(response.contains("axe added to your inventory"));
         response = sendCommandToServer("simon: look");
-        response = sendCommandToServer("simon: get axe");
         response = sendCommandToServer("simon: get potion");
         response = sendCommandToServer("simon: get coin");
         response = sendCommandToServer("simon: inventory");
@@ -179,11 +178,15 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("lumberjack"));
         response = sendCommandToServer("simon: talk horn");
-        // todo: have a think about if this is the right response...
-        System.out.println(response);
+        assertTrue(response.contains("woah dude, nice horn"));
+        response = sendCommandToServer("simon: talk lumberjack");
+        assertTrue(response.contains("Multiple actions are available, can you be more specific"));
+        response = sendCommandToServer("simon: talk to the lumberjack holding the Gold");
+        assertTrue(response.contains("love the gold"));
+        response = sendCommandToServer("simon: talk lumberjack horn gold");
+        assertTrue(response.contains("I can't do that."));
+        response = sendCommandToServer("simon: talk lumberjack horn look");
+        assertTrue(response.contains("Can't understand this command"));
     }
-
-
-    // todo: test word order, case sensitity
 
 }

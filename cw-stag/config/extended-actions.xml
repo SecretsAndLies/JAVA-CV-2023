@@ -200,12 +200,13 @@
         </triggers>
         <subjects>
             <entity>lumberjack</entity>
+            <entity>gold</entity>
         </subjects>
         <consumed>
         </consumed>
         <produced>
         </produced>
-        <narration>You talk to the lumberjack not holding the horn and he is rather standoffish !</narration>
+        <narration>You talk to the lumberjack with the gold and he's like - love the gold !</narration>
     </action>
 
 
