@@ -169,7 +169,6 @@ class ExampleSTAGTests {
         response = sendCommandToServer("james: look");
         assertTrue(response.contains("forest"));
     }
-    // todo: test word ordering.
 
     @Test
     void testChop() {

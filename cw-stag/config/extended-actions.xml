@@ -17,7 +17,50 @@
         </produced>
         <narration>You unlock the door and see steps leading down into a cellar</narration>
     </action>
-
+    <action>
+        <triggers>
+            <keyphrase>lock</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>trapdoor</entity>
+        </subjects>
+        <consumed>
+            <entity>cellar</entity> <!--This is kinda weird - you'd wannt lock the door and have it consume locations in both paths?-->
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You've locked the trapdoor, how will you get it down now!</narration>
+    </action>
+    <action>
+        <triggers>
+            <keyphrase>bash</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>trapdoor</entity>
+            <entity>shovel</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+            <entity>cellar</entity>
+            <entity>key</entity>
+        </produced>
+        <narration>You manage to bash down the door with the shovel! The key (which, idk got stuck inside or something?) falls to the floor.</narration>
+    </action>
+        <action>
+            <triggers>
+                <keyphrase>magically consume key</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>shovel</entity><!--It's, like, a magic shovel or something.-->
+            </subjects>
+            <consumed>
+                <entity>key</entity>
+            </consumed>
+            <produced>
+            </produced>
+            <narration>The key magically has disappeared.</narration>
+        </action>
     <action>
         <triggers>
             <keyphrase>chop</keyphrase>
@@ -137,5 +180,33 @@
         </produced>
         <narration>You blow the horn and as if by magic, a lumberjack appears !</narration>
     </action>
+    <action>
+        <triggers>
+            <keyphrase>talk</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>lumberjack</entity>
+            <entity>horn</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You talk to the lumberjack holding the horn and he's like "woah dude, nice horn." !</narration>
+    </action>
+    <action>
+        <triggers>
+            <keyphrase>talk</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>lumberjack</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You talk to the lumberjack not holding the horn and he is rather standoffish !</narration>
+    </action>
+
 
 </actions>
