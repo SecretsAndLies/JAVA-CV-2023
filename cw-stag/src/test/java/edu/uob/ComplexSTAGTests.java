@@ -32,10 +32,82 @@ class ComplexSTAGTests {
     }
 
     @Test
+    void testDecoratedCommands() {
+        String response;
+        response = sendCommandToServer("simon: get the axe");
+        response = sendCommandToServer("simon: inventory");
+        System.out.println(response);
+//        assertTrue(response.contains("axe"));
+        response = sendCommandToServer("simon: drop the axe");
+        response = sendCommandToServer("simon: inventory");
+        System.out.println(response);
+//        assertFalse(response.contains("axe"));
+        response = sendCommandToServer("simon: goto the forest");
+        response = sendCommandToServer("simon: look");
+        System.out.println(response);
+        response = sendCommandToServer("simon: check your health");
+        System.out.println(response);
+//        assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: look get");
+        System.out.println(response); // should fail
+
+    }
+
+    @Test
+    void testHealth() {
+        String response;
+        response = sendCommandToServer("james: goto forest");
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: get axe");
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: get key");
+        response = sendCommandToServer("simon: goto cabin");
+        response = sendCommandToServer("simon: get potion");
+        response = sendCommandToServer("simon: open trapdoor");
+        response = sendCommandToServer("simon: goto cellar");
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: attack elf");
+        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("2"));
+        response = sendCommandToServer("simon: drink potion");
+        assertTrue(response.contains("You drink the potion and your health improves"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: hit elf");
+        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("2"));
+        response = sendCommandToServer("simon: fight elf");
+        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("1"));
+        response = sendCommandToServer("simon: attack elf");
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("cabin"));
+        response = sendCommandToServer("simon: goto cellar");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("axe"), "Expecting a dropped axe but found " + response);
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("forest"));
+    }
+
+    @Test
     void testCutDownTwoWords() {
         String response;
+        response = sendCommandToServer("simon: goto cellar");
+        assertTrue(response.contains("Can't access that location from here."));
+        response = sendCommandToServer("simon: drop axe");
+        assertTrue(response.contains("axe isn't in your inventory"));
         response = sendCommandToServer("simon: get, axe");
         assertTrue(response.contains("axe"));
+        response = sendCommandToServer("simon: inventory axe");
+        assertTrue(response.contains("Can't understand this command"));
         response = sendCommandToServer("simon: inv.");
         assertTrue(response.contains("axe"));
         // note you do not have to get axe in order to use it if it's in the same room. Can't test this here need to write a new game file.
