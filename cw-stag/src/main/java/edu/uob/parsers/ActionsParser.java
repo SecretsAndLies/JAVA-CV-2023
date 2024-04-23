@@ -11,7 +11,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 public class ActionsParser {
 
@@ -32,8 +35,8 @@ public class ActionsParser {
     // gets the list of actions that contain multiple words, ordered by word number desc.
     public ArrayList<String> getMultiWordActions() {
         ArrayList<String> multiWordActions = new ArrayList<>();
-        for(String keyphrase : actions.keySet()) {
-            if(keyphrase.split(" ").length>1){
+        for (String keyphrase : actions.keySet()) {
+            if (keyphrase.split(" ").length > 1) {
                 multiWordActions.add(keyphrase);
             }
         }
@@ -41,19 +44,18 @@ public class ActionsParser {
         return multiWordActions;
     }
 
-    public HashSet<GameAction> getActionByKeyPhrase(String keyPhrase){
+    public HashSet<GameAction> getActionByKeyPhrase(String keyPhrase) {
         return this.actions.get(keyPhrase);
     }
 
+    // sorts by number of words in the string in descending order (most first.)
     static class wordLenComparator implements java.util.Comparator<String> {
         @Override
         public int compare(String a, String b) {
-            return  b.split(" ").length - a.split(" ").length;
+            return b.split(" ").length - a.split(" ").length;
         }
     }
 
-
-        // todo: too long. Needs to be broken up into mehtods.
     private void parse() {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -65,30 +67,38 @@ public class ActionsParser {
                     continue;
                 }
                 // create a new action.
-                Element action = (Element) actions.item(i);
-                Element subjectsElement = (Element) action.getElementsByTagName("subjects").item(0);
-                List<String> subjects = getStringListFromElement(subjectsElement, "entity");
-                Element consumedElement = (Element) action.getElementsByTagName("consumed").item(0);
-                List<String> consumed = getStringListFromElement(consumedElement, "entity");
-                Element producedElement = (Element) action.getElementsByTagName("produced").item(0);
-                List<String> produced = getStringListFromElement(producedElement, "entity");
-                String narration = action.getElementsByTagName("narration").item(0).getTextContent();
-                Element triggers = (Element) action.getElementsByTagName("triggers").item(0);
-                List<String> triggerList = getStringListFromElement(triggers, "keyphrase");
-                for (String trigger : triggerList) {
-                    GameAction gameAction = new GameAction(subjects, consumed, produced, narration);
-                    if (this.actions.get(trigger) == null) {
-                        HashSet<GameAction> gameActionHashSet = new HashSet<>();
-                        gameActionHashSet.add(gameAction);
-                        this.actions.put(trigger, gameActionHashSet);
-                    } else {
-                        this.actions.get((trigger)).add(gameAction);
-                    }
-                }
-
+                addNewActionToActionsList(actions, i);
             }
         } catch (ParserConfigurationException | SAXException | IOException pce) {
             System.err.println(pce.getMessage());
+        }
+    }
+
+    private void addNewActionToActionsList(NodeList actions, int i) {
+        Element action = (Element) actions.item(i);
+        Element subjectsElement = (Element) action.getElementsByTagName("subjects").item(0);
+        List<String> subjects = getStringListFromElement(subjectsElement, "entity");
+        Element consumedElement = (Element) action.getElementsByTagName("consumed").item(0);
+        List<String> consumed = getStringListFromElement(consumedElement, "entity");
+        Element producedElement = (Element) action.getElementsByTagName("produced").item(0);
+        List<String> produced = getStringListFromElement(producedElement, "entity");
+        String narration = action.getElementsByTagName("narration").item(0).getTextContent();
+        Element triggers = (Element) action.getElementsByTagName("triggers").item(0);
+        List<String> triggerList = getStringListFromElement(triggers, "keyphrase");
+        addTriggersFromTriggerList(triggerList, subjects, consumed, produced, narration);
+    }
+
+    private void addTriggersFromTriggerList(List<String> triggerList, List<String> subjects,
+                                            List<String> consumed, List<String> produced, String narration) {
+        for (String trigger : triggerList) {
+            GameAction gameAction = new GameAction(subjects, consumed, produced, narration);
+            if (this.actions.get(trigger) == null) {
+                HashSet<GameAction> gameActionHashSet = new HashSet<>();
+                gameActionHashSet.add(gameAction);
+                this.actions.put(trigger, gameActionHashSet);
+            } else {
+                this.actions.get((trigger)).add(gameAction);
+            }
         }
     }
 
@@ -101,7 +111,4 @@ public class ActionsParser {
         return stringList;
     }
 
-    public void print() {
-        System.out.println(actions);
-    }
 }

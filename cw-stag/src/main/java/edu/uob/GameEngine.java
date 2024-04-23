@@ -45,9 +45,14 @@ public class GameEngine {
         return !Collections.disjoint(Arrays.stream(commandText).toList(), listOfBuiltInCommandWords);
     }
 
-    private void placeBuiltInCommandWordsAtStartOfCommand(String[] commandText, List<String> listOfBuiltInCommandWords) {
+    private void placeBuiltInCommandWordsAtStartOfCommand(String[] commandText, List<String> listOfBuiltInCommandWords) throws GameException {
+        int numOfCommandWords = 0;
+        List<String> commandTextList = Arrays.stream(commandText).toList();
         for (String word : listOfBuiltInCommandWords) {
-            int index = Arrays.stream(commandText).toList().indexOf(word);
+            if (commandTextList.contains(word)) {
+                numOfCommandWords++;
+            }
+            int index = commandTextList.indexOf(word);
             if (index == -1) {
                 continue;
             }
@@ -56,61 +61,155 @@ public class GameEngine {
             commandText[index] = commandText[0];
             commandText[0] = temp;
         }
+        if (numOfCommandWords != 1) {
+            throw new GameException("Multiple command words found.");
+        }
     }
 
     // todo repetitive.
     private String executeBuiltInCommand(String[] commandText, Player player, List<String> listOfBuiltInCommandWords) {
-        placeBuiltInCommandWordsAtStartOfCommand(commandText, listOfBuiltInCommandWords);
-        String invalidLength = "Can't understand this command";
+
+        try {
+            placeBuiltInCommandWordsAtStartOfCommand(commandText, listOfBuiltInCommandWords);
+        } catch (GameException e) {
+            return "found more command words than expected";
+        }
+        String invalidCommandString = "Can't understand this command";
+
+        // todo: ask if this is acceptable - ie: can we safely reject any built in commands that contain non built in keyprhases?
+        if (commandContainsCustomActionKeywords(commandText)) {
+            return invalidCommandString;
+        }
+
         switch (commandText[0]) {
             case "look" -> {
-                if (commandIsInvalidLength(commandText, 1)) {
-                    return invalidLength;
+                if (isInvalidCommandWithZeroAdditionalEntites(commandText)) {
+                    return invalidCommandString;
                 }
                 return player.getLocation().getDescriptionOfLocation(player);
             }
             case "inv", "inventory" -> {
-                if (commandIsInvalidLength(commandText, 1)) {
-                    return invalidLength;
+                if (isInvalidCommandWithZeroAdditionalEntites(commandText)) {
+                    return invalidCommandString;
                 }
                 return player.getInventoryString();
             }
             case "get" -> {
-                if (commandIsInvalidLength(commandText, 2)) {
-                    return invalidLength;
+                String artifact = null;
+                try {
+                    artifact = getArtifactForGetAndDrop(commandText);
+                } catch (GameException e) {
+                    return invalidCommandString;
                 }
-                return player.getItemFromCurrentLocation(commandText[1]);
+                return player.getItemFromCurrentLocation(artifact);
             }
             case "drop" -> {
-                if (commandIsInvalidLength(commandText, 2)) {
-                    return invalidLength;
+                String artifact = null;
+                try {
+                    artifact = getArtifactForGetAndDrop(commandText);
+                } catch (GameException e) {
+                    return invalidCommandString;
                 }
-                return player.dropItemInLocation(commandText[1]);
+                return player.dropItemInLocation(artifact);
             }
             case "goto" -> {
-                if (commandIsInvalidLength(commandText, 2)) {
-                    return invalidLength;
+                String location;
+                try {
+                    location = getLocationFromCommand(commandText);
+                } catch (GameException e) {
+                    return invalidCommandString;
                 }
-                return player.gotoLocation(commandText[1]);
+                return player.gotoLocation(location);
             }
             case "health" -> {
-                if (commandIsInvalidLength(commandText, 1)) {
-                    return invalidLength;
+                if (isInvalidCommandWithZeroAdditionalEntites(commandText)) {
+                    return invalidCommandString;
                 }
                 return player.getHealthString();
             }
         }
-        return invalidLength;
+        return invalidCommandString;
     }
 
-    private boolean commandIsInvalidLength(String[] command, int length) {
-        return command.length != length;
+    private boolean commandContainsCustomActionKeywords(String[] commandText) {
+        for (String word : commandText) {
+            if (actionsParser.getActions().containsKey(word)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    // open trapdoor
-    // open trapdoor with key
-    // unlock trapdoor
-    // unlock trapdoor with key
+
+    // TODO: validators are repetitive.
+    private boolean isInvalidCommandWithZeroAdditionalEntites(String[] commandText) {
+        for (String word : commandText) {
+            // todo: potnetially you could simplify this if you had a method in the entityparser classs.
+            if (entityParser.getGameArtifacts().containsKey(word)) {
+                return true;
+            }
+            if (entityParser.getGameCharacters().containsKey(word)) {
+                return true;
+            }
+            if (entityParser.getGameFurniture().containsKey(word)) {
+                return true;
+            }
+            if (entityParser.getGameLocations().containsKey(word)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getLocationFromCommand(String[] commandText) throws GameException {
+        int countOfLocationsFound = 0;
+        String location = "";
+        for (String word : commandText) {
+            if (entityParser.getGameArtifacts().containsKey(word)) {
+                throw new GameException("artifacts");
+            }
+            if (entityParser.getGameCharacters().containsKey(word)) {
+                throw new GameException("characters");
+            }
+            if (entityParser.getGameFurniture().containsKey(word)) {
+                throw new GameException("furniture");
+            }
+            if (entityParser.getGameLocations().containsKey(word)) {
+                location = entityParser.getGameLocations().get(word).getName();
+                countOfLocationsFound++;
+            }
+        }
+        if (countOfLocationsFound != 1) {
+            throw new GameException("too many locations");
+        }
+        return location;
+    }
+
+    private String getArtifactForGetAndDrop(String[] commandText) throws GameException {
+        int countOfArtifacts = 0;
+        String artifact = "";
+        for (String word : commandText) {
+            if (entityParser.getGameArtifacts().containsKey(word)) {
+                countOfArtifacts++;
+                artifact = entityParser.getGameArtifacts().get(word).getName();
+            }
+            if (entityParser.getGameCharacters().containsKey(word)) {
+                throw new GameException("characters");
+            }
+            if (entityParser.getGameFurniture().containsKey(word)) {
+                throw new GameException("furniture");
+            }
+            if (entityParser.getGameLocations().containsKey(word)) {
+                throw new GameException("location");
+            }
+        }
+        if (countOfArtifacts != 1) {
+            throw new GameException("too many locations");
+        }
+        return artifact;
+    }
+
+
     private String handleComplexCommand(String[] commandText, Player player) throws GameException {
         ArrayList<String> actionKeywords = getActionKeywords(commandText);
         // is there ONE actionkeyword only. If not error.

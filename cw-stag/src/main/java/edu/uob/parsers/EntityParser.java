@@ -20,10 +20,18 @@ public class EntityParser {
 
     private final HashMap<String, Location> gameLocations;
 
+
+    private final HashMap<String, Item> gameArtifacts;
+    private final HashMap<String, Character> gameCharacters;
+    private final HashMap<String, Item> gameFurniture;
+
     private Location startLocation;
 
     public EntityParser(File file) throws NoSuchElementException {
         gameLocations = new HashMap<>();
+        gameArtifacts = new HashMap<>();
+        gameCharacters = new HashMap<>();
+        gameFurniture = new HashMap<>();
 
         try {
             Parser parser = new Parser();
@@ -34,9 +42,21 @@ public class EntityParser {
             addLocationsToGameLocationList(sections);
             addConnectedLocationsToGameLocations(sections);
         } catch (FileNotFoundException | ParseException e) {
-            // todo: does this belong here?
+            // todo: does this belong here? or should throw error somewhere else?
             System.err.println(e.getMessage());
         }
+    }
+
+    public HashMap<String, Item> getGameArtifacts() {
+        return gameArtifacts;
+    }
+
+    public HashMap<String, Character> getGameCharacters() {
+        return gameCharacters;
+    }
+
+    public HashMap<String, Item> getGameFurniture() {
+        return gameFurniture;
     }
 
     public HashMap<String, Location> getGameLocations() {
@@ -68,12 +88,21 @@ public class EntityParser {
         HashMap<String, Item> artifacts = getArtifacts(locationSubgraphs);
         HashMap<String, Item> furniture = getFurniture(locationSubgraphs);
         HashMap<String, Character> characters = getCharacters(locationSubgraphs);
+        addAllEntitesToMainEntiesList(artifacts, furniture, characters);
         Location location = new Location(locationName, locationDescription, isStartLocation,
                 artifacts, furniture, characters);
         if (isStartLocation) {
             startLocation = location;
         }
         return location;
+    }
+
+    private void addAllEntitesToMainEntiesList(HashMap<String, Item> artifacts,
+                                               HashMap<String, Item> furniture,
+                                               HashMap<String, Character> characters) {
+        this.gameCharacters.putAll(characters);
+        this.gameFurniture.putAll(furniture);
+        this.gameArtifacts.putAll(artifacts);
     }
 
 

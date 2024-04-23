@@ -34,23 +34,34 @@ class ComplexSTAGTests {
     @Test
     void testDecoratedCommands() {
         String response;
+        response = sendCommandToServer("simon: look at the room");
+        assertTrue(response.contains("cabin"));
+        assertTrue(response.contains("axe"));
+        response = sendCommandToServer("simon: get axe look");
+        assertTrue(response.contains("found more command words than expected"));
+        assertFalse(response.contains("axe"));
+        response = sendCommandToServer("simon: get axe potion");
+        assertTrue(response.contains("Can't understand this command"));
         response = sendCommandToServer("simon: get the axe");
+        assertTrue(response.contains("axe added to your inventory"));
         response = sendCommandToServer("simon: inventory");
-        System.out.println(response);
-//        assertTrue(response.contains("axe"));
+        assertTrue(response.contains("axe"));
         response = sendCommandToServer("simon: drop the axe");
         response = sendCommandToServer("simon: inventory");
-        System.out.println(response);
-//        assertFalse(response.contains("axe"));
+        assertFalse(response.contains("axe"));
+        assertTrue(response.contains("empty"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("axe"));
+        response = sendCommandToServer("simon: get axe");
         response = sendCommandToServer("simon: goto the forest");
         response = sendCommandToServer("simon: look");
-        System.out.println(response);
+        assertTrue(response.contains("deep dark forest"));
+        response = sendCommandToServer("simon: chop tree drop axe"); // should fail.
+        assertTrue(response.contains("Can't understand"));
         response = sendCommandToServer("simon: check your health");
-        System.out.println(response);
-//        assertTrue(response.contains("3"));
+        assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: look get");
-        System.out.println(response); // should fail
-
+        assertTrue(response.contains("found more command words than expected"));
     }
 
     @Test
@@ -66,6 +77,8 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: get potion");
         response = sendCommandToServer("simon: open trapdoor");
         response = sendCommandToServer("simon: goto cellar");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("elf"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: attack elf");
@@ -164,7 +177,7 @@ class ComplexSTAGTests {
         assertTrue(response.contains("Can't access that location from here"));
         response = sendCommandToServer("simon: goto cabin");
         response = sendCommandToServer("simon: get trapdoor");
-        assertTrue(response.contains("I can't pick up trapdoor"));
+        assertTrue(response.contains("Can't understand this command"));
         response = sendCommandToServer("simon: inventory");
         assertFalse(response.contains("trapdoor"));
         response = sendCommandToServer("simon: look");
