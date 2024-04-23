@@ -1,4 +1,4 @@
-package edu.uob.GameEntities;
+package edu.uob.game_entities;
 
 public class Item extends GameEntity {
 

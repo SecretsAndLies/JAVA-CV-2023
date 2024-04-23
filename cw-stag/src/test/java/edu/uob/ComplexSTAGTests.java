@@ -13,7 +13,11 @@ class ComplexSTAGTests {
 
     private GameServer server;
 
-    // tODO: https://pmd.github.io/ check with
+    // todo: before submission: pmd_check | grep -vE "Tests"
+    // add the timeout back in.
+    // todo - rewrite the string returns to make prettier
+    // todo: rewwork your code quality, cyclomatic complexity etc.
+    // todo: test with the command line on the lab machine.
 
     // Create a new server _before_ every @Test
     @BeforeEach

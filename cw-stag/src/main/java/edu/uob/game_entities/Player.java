@@ -1,20 +1,22 @@
-package edu.uob.GameEntities;
+package edu.uob.game_entities;
 
 import edu.uob.GameException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Player extends Character {
 
     private Location location;
-    private HashMap<String, Location> gameLocations;
-    private Location startLocation;
-    private HashMap<String, Item> inventory;
+    private final Map<String, Location> gameLocations;
+    private final Location startLocation;
+    private final Map<String, Item> inventory;
     private int health;
-    private final int START_HEALTH = 3;
+    private static final int START_HEALTH = 3;
 
-    public Player(String name, String description, Location location, HashMap<String, Location> gameLocations) {
+    public Player(String name, String description, Location location, Map<String, Location> gameLocations) {
         super(name, description);
         this.location = location;
         this.startLocation = location;
@@ -23,21 +25,9 @@ public class Player extends Character {
         health = START_HEALTH;
     }
 
-    public HashMap<String, Location> getGameLocations() {
-        return gameLocations;
-    }
-
-    public Location getStartLocation() {
-        return startLocation;
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
     // consume item from inventory or location.
     public void consumeItem(String itemName) throws GameException {
-        if (itemName.equals("health")) {
+        if ("health".equals(itemName)) {
             this.reduceHealth();
             return;
         }
@@ -101,7 +91,7 @@ public class Player extends Character {
     // can also get a location from the locations list and add it as an accessible location.
     public void produceItem(String itemName) throws GameException {
         // if item is a location
-        if (itemName.equals("health")) {
+        if ("health".equals(itemName)) {
             increaseHealth();
             return;
         }
@@ -130,10 +120,10 @@ public class Player extends Character {
         return null;
     }
 
-    private ArrayList<Location> getAllLocationsExceptStoreroom() {
-        ArrayList<Location> gameLocationsExceptStoreroom = new ArrayList<>();
+    private List<Location> getAllLocationsExceptStoreroom() {
+        List<Location> gameLocationsExceptStoreroom = new ArrayList<>();
         for (Location location : gameLocations.values()) {
-            if (location.getName().equals("storeroom")) {
+            if ("storeroom".equals(location.getName())) {
                 continue;
             }
             gameLocationsExceptStoreroom.add(location);
@@ -153,10 +143,7 @@ public class Player extends Character {
         if (location.getFurniture().containsKey(item)) {
             return true;
         }
-        if (location.getCharacters().containsKey(item)) {
-            return true;
-        }
-        return false;
+        return location.getCharacters().containsKey(item);
     }
 
     public String getHealthString() {
@@ -173,10 +160,6 @@ public class Player extends Character {
         return itemName + " added to your inventory.";
     }
 
-    public HashMap<String, Item> getInventory() {
-        return inventory;
-    }
-
     public String gotoLocation(String locationName) {
         try {
             this.location = location.getConnectedLocation(locationName);
@@ -189,7 +172,7 @@ public class Player extends Character {
     public String dropItemInLocation(String itemName) {
         Item item = inventory.get(itemName);
         if (item == null) {
-            return (itemName + " isn't in your inventory.");
+            return itemName + " isn't in your inventory.";
 
         }
         location.addItemToLocation(item);

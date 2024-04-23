@@ -1,6 +1,6 @@
 package edu.uob;
 
-import edu.uob.GameEntities.Player;
+import edu.uob.game_entities.Player;
 import edu.uob.parsers.ActionsParser;
 import edu.uob.parsers.EntityParser;
 
@@ -10,7 +10,7 @@ import java.util.*;
 public class GameEngine {
     private final ActionsParser actionsParser;
     private final EntityParser entityParser;
-    private final HashMap<String, Player> players;
+    private final Map<String, Player> players;
 
     public GameEngine(File entitiesFile, File actionsFile) {
         actionsParser = new ActionsParser(actionsFile);
@@ -19,7 +19,7 @@ public class GameEngine {
     }
 
     public String handleCommand(String command) throws GameException {
-        String response = "";
+        String response;
         String[] commandParts = command.split(":");
         String playerName = commandParts[0];
         String[] commandText = tokenizeCommandText(commandParts[1]);
@@ -95,7 +95,7 @@ public class GameEngine {
                 return player.getInventoryString();
             }
             case "get" -> {
-                String artifact = null;
+                String artifact;
                 try {
                     artifact = getArtifactForGetAndDrop(commandText);
                 } catch (GameException e) {
@@ -104,7 +104,7 @@ public class GameEngine {
                 return player.getItemFromCurrentLocation(artifact);
             }
             case "drop" -> {
-                String artifact = null;
+                String artifact;
                 try {
                     artifact = getArtifactForGetAndDrop(commandText);
                 } catch (GameException e) {
@@ -127,8 +127,10 @@ public class GameEngine {
                 }
                 return player.getHealthString();
             }
+            default -> {
+                return invalidCommandString;
+            }
         }
-        return invalidCommandString;
     }
 
     private boolean commandContainsCustomActionKeywords(String[] commandText) {
@@ -211,20 +213,20 @@ public class GameEngine {
 
 
     private String handleComplexCommand(String[] commandText, Player player) throws GameException {
-        ArrayList<String> actionKeywords = getActionKeywords(commandText);
+        List<String> actionKeywords = getActionKeywords(commandText);
         // is there ONE actionkeyword only. If not error.
         if (actionKeywords.size() != 1) {
             return "A command must include only and only one action keyphrase.";
         }
         String actionKeyWord = actionKeywords.get(0);
-        ArrayList<String> subjects = getSubjects(commandText, player);
+        List<String> subjects = getSubjects(commandText, player);
         if (subjects.isEmpty()) {
             // this could be caused if a player lacks a resource or if they don't include any entity keywords
             // (eg: open)
             return "Can't execute this action.";
         }
-        HashSet<GameAction> allActions = actionsParser.getActionByKeyPhrase(actionKeyWord);
-        ArrayList<GameAction> potentialActions = new ArrayList<>();
+        Set<GameAction> allActions = actionsParser.getActionByKeyPhrase(actionKeyWord);
+        List<GameAction> potentialActions = new ArrayList<>();
         for (GameAction action : allActions) {
             // take the list of subjects. If an action does not contain ALL of the given subjects, exclude it
             if (!action.actionContainsAllSubjects(subjects)) {
@@ -270,8 +272,8 @@ public class GameEngine {
     }
 
     // get all the subjects mentioned in the command
-    private ArrayList<String> getSubjects(String[] commandText, Player player) {
-        ArrayList<String> subjects = new ArrayList<>();
+    private List<String> getSubjects(String[] commandText, Player player) {
+        List<String> subjects = new ArrayList<>();
         for (String word : commandText) {
             if (player.environmentIncludesItemName(word)) {
                 subjects.add(word);
@@ -280,8 +282,8 @@ public class GameEngine {
         return subjects;
     }
 
-    private ArrayList<String> getActionKeywords(String[] commandText) {
-        ArrayList<String> actionKeywords = new ArrayList<>();
+    private List<String> getActionKeywords(String[] commandText) {
+        List<String> actionKeywords = new ArrayList<>();
         // get all the actionKeywords in the command
         for (String word : commandText) {
             if (actionsParser.getActions().containsKey(word)) {
@@ -303,14 +305,14 @@ public class GameEngine {
         // replace multiple spaces with single space a   a becomes a a
         commandParts = commandParts.replaceAll(" +", " ");
 
-        // gets the actions that contain multiple words, ordered by most to least words
-        ArrayList<String> mutliWordActions = actionsParser.getMultiWordActions();
+        // gets the actions that contain multiple words, ordered by most to least words.
+        List<String> mutliWordActions = actionsParser.getMultiWordActions();
         // replace those actions in the command with -. So cut down becomes cut-down
         for (String action : mutliWordActions) {
             commandParts = commandParts.replaceAll(action, action.replace(" ", "-"));
         }
         // split the strings up by spaces - so cut-down test becomes cut-down, test
-        String[] commandText = commandParts.toLowerCase().strip().split(" ");
+        String[] commandText = commandParts.toLowerCase(Locale.ENGLISH).strip().split(" ");
 
         // reform the valid commands  so cut-down, test becomes cut down, test
         for (int i = 0; i < commandText.length; i++) {

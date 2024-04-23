@@ -1,4 +1,4 @@
-package edu.uob.GameEntities;
+package edu.uob.game_entities;
 
 public abstract class GameEntity {
     private final String name;

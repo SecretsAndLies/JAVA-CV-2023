@@ -1,20 +1,22 @@
-package edu.uob.GameEntities;
+package edu.uob.game_entities;
 
 import edu.uob.GameException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Location extends GameEntity {
     private final boolean isStartLocation;
-    private final HashMap<String, Item> artifacts;
-    private final HashMap<String, Item> furniture;
-    private final HashMap<String, Character> characters;
-    private final HashMap<String, Location> accessibleLocations;
+    private final Map<String, Item> artifacts;
+    private final Map<String, Item> furniture;
+    private final Map<String, Character> characters;
+    private final Map<String, Location> accessibleLocations;
 
 
     public Location(String name, String description, boolean isStartLocation,
-                    HashMap<String, Item> artifacts, HashMap<String, Item> furniture, HashMap<String, Character> characters) {
+                    Map<String, Item> artifacts, Map<String, Item> furniture, Map<String, Character> characters) {
         super(name, description);
         this.isStartLocation = isStartLocation;
         this.artifacts = artifacts;
@@ -34,15 +36,15 @@ public class Location extends GameEntity {
     }
 
     // removes the item from this location and gives it to the caller
-    public Item takeItem(String itemName){
+    public Item takeItem(String itemName) {
         Item item = artifacts.remove(itemName);
-        if(item==null){
+        if (item == null) {
             item = furniture.remove(itemName);
         }
         return item;
     }
 
-    public Character takeCharacterFromLocation(String characterName){
+    public Character takeCharacterFromLocation(String characterName) {
         return characters.remove(characterName);
     }
 
@@ -52,11 +54,10 @@ public class Location extends GameEntity {
 
     public void addItemToLocation(Item item) {
         // not adding characters to location.
-        if(item.isCollectable()) {
+        if (item.isCollectable()) {
             artifacts.put(item.getName(), item);
-        }
-        else{
-            furniture.put(item.getName(),item);
+        } else {
+            furniture.put(item.getName(), item);
         }
     }
 
@@ -74,23 +75,21 @@ public class Location extends GameEntity {
         accessibleLocations.remove(name);
     }
 
-    public ArrayList<String> getAccessibleLocationNames() {
+    public List<String> getAccessibleLocationNames() {
         return new ArrayList<>(accessibleLocations.keySet().stream().toList());
     }
 
-    private String getCharactersString(HashMap<String, Character> characters) {
+    private String getCharactersString(Map<String, Character> characters) {
         if (characters.isEmpty()) {
             return "";
         }
         final String[] charactersString = {"You can see characters: "};
-        characters.forEach((key, value) -> {
-            charactersString[0] = charactersString[0] + " " + key + " " + value;
-        });
+        characters.forEach((key, value) -> charactersString[0] = charactersString[0] + " " + key + " " + value);
         return charactersString[0];
     }
 
     public String getDescriptionOfLocation(Player currentPlayer) {
-        HashMap<String, Character> characterCopy = new HashMap<>(characters);
+        Map<String, Character> characterCopy = new HashMap<>(characters);
         characterCopy.remove(currentPlayer.getName());
         return "You are in " + getDescription() +
                 ". You can see " + artifacts.values() +
@@ -104,20 +103,16 @@ public class Location extends GameEntity {
         return isStartLocation;
     }
 
-    public HashMap<String, Item> getArtifacts() {
+    public Map<String, Item> getArtifacts() {
         return artifacts;
     }
 
-    public HashMap<String, Item> getFurniture() {
+    public Map<String, Item> getFurniture() {
         return furniture;
     }
 
-    public HashMap<String, Character> getCharacters() {
+    public Map<String, Character> getCharacters() {
         return characters;
-    }
-
-    public HashMap<String, Location> getAccessibleLocations() {
-        return accessibleLocations;
     }
 
     @Override

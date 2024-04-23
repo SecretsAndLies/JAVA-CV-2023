@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class GameAction
-{
+public class GameAction {
     private final List<String> subjects;
     private final List<String> consumed;
     private final List<String> produced;
@@ -18,7 +17,7 @@ public class GameAction
         this.narration = narration;
     }
 
-    public boolean actionContainsAllSubjects(ArrayList<String> subjects){
+    public boolean actionContainsAllSubjects(List<String> subjects) {
         return new HashSet<>(this.subjects).containsAll(subjects);
     }
 
@@ -38,10 +37,11 @@ public class GameAction
         return narration;
     }
 
-    public String toString(){
-        return "Subjects: " + subjects.toString() + "\n" +
-                "Consumed: " + consumed.toString() + "\n" +
-                "Produced: " + produced.toString() + "\n" +
+    @Override
+    public String toString() {
+        return "Subjects: " + subjects + "\n" +
+                "Consumed: " + consumed + "\n" +
+                "Produced: " + produced + "\n" +
                 "Narration: " + narration;
     }
 }
