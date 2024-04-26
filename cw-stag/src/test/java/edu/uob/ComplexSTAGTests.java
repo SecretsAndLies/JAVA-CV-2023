@@ -19,6 +19,9 @@ class ComplexSTAGTests {
     // todo: rewwork your code quality, cyclomatic complexity etc.
     // todo: test with the command line on the lab machine.
 
+    // TODO: check player is correctly reset to the start location.
+    // TODO: test produce from anywhere and consume from anywhere.
+
     // Create a new server _before_ every @Test
     @BeforeEach
     void setup() {
@@ -84,6 +87,8 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: look get");
         assertTrue(response.contains("found more command words than expected"));
     }
+
+
 
     @Test
     void testCantGetFurniture() {
@@ -151,6 +156,19 @@ class ComplexSTAGTests {
     }
 
     @Test
+    void testSummon(){
+        String response;
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("key"));
+        response = sendCommandToServer("simon: summon with the potion"); // summons the key
+        assertTrue(response.contains("You've used the magic potion to summoned the key from the forest!"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("key"));
+        response = sendCommandToServer("simon: open trapdoor");
+        assertTrue(response.contains("unlock the door and see steps leading down into a cellar"));
+    }
+
+    @Test
     void testCutDownTwoWords() {
         String response;
         response = sendCommandToServer("simon: goto cellar");
@@ -169,7 +187,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: repair tree");
         assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: repair log");
-        assertTrue(response.contains("Can't execute this action."));
+        assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: down slice tree with axe");
         assertTrue(response.contains("A command must include only and only one action keyphrase."));
         response = sendCommandToServer("simon: cut down tree with axe");

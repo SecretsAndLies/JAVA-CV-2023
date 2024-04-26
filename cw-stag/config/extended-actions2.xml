@@ -31,7 +31,22 @@
         </produced>
         <narration>You've locked the trapdoor, how will you get it down now!</narration>
       </action>
-      <action>
+    <action>
+        <triggers>
+            <keyphrase>summon</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>potion</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+            <entity>key</entity>
+        </produced>
+        <narration>You've used the magic potion to summoned the key from the forest!</narration>
+    </action>
+
+    <action>
           <triggers>
               <keyphrase>magically create</keyphrase>
           </triggers>

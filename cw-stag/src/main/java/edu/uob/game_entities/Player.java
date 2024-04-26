@@ -107,17 +107,21 @@ public class Player extends Character {
             return;
         }
 
-        Location storeroom = getStoreroom();
-        Character character = storeroom.takeCharacterFromLocation(itemName);
-        if (character != null) {
-            this.location.addCharacterToLocation(character);
-            return;
+        for (Location locationFromList : gameLocations.values()) {
+            if(locationFromList.equals(this.getLocation())){
+                continue;
+            }
+            Character character = locationFromList.takeCharacterFromLocation(itemName);
+            if (character != null) {
+                this.location.addCharacterToLocation(character);
+                return;
+            }
+            Item item = locationFromList.takeItem(itemName);
+            if (item == null) {
+                continue;
+            }
+            this.location.addItemToLocation(item);
         }
-        Item item = storeroom.takeItem(itemName);
-        if (item == null) {
-            return;
-        }
-        this.location.addItemToLocation(item);
     }
 
     private Location getLocationByName(String name) {
@@ -153,6 +157,24 @@ public class Player extends Character {
             return true;
         }
         return location.getCharacters().containsKey(item);
+    }
+
+    public boolean worldIncludesItemName(String item) {
+        if (inventory.containsKey(item)) {
+            return true;
+        }
+        for(Location location : gameLocations.values()) {
+            if (location.getArtifacts().containsKey(item)) {
+                return true;
+            }
+            if (location.getFurniture().containsKey(item)) {
+                return true;
+            }
+            if (location.getCharacters().containsKey(item)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getHealthString() {

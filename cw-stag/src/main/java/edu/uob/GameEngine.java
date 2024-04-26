@@ -225,6 +225,7 @@ public class GameEngine {
             // (eg: open)
             return "Can't execute this action.";
         }
+        // TODO: getSubjects is now too permissive. You need to check if the player has the resources.
         Set<GameAction> allActions = actionsParser.getActionByKeyPhrase(actionKeyWord);
         List<GameAction> potentialActions = new ArrayList<>();
         for (GameAction action : allActions) {
@@ -275,7 +276,7 @@ public class GameEngine {
     private List<String> getSubjects(String[] commandText, Player player) {
         List<String> subjects = new ArrayList<>();
         for (String word : commandText) {
-            if (player.environmentIncludesItemName(word)) {
+            if (player.worldIncludesItemName(word)) {
                 subjects.add(word);
             }
         }
