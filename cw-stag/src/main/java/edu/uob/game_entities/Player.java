@@ -67,12 +67,16 @@ public class Player extends Character {
     public void reduceHealth() {
         health--;
         if (health == 0) {
+            // todo: also provide custom error?
             // drop all items in current location
             for (Item item : inventory.values()) {
                 location.addItemToLocation(item);
             }
+            // remove the player from this location
+            location.removeCharacterFromLocation(this);
             // move player to start location.
             this.location = startLocation;
+            this.location.addCharacterToLocation(this);
             health = START_HEALTH;
         }
     }

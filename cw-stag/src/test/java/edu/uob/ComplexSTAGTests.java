@@ -89,6 +89,34 @@ class ComplexSTAGTests {
     }
 
 
+@Test
+void testPlayerIsResetToStart(){
+    String response;
+    response = sendCommandToServer("james: get potion");
+    response = sendCommandToServer("james: summon with potion");
+    assertTrue(response.contains("You've used the magic potion to summoned the key from the forest!"));
+    response = sendCommandToServer("james: open trapdoor");
+    assertTrue(response.contains("leading down into a cellar"));
+    response = sendCommandToServer("james: goto cellar");
+    assertTrue(response.contains("dusty cellar"));
+    response = sendCommandToServer("bryan: goto cellar");
+    assertTrue(response.contains("dusty cellar"));
+    assertTrue(response.contains("james"));
+    response = sendCommandToServer("james: hit elf");
+    assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+    response = sendCommandToServer("james: hit elf");
+    assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+    response = sendCommandToServer("james: hit elf");
+    assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+    response = sendCommandToServer("james: look");
+    assertTrue(response.contains("log cabin"));
+    response = sendCommandToServer("bryan: look");
+    assertTrue(response.contains("dusty cellar"));
+    assertTrue(response.contains("potion"));
+    assertFalse(response.contains("james"));
+
+
+}
 
     @Test
     void testCantGetFurniture() {
