@@ -165,9 +165,25 @@ class ComplexSTAGTests {
         assertTrue(response.contains("axe"));
         // note you do not have to get axe in order to use it if it's in the same room. Can't test this here need to write a new game file.
         response = sendCommandToServer("simon: goto-forest");
+        assertTrue(response.contains("deep dark forest"));
+        response = sendCommandToServer("simon: repair tree");
+        assertTrue(response.contains("I can't do that."));
+        response = sendCommandToServer("simon: repair log");
+        assertTrue(response.contains("Can't execute this action."));
         response = sendCommandToServer("simon: down slice tree with axe");
         assertTrue(response.contains("A command must include only and only one action keyphrase."));
         response = sendCommandToServer("simon: cut down tree with axe");
+        assertTrue(response.contains("You cut down the tree with the axe"));
+        response = sendCommandToServer("simon: look");
+        // log should now be in the level and tree should be gone.
+        assertTrue(response.contains("log"));
+        assertFalse(response.contains("tree"));
+        response = sendCommandToServer("simon: repair log");
+        assertTrue(response.contains("You repaired the log back into a tree."));
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("log"));
+        assertTrue(response.contains("tree"));
+        response = sendCommandToServer("simon: cut that thing down with your trusty axe");
         assertTrue(response.contains("You cut down the tree with the axe"));
         response = sendCommandToServer("simon: look");
         // log should now be in the level and tree should be gone.

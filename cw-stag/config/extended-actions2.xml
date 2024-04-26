@@ -59,8 +59,6 @@
           </produced>
           <narration>You used the potion to magically destroy furnitureItem</narration>
         </action>
-
-
      <action>
         <triggers>
             <keyphrase>bash</keyphrase>
@@ -124,7 +122,21 @@
         </produced>
         <narration>You cut down the tree with the axe</narration>
     </action>
-
+    <action>
+        <triggers>
+            <keyphrase>repair</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>log</entity>
+        </subjects>
+        <consumed>
+            <entity>log</entity>
+        </consumed>
+        <produced>
+            <entity>tree</entity>
+        </produced>
+        <narration>You repaired the log back into a tree.</narration>
+    </action>
     <action>
         <triggers>
             <keyphrase>drink</keyphrase>
