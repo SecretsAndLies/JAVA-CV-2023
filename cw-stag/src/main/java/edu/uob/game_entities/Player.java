@@ -39,6 +39,12 @@ public class Player extends Character {
             return;
         }
 
+        Character locationCharacter = location.takeCharacterFromLocation(itemName);
+        if (locationCharacter != null) {
+            getStoreroom().addCharacterToLocation(locationCharacter);
+            return;
+        }
+
         // remove item which can be in any location (not just the current one)
         for (Location gameLocation : getAllLocationsExceptStoreroom()) {
             Item furnitureItem = gameLocation.getFurniture().remove(itemName);

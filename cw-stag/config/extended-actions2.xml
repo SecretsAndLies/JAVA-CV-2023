@@ -222,6 +222,19 @@
         </produced>
         <narration>You talk to the lumberjack with the gold and he's like - love the gold !</narration>
     </action>
-
+    <action>
+        <triggers>
+            <keyphrase>murder</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>lumberjack</entity>
+        </subjects>
+        <consumed>
+            <entity>lumberjack</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You murdered the lumberjack. Oh, the humanity !</narration>
+    </action>
 
 </actions>

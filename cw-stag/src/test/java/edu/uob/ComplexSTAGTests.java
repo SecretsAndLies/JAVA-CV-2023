@@ -74,7 +74,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("deep dark forest"));
         assertTrue(response.contains("tree"));
-        response = sendCommandToServer("bryan: drop ax,e");
+        response = sendCommandToServer("bryan: drop ax,e"); // punctuation is intrepted as spaces, so this fails.
         assertTrue(response.contains("Can't understand"));
         response = sendCommandToServer("simon: get axe");
         response = sendCommandToServer("simon: chop tree drop axe"); // should fail as composite.
@@ -194,7 +194,6 @@ class ComplexSTAGTests {
         response = sendCommandToServer("bryan: look");
         assertTrue(response.contains("simon"));
         assertFalse(response.contains("bryan"));
-
     }
 
     @Test
@@ -334,6 +333,10 @@ class ComplexSTAGTests {
         assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: talk lumberjack horn look");
         assertTrue(response.contains("Can't understand this command"));
+        response = sendCommandToServer("simon: murder lumberjack");
+        assertTrue(response.contains("You murdered the lumberjack. Oh, the humanity"));
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("lumberjack"));
     }
 
 
