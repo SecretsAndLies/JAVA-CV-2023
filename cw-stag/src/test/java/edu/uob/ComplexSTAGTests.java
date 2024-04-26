@@ -22,8 +22,8 @@ class ComplexSTAGTests {
     // Create a new server _before_ every @Test
     @BeforeEach
     void setup() {
-        File entitiesFile = Paths.get("config" + File.separator + "extended-entities.dot").toAbsolutePath().toFile();
-        File actionsFile = Paths.get("config" + File.separator + "extended-actions.xml").toAbsolutePath().toFile();
+        File entitiesFile = Paths.get("config" + File.separator + "extended-entities2.dot").toAbsolutePath().toFile();
+        File actionsFile = Paths.get("config" + File.separator + "extended-actions2.xml").toAbsolutePath().toFile();
         server = new GameServer(entitiesFile, actionsFile);
     }
 
@@ -38,6 +38,9 @@ class ComplexSTAGTests {
     @Test
     void testDecoratedCommands() {
         String response;
+        response = sendCommandToServer("simon: goto river");
+        assertTrue(response.contains("Can't understand this command"));
+
         response = sendCommandToServer("simon: look at the room");
         assertTrue(response.contains("cabin"));
         assertTrue(response.contains("axe"));
@@ -54,13 +57,27 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: inventory");
         assertFalse(response.contains("axe"));
         assertTrue(response.contains("empty"));
-        response = sendCommandToServer("simon: look");
+        response = sendCommandToServer("simon: se look");
         assertTrue(response.contains("axe"));
+
+        response = sendCommandToServer("bryan: get axe!");
+        assertTrue(response.contains("axe added to your inventory."));
+        response = sendCommandToServer("bryan: check your inventory");
+        assertTrue(response.contains("axe"));
+
         response = sendCommandToServer("simon: get axe");
+        assertTrue(response.contains("I can't pick up axe"));
+        response = sendCommandToServer("bryan: goto forest!");
         response = sendCommandToServer("simon: goto the forest");
+        response = sendCommandToServer("simon: chop tree");  // fails, bryan has the axe
+        assertTrue(response.contains("can't"));
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("deep dark forest"));
-        response = sendCommandToServer("simon: chop tree drop axe"); // should fail.
+        assertTrue(response.contains("tree"));
+        response = sendCommandToServer("bryan: drop ax,e");
+        assertTrue(response.contains("Can't understand"));
+        response = sendCommandToServer("simon: get axe");
+        response = sendCommandToServer("simon: chop tree drop axe"); // should fail as composite.
         assertTrue(response.contains("Can't understand"));
         response = sendCommandToServer("simon: check your health");
         assertTrue(response.contains("3"));
@@ -164,6 +181,10 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: get key");
         response = sendCommandToServer("simon: goto cabin");
+        response = sendCommandToServer("simon: bash trapdoor");
+        assertTrue(response.contains("You bash at the trapdoor with your hand and lose some health"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: open door");
         assertTrue(response.contains("Can't execute this action."));
         response = sendCommandToServer("simon: open trapdoor");
@@ -183,6 +204,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: get trapdoor");
         assertTrue(response.contains("Can't understand this command"));
         response = sendCommandToServer("simon: inventory");
+        assertTrue(response.contains("shovel"));
         assertFalse(response.contains("trapdoor"));
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("trapdoor"));
@@ -195,6 +217,9 @@ class ComplexSTAGTests {
         assertFalse(response.contains("A dusty cellar"));
         assertTrue(response.contains("log cabin in the woods"));
         response = sendCommandToServer("simon: bash trapdoor");
+        assertTrue(response.contains("Multiple actions are available"));
+        response = sendCommandToServer("simon: bash trapdoor with shovel");
+        assertTrue(response.contains("You manage to bash down the door with the shovel"));
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("key"));
         response = sendCommandToServer("simon: get key");
@@ -225,7 +250,7 @@ class ComplexSTAGTests {
 //        System.out.println(response);
         response = sendCommandToServer("simon: chop down the tree with the axe");
         response = sendCommandToServer("simon: look");
-        assertTrue(response.contains("deep dark forest."));
+        assertTrue(response.contains("deep dark forest"));
         response = sendCommandToServer("simon: goto riverbank");
         assertTrue(response.contains("grassy riverbank"));
         response = sendCommandToServer("simon: bridge river with the log");
@@ -277,5 +302,6 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: talk lumberjack horn look");
         assertTrue(response.contains("Can't understand this command"));
     }
+
 
 }

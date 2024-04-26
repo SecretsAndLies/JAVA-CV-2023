@@ -2,9 +2,7 @@ package edu.uob.game_entities;
 
 import edu.uob.GameException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Location extends GameEntity {
@@ -75,28 +73,53 @@ public class Location extends GameEntity {
         accessibleLocations.remove(name);
     }
 
-    public List<String> getAccessibleLocationNames() {
-        return new ArrayList<>(accessibleLocations.keySet().stream().toList());
-    }
 
+    // TODO: these string methods are similar. Refactor.
     private String getCharactersString(Map<String, Character> characters) {
         if (characters.isEmpty()) {
             return "";
         }
-        final String[] charactersString = {"You can see characters: "};
-        characters.forEach((key, value) -> charactersString[0] = charactersString[0] + " " + key + " " + value);
+        final String[] charactersString = {"\nYou can see characters: "};
+        characters.forEach((key, value) -> charactersString[0] = charactersString[0] + "\n      " + value);
         return charactersString[0];
+    }
+
+    private String getArtifactsString() {
+        if (artifacts.isEmpty()) {
+            return "";
+        }
+        final String[] artifactsString = {"\nYou can see the following objects: "};
+        artifacts.forEach((key, value) -> artifactsString[0] = artifactsString[0] + "\n      " + " " + value);
+        return artifactsString[0];
+    }
+
+    private String getFurnitureString() {
+        if (furniture.isEmpty()) {
+            return "";
+        }
+        final String[] furnitureString = {"\nYou can see the following furniture: "};
+        furniture.forEach((key, value) -> furnitureString[0] = furnitureString[0] + "\n      " + " " + value);
+        return furnitureString[0];
+    }
+
+    private String getAccessibleLocationsString() {
+        if (accessibleLocations.isEmpty()) {
+            return "";
+        }
+        final String[] accessibleLocationsString = {"\nLocations accessible from here are: "};
+        accessibleLocations.forEach((key, value) -> accessibleLocationsString[0] = accessibleLocationsString[0] + "\n      " + " " + value.getName());
+        return accessibleLocationsString[0];
     }
 
     public String getDescriptionOfLocation(Player currentPlayer) {
         Map<String, Character> characterCopy = new HashMap<>(characters);
         characterCopy.remove(currentPlayer.getName());
-        return "You are in " + getDescription() +
-                ". You can see " + artifacts.values() +
-                " " + furniture.values() + " " +
+        // todo: this could be better with some custom string formatting.
+        return "You are in " + this.getDescription()
+                + getArtifactsString() +
+                getFurnitureString() +
                 getCharactersString(characterCopy) +
-                // todo: turn this into a prettier list - key: value
-                " Locations accessible from here are: " + getAccessibleLocationNames();
+                getAccessibleLocationsString();
     }
 
     public boolean isStartLocation() {
@@ -115,13 +138,14 @@ public class Location extends GameEntity {
         return characters;
     }
 
-    @Override
-    public String toString() {
-        // todo: at some point you'll wanna clean up this string. (the thing says it should include names and descrpitons?)
-        return "You are in " + getDescription() +
-                ". You can see " + artifacts.values() +
-                " " + furniture.values() + " " +
-                characters.values() +
-                " Locations accessible from here are: " + getAccessibleLocationNames();
-    }
+//
+//    @Override
+//    public String toString() {
+//        // todo: at some point you'll wanna clean up this string. (the thing says it should include names and descrpitons?)
+//        return "You are in " + getDescription() +
+//                ". You can see " + artifacts.values() +
+//                " " + furniture.values() + " " +
+//                characters.values() +
+//                " Locations accessible from here are: " + getAccessibleLocationNames();
+//    }
 }
