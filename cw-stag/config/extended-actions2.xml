@@ -31,6 +31,36 @@
         </produced>
         <narration>You've locked the trapdoor, how will you get it down now!</narration>
       </action>
+      <action>
+          <triggers>
+              <keyphrase>magically create</keyphrase>
+          </triggers>
+          <subjects>
+              <entity>potion</entity>
+          </subjects>
+          <consumed>
+          </consumed>
+          <produced>
+                <entity>furnitureItem</entity>
+          </produced>
+          <narration>You used the potion to magically create furnitureItem</narration>
+        </action>
+      <action>
+          <triggers>
+              <keyphrase>magically destroy</keyphrase>
+          </triggers>
+          <subjects>
+              <entity>potion</entity>
+          </subjects>
+          <consumed>
+                <entity>furnitureItem</entity>
+          </consumed>
+          <produced>
+          </produced>
+          <narration>You used the potion to magically destroy furnitureItem</narration>
+        </action>
+
+
      <action>
         <triggers>
             <keyphrase>bash</keyphrase>

@@ -86,6 +86,25 @@ class ComplexSTAGTests {
     }
 
     @Test
+    void testCantGetFurniture() {
+        String response;
+        response = sendCommandToServer("james: use potion to magically create");
+        assertTrue(response.contains("You used the potion to magically create furnitureItem"));
+        response = sendCommandToServer("james: get furnitureItem");
+        assertTrue(response.contains("Can't understand this command"));
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("furnitureItem"));
+        response = sendCommandToServer("james: use potion to magically destroy");
+        assertTrue(response.contains("You used the potion to magically destroy furnitureItem"));
+        response = sendCommandToServer("james: look");
+        assertFalse(response.contains("furnitureItem"));
+        response = sendCommandToServer("james: use potion to magically create");
+        assertTrue(response.contains("You used the potion to magically create furnitureItem"));
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("furnitureItem"));
+    }
+
+    @Test
     void testHealth() {
         String response;
         response = sendCommandToServer("james: goto forest");
@@ -322,7 +341,7 @@ class ComplexSTAGTests {
         assertFalse(response.contains("hole"));
         response = sendCommandToServer("simon: blow horn");
         response = sendCommandToServer("simon: look");
-        assertTrue(response.contains("lumberjack"));
+        assertTrue(response.contains("lumberjack")); // tests that characters can be created.
         response = sendCommandToServer("simon: talk horn");
         assertTrue(response.contains("woah dude, nice horn"));
         response = sendCommandToServer("simon: talk lumberjack");
@@ -333,7 +352,7 @@ class ComplexSTAGTests {
         assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: talk lumberjack horn look");
         assertTrue(response.contains("Can't understand this command"));
-        response = sendCommandToServer("simon: murder lumberjack");
+        response = sendCommandToServer("simon: murder lumberjack"); // tests that characters can be consumed.
         assertTrue(response.contains("You murdered the lumberjack. Oh, the humanity"));
         response = sendCommandToServer("simon: look");
         assertFalse(response.contains("lumberjack"));
