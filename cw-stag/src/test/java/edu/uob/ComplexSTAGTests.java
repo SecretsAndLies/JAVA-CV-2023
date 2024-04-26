@@ -220,6 +220,9 @@ class ComplexSTAGTests {
         assertTrue(response.contains("Multiple actions are available"));
         response = sendCommandToServer("simon: bash trapdoor with shovel");
         assertTrue(response.contains("You manage to bash down the door with the shovel"));
+        // repeating this action should give the same answer but not generate new objects.
+        response = sendCommandToServer("simon: bash trapdoor with shovel");
+        assertTrue(response.contains("You manage to bash down the door with the shovel"));
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("key"));
         response = sendCommandToServer("simon: get key");

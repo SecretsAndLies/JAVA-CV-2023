@@ -108,6 +108,9 @@ public class Player extends Character {
             return;
         }
         Item item = storeroom.takeItem(itemName);
+        if (item == null) {
+            return;
+        }
         this.location.addItemToLocation(item);
     }
 
