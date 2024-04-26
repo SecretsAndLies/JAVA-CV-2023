@@ -170,11 +170,41 @@ class ComplexSTAGTests {
     }
 
     @Test
+    void testCantSeeOtherCharacter() {
+        String response;
+        response = sendCommandToServer("simon: axe get");
+        response = sendCommandToServer("bryan: look");
+        assertTrue(response.contains("simon"));
+        assertFalse(response.contains("bryan"));
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("simon"));
+        assertTrue(response.contains("bryan"));
+        response = sendCommandToServer("simon: get Bryan");
+        assertTrue(response.contains("Can't understand"));
+        response = sendCommandToServer("simon: goto forest");
+        assertTrue(response.contains("You are in A deep dark forest"));
+        response = sendCommandToServer("simon: look"); // Forest simon can't see anyone.
+        assertFalse(response.contains("simon"));
+        assertFalse(response.contains("bryan"));
+        response = sendCommandToServer("bryan: look"); // cabin bryan can't see anyone.
+        assertFalse(response.contains("simon"));
+        assertFalse(response.contains("bryan"));
+        response = sendCommandToServer("bryan: goto forest");
+        assertTrue(response.contains("You are in A deep dark forest"));
+        response = sendCommandToServer("bryan: look");
+        assertTrue(response.contains("simon"));
+        assertFalse(response.contains("bryan"));
+
+    }
+
+    @Test
     void testPlayingTheGame() {
         String response;
         response = sendCommandToServer("simon: axe get");
         assertTrue(response.contains("axe added to your inventory"));
         response = sendCommandToServer("simon: look");
+        response = sendCommandToServer("simon: drop potion");
+        assertTrue(response.contains("potion isn't in your inventory"));
         response = sendCommandToServer("simon: get potion");
         response = sendCommandToServer("simon: get coin");
         response = sendCommandToServer("simon: inventory");

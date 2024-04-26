@@ -74,13 +74,19 @@ public class Location extends GameEntity {
     }
 
 
+    public void removeCharacterFromLocation(Character character) {
+        characters.remove(character.getName());
+    }
+
     // TODO: these string methods are similar. Refactor.
-    private String getCharactersString(Map<String, Character> characters) {
-        if (characters.isEmpty()) {
+    private String getCharactersString(Player currentPlayer) {
+        Map<String, Character> characterCopy = new HashMap<>(characters);
+        characterCopy.remove(currentPlayer.getName());
+        if (characterCopy.isEmpty()) {
             return "";
         }
         final String[] charactersString = {"\nYou can see characters: "};
-        characters.forEach((key, value) -> charactersString[0] = charactersString[0] + "\n      " + value);
+        characterCopy.forEach((key, value) -> charactersString[0] = charactersString[0] + "\n      " + value);
         return charactersString[0];
     }
 
@@ -112,18 +118,11 @@ public class Location extends GameEntity {
     }
 
     public String getDescriptionOfLocation(Player currentPlayer) {
-        Map<String, Character> characterCopy = new HashMap<>(characters);
-        characterCopy.remove(currentPlayer.getName());
-        // todo: this could be better with some custom string formatting.
         return "You are in " + this.getDescription()
                 + getArtifactsString() +
                 getFurnitureString() +
-                getCharactersString(characterCopy) +
+                getCharactersString(currentPlayer) +
                 getAccessibleLocationsString();
-    }
-
-    public boolean isStartLocation() {
-        return isStartLocation;
     }
 
     public Map<String, Item> getArtifacts() {
@@ -137,15 +136,4 @@ public class Location extends GameEntity {
     public Map<String, Character> getCharacters() {
         return characters;
     }
-
-//
-//    @Override
-//    public String toString() {
-//        // todo: at some point you'll wanna clean up this string. (the thing says it should include names and descrpitons?)
-//        return "You are in " + getDescription() +
-//                ". You can see " + artifacts.values() +
-//                " " + furniture.values() + " " +
-//                characters.values() +
-//                " Locations accessible from here are: " + getAccessibleLocationNames();
-//    }
 }

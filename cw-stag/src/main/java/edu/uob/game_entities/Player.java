@@ -164,12 +164,15 @@ public class Player extends Character {
     }
 
     public String gotoLocation(String locationName) {
+        Location oldLocation = this.location;
         try {
             this.location = location.getConnectedLocation(locationName);
         } catch (GameException e) {
             return "Can't access that location from here.";
         }
-        return location.toString();
+        oldLocation.removeCharacterFromLocation(this);
+        this.location.addCharacterToLocation(this);
+        return location.getDescriptionOfLocation(this);
     }
 
     public String dropItemInLocation(String itemName) {
