@@ -367,5 +367,18 @@
         </produced>
         <narration>You murdered the lumberjack. Oh, the humanity !</narration>
     </action>
-
+    <action>
+        <triggers>
+            <keyphrase>assemble bridge</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>woodenPlanks</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+            <entity>riverbank</entity>
+        </produced>
+        <narration>You turned some of the planks into a bridge !</narration>
+    </action>
 </actions>

@@ -102,7 +102,7 @@ public class ActionsParser {
     private List<String> getStringListFromElement(Element element, String targetElementName) {
         List<String> stringList = new ArrayList<>();
         for (int i = 0; i < element.getElementsByTagName(targetElementName).getLength(); i++) {
-            String phrase = element.getElementsByTagName(targetElementName).item(i).getTextContent();
+            String phrase = element.getElementsByTagName(targetElementName).item(i).getTextContent().toLowerCase();
             stringList.add(phrase);
         }
         return stringList;

@@ -252,12 +252,13 @@ public class GameEngine {
     // TODO: returns true if this action is possible for this player to complete at the moment
     // ie: do they have the required items.
     private boolean isActionPossible(GameAction action, Player player) {
-        // get the items in the location and players inventory
+        // Does the player have all the items they need.
         for (String itemName : action.getSubjects()) {
             if (!player.environmentIncludesItemName(itemName)) {
                 return false;
             }
         }
+        // can we consume all the items we need to?
         // todo: this loop is basically identical to the one below except it uses the poorly named player mehtod
         // that also checks inventory.
         for (String itemName : action.getConsumed()) {

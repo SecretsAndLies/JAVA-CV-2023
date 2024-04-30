@@ -53,14 +53,14 @@ class ComplexSTAGTests {
     @Test
     void testThatAllSubjectsAreAvailableBeforeActionIsDone(){
         String response;
-        response = sendCommandToServer("simon: look");
-        response = sendCommandToServer("simon: celebrate with trapdoor");
+        response = sendCommandToServer("simon: loOk");
+        response = sendCommandToServer("simon:  with ceLebrate, trapdoor");
         assertTrue(response.contains("can't do that"));
-        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: goTo Forest");
         response = sendCommandToServer("simon: celebrate with key");
         assertTrue(response.contains("can't do that"));
-        response = sendCommandToServer("simon: goto riverbank");
-        response = sendCommandToServer("simon: celebrate with key");
+        response = sendCommandToServer("simon: goto Riverbank");
+        response = sendCommandToServer("simon: celebrAte with key");
         assertTrue(response.contains("can't do that"));
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: goto cabin");
@@ -72,7 +72,6 @@ class ComplexSTAGTests {
         assertTrue(response.contains("log is produced"));
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("log"));
-
     }
 
 
@@ -153,6 +152,7 @@ class ComplexSTAGTests {
 
     @Test
     void testProduceAndConsume(){
+
         // produce and consume a location
         // produce and consume a character
         // produce and consume an artifact
@@ -247,15 +247,15 @@ void testPlayerIsResetToStart(){
         response = sendCommandToServer("james: get furnitureItem");
         assertTrue(response.contains("Can't understand this command"));
         response = sendCommandToServer("james: look");
-        assertTrue(response.contains("furnitureItem"));
+        assertTrue(response.contains("furnitureitem"));
         response = sendCommandToServer("james: use potion to magically destroy");
         assertTrue(response.contains("You used the potion to magically destroy furnitureItem"));
         response = sendCommandToServer("james: look");
-        assertFalse(response.contains("furnitureItem"));
+        assertFalse(response.contains("furnitureitem"));
         response = sendCommandToServer("james: use potion to magically create");
         assertTrue(response.contains("You used the potion to magically create furnitureItem"));
         response = sendCommandToServer("james: look");
-        assertTrue(response.contains("furnitureItem"));
+        assertTrue(response.contains("furnitureitem"));
     }
 
     @Test
@@ -545,6 +545,22 @@ void testPlayerIsResetToStart(){
 
         response = sendCommandToServer("simon: goto clearing");
         assertTrue(response.contains("clearing in the woods"));
+        response = sendCommandToServer("simon: goto riverbank");
+        assertTrue(response.contains("Can't access"));
+        // produce a location that already exists
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("woodenplanks"));
+        response = sendCommandToServer("simon: assemble bridge with woodenPlanks");
+        assertTrue(response.contains("turned some of the planks into a bridge"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("pile of wooden"));
+        assertTrue(response.contains("clearing in the woods"));
+        response = sendCommandToServer("simon: assemble bridge with woodenPlanks");
+        response = sendCommandToServer("simon: goto riverbank");
+        assertTrue(response.contains("grassy riverbank"));
+        response = sendCommandToServer("simon: goto clearing");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("clearing in the woods"));
         response = sendCommandToServer("simon: drop shovel");
         response = sendCommandToServer("simon: inventory");
         assertFalse(response.contains("shovel"));
@@ -574,7 +590,7 @@ void testPlayerIsResetToStart(){
         assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: talk lumberjack horn look");
         assertTrue(response.contains("Can't understand this command"));
-        response = sendCommandToServer("simon: murder lumberjack"); // tests that characters can be consumed.
+        response = sendCommandToServer("simon: murder lUmberjack"); // tests that characters can be consumed.
         assertTrue(response.contains("You murdered the lumberjack. Oh, the humanity"));
         response = sendCommandToServer("simon: look");
         assertFalse(response.contains("lumberjack"));

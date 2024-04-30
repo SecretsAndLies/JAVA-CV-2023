@@ -115,7 +115,7 @@ public class EntityParser {
             if ("artefacts".equals(locationSubgraph.getId().getId())) {
                 List<Node> nodeList = locationSubgraph.getNodes(false);
                 for (Node node : nodeList) {
-                    String name = node.getId().getId();
+                    String name = node.getId().getId().toLowerCase();
                     String description = node.getAttribute("description");
                     Item item = new Item(name, description, true);
                     artifacts.put(item.getName(), item);
@@ -131,7 +131,7 @@ public class EntityParser {
             if ("furniture".equals(locationSubgraph.getId().getId())) {
                 List<Node> nodeList = locationSubgraph.getNodes(false);
                 for (Node node : nodeList) {
-                    String name = node.getId().getId();
+                    String name = node.getId().getId().toLowerCase();
                     String description = node.getAttribute("description");
                     Item item = new Item(name, description, false);
                     furniture.put(item.getName(), item);
@@ -147,7 +147,7 @@ public class EntityParser {
             if ("characters".equals(locationSubgraph.getId().getId())) {
                 List<Node> nodeList = locationSubgraph.getNodes(false);
                 for (Node node : nodeList) {
-                    String name = node.getId().getId();
+                    String name = node.getId().getId().toLowerCase();
                     String description = node.getAttribute("description");
                     Character character = new Character(name, description);
                     characters.put(character.getName(), character);

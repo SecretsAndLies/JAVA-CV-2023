@@ -63,6 +63,7 @@ digraph layout {
             subgraph furniture {
                 node [shape = "hexagon"];
                 ground [description = "It looks like the soil has been recently disturbed"];
+                woodenPlanks [description = "A pile of wooden planks"];
             }
         }
 
@@ -94,7 +95,6 @@ digraph layout {
         cellar -> cabin;
         forest -> riverbank
         riverbank -> forest
-        clearing -> riverbank
     }
 
 }
