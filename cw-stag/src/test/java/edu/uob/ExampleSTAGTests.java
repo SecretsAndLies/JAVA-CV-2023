@@ -250,6 +250,24 @@ class ExampleSTAGTests {
     }
 
     @Test
+    void testCharacterNames(){
+        String response;
+        response = sendCommandToServer("james may: gET Axe");
+        assertTrue(response.contains("axe added to your inventory."));
+        response = sendCommandToServer("james may: inv");
+        assertTrue(response.contains("axe"));
+        response = sendCommandToServer("James May: gET Axe");
+        assertTrue(response.contains("I can't pick up axe"), "upper case names are differenrt characters.");
+        response = sendCommandToServer("James May: look");
+        assertTrue(response.contains("james may"));
+        response = sendCommandToServer("james may: look");
+        assertTrue(response.contains("James May"));
+        response = sendCommandToServer("james may: goto forest");
+        response = sendCommandToServer("James May: look");
+        assertFalse(response.contains("james may"));
+    }
+
+    @Test
     void testWeirdSpacingAndCapitilization() {
         String response;
         response = sendCommandToServer("james may: gET Axe");
@@ -301,6 +319,7 @@ class ExampleSTAGTests {
         assertTrue(response.contains("I can't do that."));
 
         response = sendCommandToServer("simon: drink pOTION");
+        System.out.println(response);
         assertTrue(response.contains("You drink the potion and your health improves"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));

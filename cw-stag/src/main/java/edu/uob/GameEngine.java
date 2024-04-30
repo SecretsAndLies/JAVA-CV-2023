@@ -1,5 +1,6 @@
 package edu.uob;
 
+import edu.uob.game_entities.Location;
 import edu.uob.game_entities.Player;
 import edu.uob.parsers.ActionsParser;
 import edu.uob.parsers.EntityParser;
@@ -257,7 +258,52 @@ public class GameEngine {
                 return false;
             }
         }
+        // todo: this loop is basically identical to the one below except it uses the poorly named player mehtod
+        // that also checks inventory.
+        for (String itemName : action.getConsumed()) {
+            if(itemName.equals("health")){
+                continue;
+            }
+            // check if location.
+            if(entityParser.getGameLocations().containsKey(itemName)){
+                return true;
+            }
+            if (!player.worldIncludesItemName(itemName)){
+                return false;
+            }
+        }
+        // can we produce all the required items
+        for (String itemName : action.getProduced()) {
+            if(itemName.equals("health")){
+                continue;
+            }
+            // check if location.
+            if(entityParser.getGameLocations().containsKey(itemName)){
+                return true;
+            }
+            if (!worldIncludesItemName(itemName)){
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    // todo: this is very similar to code that lives in the player class. except it doesn't search in the inventory
+    //  rename and rethink.
+    public boolean worldIncludesItemName(String item) {
+        for(Location location : entityParser.getGameLocations().values()) {
+            if (location.getArtifacts().containsKey(item)) {
+                return true;
+            }
+            if (location.getFurniture().containsKey(item)) {
+                return true;
+            }
+            if (location.getCharacters().containsKey(item)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // take the action and implement its effects

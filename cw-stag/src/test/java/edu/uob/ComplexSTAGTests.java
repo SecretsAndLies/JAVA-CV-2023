@@ -18,9 +18,21 @@ class ComplexSTAGTests {
     // todo - rewrite the string returns to make prettier
     // todo: rewwork your code quality, cyclomatic complexity etc.
     // todo: test with the command line on the lab machine.
+    // todo: fix inventory string.
 
-    // TODO: check player is correctly reset to the start location.
-    // TODO: test produce from anywhere and consume from anywhere.
+    //    Case Insensitivity
+//
+//    Decorated Commands
+//
+//Word Ordering
+//
+//    Partial Commands
+//
+//    Extraneous Entities
+
+    // action keyprhase not unique - create a very ambiguous one?
+// Note that being "available" requires the entity to either be in the inventory of the player invoking the action or for that entity to be in the room/location where the action is being performed
+// trigger phrases cannot (and will not) contain the names of entities, since this would make incoming commands far too difficult to interpret. Just consider the challenge of trying to interpret the command: lock lock with key.
 
     // Create a new server _before_ every @Test
     @BeforeEach
@@ -36,6 +48,115 @@ class ComplexSTAGTests {
         return server.handleCommand(command);
 //                },
 //                "Server took too long to respond (probably stuck in an infinite loop)");
+    }
+
+    @Test
+    void testThatAllSubjectsAreAvailableBeforeActionIsDone(){
+        String response;
+        response = sendCommandToServer("simon: look");
+        response = sendCommandToServer("simon: celebrate with trapdoor");
+        assertTrue(response.contains("can't do that"));
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: celebrate with key");
+        assertTrue(response.contains("can't do that"));
+        response = sendCommandToServer("simon: goto riverbank");
+        response = sendCommandToServer("simon: celebrate with key");
+        assertTrue(response.contains("can't do that"));
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: goto cabin");
+        response = sendCommandToServer("simon: summon potion");
+        response = sendCommandToServer("simon: get key");
+        response = sendCommandToServer("simon: inventory");
+        assertTrue(response.contains("key"));
+        response = sendCommandToServer("simon: celebrate trapdoor key potion");
+        assertTrue(response.contains("log is produced"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("log"));
+
+    }
+
+
+    @Test
+    void testLockDoorTwice(){
+        String response;
+        response = sendCommandToServer("simon: goto");
+        assertTrue(response.contains("Can't understand this command"));
+        response = sendCommandToServer("simon: goto cellar cabin");
+        assertTrue(response.contains("Can't understand this command"));
+        response = sendCommandToServer("simon: goto cellar");
+        assertTrue(response.contains("Can't access that location from here"));
+        response = sendCommandToServer("simon: lock trapdoor");
+        assertTrue(response.contains("You've locked the trapdoor, how will you get it down now!"));
+        response = sendCommandToServer("simon: lock trapdoor");
+        assertTrue(response.contains("You've locked the trapdoor, how will you get it down now!"));
+        response = sendCommandToServer("simon: get key");
+        assertTrue(response.contains("I can't pick up key"));
+        response = sendCommandToServer("simon: summon with potion");
+        assertTrue(response.contains("You've used the magic potion to summoned the key from the forest"));
+        response = sendCommandToServer("simon: open trapdoor");
+        assertTrue(response.contains("see steps leading down into a cellar"));
+        response = sendCommandToServer("simon: goto cellar");
+        assertTrue(response.contains("A dusty cellar"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("A dusty cellar"));
+        response = sendCommandToServer("simon: goto cabin");
+        assertTrue(response.contains("A log cabin in the woods"));
+        response = sendCommandToServer("simon: lock trapdoor");
+        assertTrue(response.contains("You've locked the trapdoor, how will you get it down now"));
+        response = sendCommandToServer("simon: goto cellar");
+        assertTrue(response.contains("Can't access that location from here."));
+    }
+
+    // Note that it is NOT possible to perform an action where a subject,
+    // or a consumed or produced entity is currently in another player's inventory.
+    @Test
+    void testNotPossiblePerformActionInAnotherInventory(){
+        String response;
+        response = sendCommandToServer("simon: get potion");
+        response = sendCommandToServer("simon: inv");
+        assertTrue(response.contains("potion"));
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("axe"));
+        response = sendCommandToServer("james: get potion");
+        assertTrue(response.contains("can't pick up"));
+        response = sendCommandToServer("james: po summon with axe");
+        // this action should be impossible, because you cannot produce the potion, since it's in
+        // simon's inventory
+        assertTrue(response.contains("can't do that"));
+
+        // Attempt to run an action that consumes an item in another players inventory. Should fail
+        response = sendCommandToServer("james: disappear axe");
+        assertTrue(response.contains("I can't do that"));
+    }
+
+    @Test
+    void testProducingItemInSameLocation(){
+        String response;
+        response = sendCommandToServer("simon: get potion");
+        response = sendCommandToServer("simon: goto forest");
+        assertTrue(response.contains("A deep dark forest"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("key"));
+        response = sendCommandToServer("simon: summon with potion");
+       assertTrue(response.contains("used the magic potion"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("key"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("2"));
+        response = sendCommandToServer("simon: summon with potion");
+        assertTrue(response.contains("used the magic potion"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("key"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("1"));
+    }
+
+    @Test
+    void testProduceAndConsume(){
+        // produce and consume a location
+        // produce and consume a character
+        // produce and consume an artifact
+
     }
 
     @Test
@@ -94,7 +215,9 @@ void testPlayerIsResetToStart(){
     String response;
     response = sendCommandToServer("james: get potion");
     response = sendCommandToServer("james: summon with potion");
-    assertTrue(response.contains("You've used the magic potion to summoned the key from the forest!"));
+    assertTrue(response.contains("You've used the magic potion to summoned the key from the forest"));
+    response = sendCommandToServer("james: health");
+    assertTrue(response.contains("2"));
     response = sendCommandToServer("james: open trapdoor");
     assertTrue(response.contains("leading down into a cellar"));
     response = sendCommandToServer("james: goto cellar");
@@ -102,8 +225,6 @@ void testPlayerIsResetToStart(){
     response = sendCommandToServer("bryan: goto cellar");
     assertTrue(response.contains("dusty cellar"));
     assertTrue(response.contains("james"));
-    response = sendCommandToServer("james: hit elf");
-    assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
     response = sendCommandToServer("james: hit elf");
     assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
     response = sendCommandToServer("james: hit elf");
@@ -164,7 +285,6 @@ void testPlayerIsResetToStart(){
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: hit elf");
         assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
-
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: fight elf");
@@ -184,12 +304,52 @@ void testPlayerIsResetToStart(){
     }
 
     @Test
+    void testCompositeCommands(){
+        String response;
+        response = sendCommandToServer("james: get axe look");
+        assertTrue(response.contains("found more command words than expected"));
+        response = sendCommandToServer("james: look get axe");
+        assertTrue(response.contains("found more command words than expected"));
+        response = sendCommandToServer("james: health get axe");
+        assertTrue(response.contains("found more command words than expected"));
+
+        response = sendCommandToServer("james: open summon potion");
+        assertTrue(response.contains("A command must include only and only one action keyphrase."));
+        response = sendCommandToServer("james: health");
+        assertTrue(response.contains("3"));
+    }
+
+    @Test
+    void testAmbiguousCommands(){
+        String response;
+        response = sendCommandToServer("james: pour potion");
+        assertTrue(response.contains("Multiple actions are available, can you be more specific"));
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("axe"));
+        assertTrue(response.contains("coin"));
+        response = sendCommandToServer("james: pour potion to destroy the coin");
+        assertTrue(response.contains("You pour the potion onto the coin and it disappears"));
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("axe"));
+        assertFalse(response.contains("coin"));
+        response = sendCommandToServer("james: pour potion");
+        assertTrue(response.contains("You pour the potion onto the axe and it disappears"));
+        response = sendCommandToServer("james: look");
+        assertFalse(response.contains("axe"));
+        assertFalse(response.contains("coin"));
+    }
+
+
+
+    @Test
     void testSummon(){
         String response;
         response = sendCommandToServer("simon: look");
         assertFalse(response.contains("key"));
         response = sendCommandToServer("simon: summon with the potion"); // summons the key
-        assertTrue(response.contains("You've used the magic potion to summoned the key from the forest!"));
+        assertTrue(response.contains("You've used the magic potion to summoned the key from the forest"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("key"));
         response = sendCommandToServer("simon: open trapdoor");

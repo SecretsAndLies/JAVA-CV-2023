@@ -19,6 +19,22 @@
     </action>
     <action>
         <triggers>
+            <keyphrase>celebrate</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>trapdoor</entity>
+            <entity>key</entity>
+            <entity>potion</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+            <entity>log</entity>
+        </produced>
+        <narration>You celebrate and a log is produced</narration>
+    </action>
+    <action>
+        <triggers>
             <keyphrase>lock</keyphrase>
         </triggers>
         <subjects>
@@ -39,13 +55,28 @@
             <entity>potion</entity>
         </subjects>
         <consumed>
+            <entity>health</entity>
         </consumed>
         <produced>
             <entity>key</entity>
         </produced>
-        <narration>You've used the magic potion to summoned the key from the forest!</narration>
+        <narration>You've used the magic potion to summoned the key from the forest and lose some health in the process</narration>
     </action>
-
+    <action>
+        <triggers>
+            <keyphrase>po summon</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>axe</entity>
+        </subjects>
+        <consumed>
+            <entity>health</entity>
+        </consumed>
+        <produced>
+            <entity>potion</entity>
+        </produced>
+        <narration>You've used the magic axe to summon the potion and lose health</narration>
+    </action>
     <action>
           <triggers>
               <keyphrase>magically create</keyphrase>
@@ -103,6 +134,36 @@
         <produced>
         </produced>
         <narration>You bash at the trapdoor with your hand and lose some health.</narration>
+    </action>
+    <action>
+        <triggers>
+            <keyphrase>pour</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>potion</entity>
+            <entity>coin</entity>
+        </subjects>
+        <consumed>
+            <entity>coin</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You pour the potion onto the coin and it disappears.</narration>
+    </action>
+    <action>
+        <triggers>
+            <keyphrase>pour</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>potion</entity>
+            <entity>axe</entity>
+        </subjects>
+        <consumed>
+            <entity>axe</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You pour the potion onto the axe and it disappears.</narration>
     </action>
         <action>
             <triggers>
@@ -167,7 +228,20 @@
         </produced>
         <narration>You drink the potion and your health improves</narration>
     </action>
-
+    <action>
+        <triggers>
+            <keyphrase>disappear</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>axe</entity>
+        </subjects>
+        <consumed>
+            <entity>potion</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You use the magic axe to disappear the potion</narration>
+    </action>
     <action>
         <triggers>
             <keyphrase>fight</keyphrase>

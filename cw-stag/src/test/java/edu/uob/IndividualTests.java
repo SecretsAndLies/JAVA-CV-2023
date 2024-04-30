@@ -1,9 +1,14 @@
 package edu.uob;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class IndividualTests {
     // ensure that all items are collectable and all furniture isn't
@@ -32,6 +37,7 @@ public class IndividualTests {
 //                },
 //                "Server took too long to respond (probably stuck in an infinite loop)");
     }
+
 
 
 }
