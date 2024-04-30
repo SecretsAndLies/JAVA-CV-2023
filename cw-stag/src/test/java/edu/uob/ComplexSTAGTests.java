@@ -509,6 +509,8 @@ class ComplexSTAGTests {
         // needs a subject,
         response = sendCommandToServer("simon: magically consume thing");
         assertTrue(response.contains("Can't execute this action"));
+        response = sendCommandToServer("simon: magically consume thing key");
+        assertTrue(response.contains("I can't do that"));
         // consume an object that's not in your location.
         response = sendCommandToServer("simon: magically consume thing using the magic shovel");
         assertTrue(response.contains("magically has disappeared"));
