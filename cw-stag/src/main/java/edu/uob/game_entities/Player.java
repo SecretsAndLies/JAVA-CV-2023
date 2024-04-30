@@ -222,8 +222,11 @@ public class Player extends Character {
         if (inventory.isEmpty()) {
             return "Your inventory is empty.";
         }
-        // todo clean this up.
-        return "Your inventory contains: " + inventory;
+        StringBuilder inventoryString = new StringBuilder();
+        for(String item : inventory.keySet()){
+            inventoryString.append(item).append(", ");
+        }
+        return "Your inventory contains: " + inventoryString.toString();
     }
 
     public Location getLocation() {

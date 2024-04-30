@@ -176,6 +176,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: get the axe");
         assertTrue(response.contains("axe added to your inventory"));
         response = sendCommandToServer("simon: inventory");
+        System.out.println(response);
         assertTrue(response.contains("axe"));
         response = sendCommandToServer("simon: drop the axe");
         response = sendCommandToServer("simon: inventory");
@@ -285,6 +286,8 @@ void testPlayerIsResetToStart(){
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: hit elf");
         assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        response = sendCommandToServer("simon: health elf");
+        assertTrue(response.contains("Can't understand this command"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: fight elf");
