@@ -18,20 +18,6 @@ class ComplexSTAGTests {
     // todo: rewwork your code quality, cyclomatic complexity etc.
     // todo: test with the command line on the lab machine.
 
-    //    Case Insensitivity
-//
-//    Decorated Commands
-//
-//Word Ordering
-//
-//    Partial Commands
-//
-//    Extraneous Entities
-
-    // action keyprhase not unique - create a very ambiguous one?
-// Note that being "available" requires the entity to either be in the inventory of the player invoking the action or for that entity to be in the room/location where the action is being performed
-// trigger phrases cannot (and will not) contain the names of entities, since this would make incoming commands far too difficult to interpret. Just consider the challenge of trying to interpret the command: lock lock with key.
-
     // Create a new server _before_ every @Test
     @BeforeEach
     void setup() {
@@ -58,7 +44,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: celebrate with key");
         assertTrue(response.contains("can't do that"));
         response = sendCommandToServer("simon: goto Riverbank");
-        response = sendCommandToServer("simon: celebrAte with key");
+        response = sendCommandToServer("simon: celebrAte with kEy");
         assertTrue(response.contains("can't do that"));
         response = sendCommandToServer("simon: goto forest");
         response = sendCommandToServer("simon: goto cabin");
@@ -66,7 +52,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: get key");
         response = sendCommandToServer("simon: inventory");
         assertTrue(response.contains("key"));
-        response = sendCommandToServer("simon: celebrate trapdoor key potion");
+        response = sendCommandToServer("simon: trapdoor celebrate key potion");
         assertTrue(response.contains("log is produced"));
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("log"));
