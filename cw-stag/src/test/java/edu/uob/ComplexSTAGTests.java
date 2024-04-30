@@ -15,10 +15,8 @@ class ComplexSTAGTests {
 
     // todo: before submission: pmd_check | grep -vE "Tests"
     // add the timeout back in.
-    // todo - rewrite the string returns to make prettier
     // todo: rewwork your code quality, cyclomatic complexity etc.
     // todo: test with the command line on the lab machine.
-    // todo: fix inventory string.
 
     //    Case Insensitivity
 //
@@ -151,12 +149,24 @@ class ComplexSTAGTests {
     }
 
     @Test
-    void testProduceAndConsume(){
-
-        // produce and consume a location
-        // produce and consume a character
-        // produce and consume an artifact
-
+    void testProduceAndConsumeCharacter(){
+        String response;
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("dog"));
+        response = sendCommandToServer("simon: call doggo");
+        assertTrue(response.contains("Can't execute this action"));
+        response = sendCommandToServer("simon: call axe");
+        assertTrue(response.contains("Your dog is here"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("dog"));
+        response = sendCommandToServer("simon: eat dog");
+        assertTrue(response.contains("You ate your"));
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("dog"));
+        response = sendCommandToServer("simon: call axe");
+        assertTrue(response.contains("Your dog is here"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("dog"));
     }
 
     @Test
@@ -176,7 +186,6 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: get the axe");
         assertTrue(response.contains("axe added to your inventory"));
         response = sendCommandToServer("simon: inventory");
-        System.out.println(response);
         assertTrue(response.contains("axe"));
         response = sendCommandToServer("simon: drop the axe");
         response = sendCommandToServer("simon: inventory");

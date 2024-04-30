@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Location extends GameEntity {
-    private final boolean isStartLocation;
+    private final boolean isStartLocation; // todo: remove.
     private final Map<String, Item> artifacts;
     private final Map<String, Item> furniture;
     private final Map<String, Character> characters;

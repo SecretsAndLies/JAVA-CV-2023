@@ -49,6 +49,34 @@
       </action>
     <action>
         <triggers>
+            <keyphrase>call</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>axe</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+            <entity>dog</entity>
+        </produced>
+        <narration>Your dog is here!</narration>
+    </action>
+    <action>
+        <triggers>
+            <keyphrase>eat</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>dog</entity>
+        </subjects>
+        <consumed>
+            <entity>dog</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You ate your dog>?!?!!</narration>
+    </action>
+    <action>
+        <triggers>
             <keyphrase>summon</keyphrase>
         </triggers>
         <subjects>

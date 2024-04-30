@@ -73,6 +73,7 @@ digraph layout {
             subgraph characters {
                 node [shape = "ellipse"];
                 lumberjack [description = "A burly wood cutter"];
+                dog [description = "A loyal dog"];
             }
             subgraph artefacts {
                 node [shape = "diamond"];

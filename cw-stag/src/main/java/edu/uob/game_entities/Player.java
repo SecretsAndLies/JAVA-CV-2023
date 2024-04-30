@@ -188,7 +188,6 @@ public class Player extends Character {
     public String getItemFromCurrentLocation(String itemName) {
         Item item = location.removeItemFromLocation(itemName);
         if (item == null) {
-            // todo: ideally you'd distinguish between furnitue and items here. Maybe even combine into a single list?
             return "I can't pick up " + itemName;
         }
         inventory.put(itemName, item);
@@ -226,7 +225,7 @@ public class Player extends Character {
         for(String item : inventory.keySet()){
             inventoryString.append(item).append(", ");
         }
-        return "Your inventory contains: " + inventoryString.toString();
+        return "Your inventory contains: " + inventoryString;
     }
 
     public Location getLocation() {

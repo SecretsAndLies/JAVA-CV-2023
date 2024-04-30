@@ -43,7 +43,6 @@ public class EntityParser {
             addLocationsToGameLocationList(sections);
             addConnectedLocationsToGameLocations(sections);
         } catch (FileNotFoundException | ParseException e) {
-            // todo: does this belong here? or should throw error somewhere else?
             System.err.println(e.getMessage());
         }
     }

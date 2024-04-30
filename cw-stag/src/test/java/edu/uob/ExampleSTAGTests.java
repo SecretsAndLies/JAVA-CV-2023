@@ -103,7 +103,7 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: cutdown tree with axe");
         assertTrue(response.contains("You cut down the tree with the axe"));
         response = sendCommandToServer("simon: look");
-        System.out.println(response);
+
         // log should now be in the level and tree should be gone.
         assertTrue(response.contains("log"));
         assertFalse(response.contains("tree"));
@@ -319,7 +319,6 @@ class ExampleSTAGTests {
         assertTrue(response.contains("I can't do that."));
 
         response = sendCommandToServer("simon: drink pOTION");
-        System.out.println(response);
         assertTrue(response.contains("You drink the potion and your health improves"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
