@@ -369,7 +369,7 @@
     </action>
     <action>
         <triggers>
-            <keyphrase>assemble bridge</keyphrase>
+            <keyphrase>assemble brIdge</keyphrase>
         </triggers>
         <subjects>
             <entity>woodenPlanks</entity>

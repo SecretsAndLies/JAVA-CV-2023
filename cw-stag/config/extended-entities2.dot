@@ -82,7 +82,7 @@ digraph layout {
             }
             subgraph furniture {
                 node [shape = "hexagon"];
-                hole [description = "A deep hole in the ground"];
+                HOLE [description = "A deep hole in the ground"];
                 furnitureItem [description = "An item of furniture"];
             }
         }
