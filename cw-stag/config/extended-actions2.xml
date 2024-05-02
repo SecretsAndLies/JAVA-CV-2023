@@ -195,7 +195,7 @@
     </action>
         <action>
             <triggers>
-                <keyphrase>magically consume key</keyphrase>
+                <keyphrase>magically consume thing</keyphrase>
             </triggers>
             <subjects>
                 <entity>shovel</entity><!--It's, like, a magic shovel or something.-->
