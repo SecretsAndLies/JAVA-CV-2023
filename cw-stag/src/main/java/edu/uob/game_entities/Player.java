@@ -112,7 +112,7 @@ public class Player extends Character {
         }
 
         for (Location locationFromList : gameLocations.values()) {
-            if(locationFromList.equals(this.getLocation())){
+            if (locationFromList.equals(this.getLocation())) {
                 continue;
             }
             Character character = locationFromList.takeCharacterFromLocation(itemName);
@@ -149,8 +149,11 @@ public class Player extends Character {
 
     }
 
-    // searches environment (including player inventory) for item returns true if found.
+    // searches environment (including player inventory and current location) for item returns true if found.
     public boolean environmentIncludesItemName(String item) {
+        if (this.location.getName().equals(item)) {
+            return true;
+        }
         if (inventory.containsKey(item)) {
             return true;
         }
@@ -167,7 +170,10 @@ public class Player extends Character {
         if (inventory.containsKey(item)) {
             return true;
         }
-        for(Location location : gameLocations.values()) {
+        for (Location location : gameLocations.values()) {
+            if (location.getName().equals(item)) {
+                return true;
+            }
             if (location.getArtifacts().containsKey(item)) {
                 return true;
             }
@@ -222,7 +228,7 @@ public class Player extends Character {
             return "Your inventory is empty.";
         }
         StringBuilder inventoryString = new StringBuilder();
-        for(String item : inventory.keySet()){
+        for (String item : inventory.keySet()) {
             inventoryString.append(item).append(", ");
         }
         return "Your inventory contains: " + inventoryString;

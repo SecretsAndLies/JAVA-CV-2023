@@ -19,6 +19,35 @@
     </action>
     <action>
         <triggers>
+            <keyphrase>kiss</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>axe</entity>
+            <entity>cabin</entity>
+        </subjects>
+        <consumed>
+            <entity>health</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You kiss the axe in the cabin and it costs health.</narration>
+    </action>
+    <action>
+        <triggers>
+            <keyphrase>kiss</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>axe</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+             <entity>health</entity>
+        </produced>
+        <narration>You kiss the axe outside the cabin and gain some health.</narration>
+    </action>
+    <action>
+        <triggers>
             <keyphrase>celebrate</keyphrase>
         </triggers>
         <subjects>

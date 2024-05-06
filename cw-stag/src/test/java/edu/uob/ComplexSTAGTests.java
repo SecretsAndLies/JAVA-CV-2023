@@ -36,6 +36,28 @@ class ComplexSTAGTests {
 //                "Server took too long to respond (probably stuck in an infinite loop)");
     }
 
+
+    @Test
+    void testCoLocation() {
+        String response;
+
+        response = sendCommandToServer("simon: kiss the axe");
+        // ambiguious
+        assertTrue(response.contains("Multiple actions are available, can you be more specific"));
+        response = sendCommandToServer("simon: kiss the axe in the cabin");
+        assertTrue(response.contains("You kiss the axe in the cabin and it costs health."));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("2"));
+        response = sendCommandToServer("simon: get axe");
+        response = sendCommandToServer("simon: inv");
+        assertTrue(response.contains("axe"));
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: kiss the axe");
+        assertTrue(response.contains("You kiss the axe outside the cabin and gain some health."));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
+    }
+
     @Test
     void testThatAllSubjectsAreAvailableBeforeActionIsDone() {
         String response;
