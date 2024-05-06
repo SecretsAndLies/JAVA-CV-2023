@@ -41,9 +41,9 @@ public final class GameServer {
         } catch (GameException gameException) {
             return gameException.getMessage();
         }
-//        catch (Exception exception){
-//            return "Something went wrong.";
-//        }
+        catch (Exception exception){
+            return "Something went wrong.";
+        }
     }
 
     /**
