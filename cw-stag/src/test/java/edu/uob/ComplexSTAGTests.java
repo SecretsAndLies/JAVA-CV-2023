@@ -36,6 +36,71 @@ class ComplexSTAGTests {
 //                "Server took too long to respond (probably stuck in an infinite loop)");
     }
 
+    // you cannot consume a locaiton that's not connected to your current location.
+    // look look
+
+    @Test
+    void testCompositeCommands2() {
+        String response;
+        response = sendCommandToServer("simon: summon potion");
+        response = sendCommandToServer("simon: get key");
+        response = sendCommandToServer("simon: open and bash trapdoor");
+        assertTrue(response.contains("Multiple actions are available, can you be more specific"));
+    }
+
+    @Test
+    void testDoubleWordCommands() {
+        String response;
+        response = sendCommandToServer("simon: look look");
+        assertTrue(response.contains("log cabin in the woods"));
+        response = sendCommandToServer("simon: summon potion");
+        response = sendCommandToServer("simon: get key");
+        response = sendCommandToServer("simon: inv");
+        assertTrue(response.contains("key"));
+        response = sendCommandToServer("simon: open and unlock trapdoor");
+        assertTrue(response.contains("You unlock the door and see steps leading down into a cellar"));
+        // todo test empty subjects trying to do things without right resources etc.
+
+        // artifacts
+        response = sendCommandToServer("simon: get potion potion");
+        assertTrue(response.contains("potion added to your inventory"));
+
+        response = sendCommandToServer("simon: drop potion potion");
+        assertTrue(response.contains("dropped on the ground"));
+
+        response = sendCommandToServer("simon: get trapdoor trapdoor");
+        assertTrue(response.contains("Can't understand this command"));
+
+        // locations
+        response = sendCommandToServer("simon: goto forest forest");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("A deep dark forest"));
+
+        response = sendCommandToServer("simon: kiss axe axe in cabin");
+        System.out.println(response); // should work because the word is duplicated but same.
+
+        response = sendCommandToServer("simon: kiss axe potion in cabin");
+        assertTrue(response.contains("I can't do that."));
+
+
+        // THIS ISN'T TESTED
+//        response = sendCommandToServer("simon: look get");
+//        System.out.println(response);  // this also should work because (not testing it though)
+
+
+    }
+
+    @Test
+    void testInvalidPlayerName() {
+        String response;
+        response = sendCommandToServer("simon!: goto forest");
+        assertTrue(response.contains("Player name is invalid."));
+        // todo you could test other stuff here.
+        response = sendCommandToServer("simon's: goto forest");
+        assertTrue(response.contains("deep dark forest"));
+        response = sendCommandToServer("bryan-s: goto forest");
+        assertTrue(response.contains("deep dark forest"));
+    }
 
     @Test
     void testCoLocation() {
@@ -164,7 +229,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: look");
         assertFalse(response.contains("dog"));
         response = sendCommandToServer("simon: call doggo");
-        assertTrue(response.contains("Can't execute this action"));
+        assertTrue(response.contains("I can't do that"));
         response = sendCommandToServer("simon: call axe");
         assertTrue(response.contains("Your dog is here"));
         response = sendCommandToServer("simon: look");
@@ -336,9 +401,9 @@ class ComplexSTAGTests {
         assertTrue(response.contains("found more command words than expected"));
 
         response = sendCommandToServer("james: open summon potion");
-        assertTrue(response.contains("A command must include only and only one action keyphrase."));
+        assertTrue(response.contains("used the magic potion to summoned"));
         response = sendCommandToServer("james: health");
-        assertTrue(response.contains("3"));
+        assertTrue(response.contains("2"));
     }
 
     @Test
@@ -398,7 +463,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: repair log");
         assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: down slice tree with axe");
-        assertTrue(response.contains("A command must include only and only one action keyphrase."));
+        assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: cut down tree with axe");
         assertTrue(response.contains("You cut down the tree with the axe"));
         response = sendCommandToServer("simon: look");
@@ -477,7 +542,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: open door");
-        assertTrue(response.contains("Can't execute this action."));
+        assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: open trapdoor");
         assertTrue(response.contains("You unlock the door and see steps leading down into a cellar"));
         response = sendCommandToServer("simon: get shovel");
@@ -530,7 +595,7 @@ class ComplexSTAGTests {
         assertTrue(response.contains("log cabin in the woods"));
         // needs a subject,
         response = sendCommandToServer("simon: magically consume thing");
-        assertTrue(response.contains("Can't execute this action"));
+        assertTrue(response.contains("I can't do that"));
         response = sendCommandToServer("simon: magically consume thing key");
         assertTrue(response.contains("I can't do that"));
         // consume an object that's not in your location.

@@ -25,6 +25,19 @@ public class GameAction {
         return subjects;
     }
 
+    public boolean deepEquals(GameAction other) {
+        if (!this.subjects.equals(other.subjects)) {
+            return false;
+        }
+        if (!this.consumed.equals(other.consumed)) {
+            return false;
+        }
+        if (!this.produced.equals(other.produced)) {
+            return false;
+        }
+        return this.narration.equals(other.narration);
+    }
+
     public List<String> getConsumed() {
         return consumed;
     }
