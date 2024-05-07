@@ -36,8 +36,7 @@ class ComplexSTAGTests {
 //                "Server took too long to respond (probably stuck in an infinite loop)");
     }
 
-    // you cannot consume a locaiton that's not connected to your current location.
-    // look look
+    // TODO: test that you cannot consume a locaiton that's not connected to your current location.
 
     @Test
     void testCompositeCommands2() {
@@ -382,6 +381,8 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("1"));
         response = sendCommandToServer("simon: attack elf");
+        response = sendCommandToServer("simon: inv");
+        assertTrue(response.contains("Your inventory is empty"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: look");
