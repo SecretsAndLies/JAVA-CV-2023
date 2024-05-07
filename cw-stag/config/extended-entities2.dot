@@ -15,6 +15,7 @@ digraph layout {
                 potion [description = "A bottle of magic potion"];
                 axe [description = "A razor sharp axe"];
                 coin [description = "A silver coin"];
+                weirdCase [description = "A thing with strange capitlization"];
             }
             subgraph furniture {
                 node [shape = "hexagon"];

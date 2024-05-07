@@ -2,6 +2,93 @@
 <actions>
     <action>
         <triggers>
+            <keyphrase>forcedrop</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>axe</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+               <entity>axe</entity>
+        </produced>
+        <narration>Woah, an axe!</narration>
+    </action>
+        <action>
+            <triggers>
+                <keyphrase>touch</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>weirdcaSe</entity>
+            </subjects>
+            <consumed>
+                <entity>health</entity>
+            </consumed>
+            <produced>
+            </produced>
+            <narration>You touched the weirdCase and lost health!</narration>
+        </action>
+    <action>
+        <triggers>
+            <keyphrase>meditate</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>forest</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+               <entity>health</entity>
+        </produced>
+        <narration>you meditate in the relaxing forest and gain health!</narration>
+    </action>
+        <action>
+            <triggers>
+                <keyphrase>meditate</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>cabin</entity>
+            </subjects>
+            <consumed>
+                <entity>health</entity>
+            </consumed>
+            <produced>
+            </produced>
+            <narration>you meditate in the scary cabin and lose health!</narration>
+        </action>
+    <action>
+        <triggers>
+            <keyphrase>trap</keyphrase>
+            <keyphrase>capture</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>axe</entity>
+        </subjects>
+        <consumed>
+            <entity>cellar</entity>
+            <entity>forest</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You have trapped yourself in the cabin.</narration>
+    </action>
+        <action>
+            <triggers>
+                <keyphrase>un trap</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>axe</entity>
+            </subjects>
+            <consumed>
+            </consumed>
+            <produced>
+                <entity>cellar</entity>
+                <entity>forest</entity>
+            </produced>
+            <narration>You have untrapped yourself in the cabin.</narration>
+        </action>
+    <action>
+        <triggers>
             <keyphrase>open</keyphrase>
             <keyphrase>unlock</keyphrase>
         </triggers>
@@ -206,6 +293,20 @@
         <produced>
         </produced>
         <narration>You pour the potion onto the coin and it disappears.</narration>
+    </action>
+    <action>
+        <triggers>
+            <keyphrase>use</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>coin</entity>
+        </subjects>
+        <consumed>
+            <entity>health</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You use the coin and it costs some health.</narration>
     </action>
     <action>
         <triggers>

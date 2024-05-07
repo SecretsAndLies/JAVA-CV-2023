@@ -250,7 +250,7 @@ class ExampleSTAGTests {
     }
 
     @Test
-    void testCharacterNames(){
+    void testCharacterNames() {
         String response;
         response = sendCommandToServer("james may: gET Axe");
         assertTrue(response.contains("axe added to your inventory."));
