@@ -76,8 +76,11 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("A deep dark forest"));
 
+        response = sendCommandToServer("simon: goto cabin where the cabin is");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("A log cabin"));
         response = sendCommandToServer("simon: kiss axe axe in cabin");
-        System.out.println(response); // should work because the word is duplicated but same.
+        assertTrue(response.contains("You kiss the axe in the cabin and it costs health"));
 
         response = sendCommandToServer("simon: kiss axe potion in cabin");
         assertTrue(response.contains("I can't do that."));

@@ -362,6 +362,9 @@ public class GameEngine {
     private List<String> getSubjects(String[] commandText, Player player) {
         List<String> subjects = new ArrayList<>();
         for (String word : commandText) {
+            if (subjects.contains(word)) {
+                continue;
+            }
             if (player.worldIncludesItemName(word)) {
                 subjects.add(word);
             }
