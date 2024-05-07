@@ -306,6 +306,12 @@ public class GameEngine {
             }
             // check if location.
             if (entityParser.getGameLocations().containsKey(itemName)) {
+                try {
+                    // get connected location throws an exception if it's not connected to the current player.
+                    player.getLocation().getConnectedLocation(itemName);
+                } catch (GameException e) {
+                    return false;
+                }
                 return true;
             }
             if (!player.worldIncludesItemName(itemName)) {

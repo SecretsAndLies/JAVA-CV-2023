@@ -12,7 +12,7 @@ public class Player extends Character {
     private Location location;
     private final Map<String, Location> gameLocations;
     private final Location startLocation;
-    private final Map<String, Item> inventory;
+    private Map<String, Item> inventory;
     private int health;
     private static final int START_HEALTH = 3;
 
@@ -72,6 +72,7 @@ public class Player extends Character {
             for (Item item : inventory.values()) {
                 location.addItemToLocation(item);
             }
+            inventory = new HashMap<>();
             // remove the player from this location
             location.removeCharacterFromLocation(this);
             // move player to start location.
