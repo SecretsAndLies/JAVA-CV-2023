@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.time.Duration;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ComplexSTAGTests {
 
@@ -18,7 +18,6 @@ class ComplexSTAGTests {
     // todo: rewwork your code quality, cyclomatic complexity etc.
     // todo: test with the command line on the lab machine.
 
-    // todo do more extraneuo
 
     // Create a new server _before_ every @Test
     @BeforeEach
@@ -34,13 +33,11 @@ class ComplexSTAGTests {
 
     String sendCommandToServer(String command) {
         // Try to send a command to the server - this call will timeout if it takes too long (in case the server enters an infinite loop)
-//        return assertTimeoutPreemptively(Duration.ofMillis(1000), () -> {
-        return server.handleCommand(command);
-//                },
-//                "Server took too long to respond (probably stuck in an infinite loop)");
+        return assertTimeoutPreemptively(Duration.ofMillis(1000), () -> {
+                    return server.handleCommand(command);
+                },
+                "Server took too long to respond (probably stuck in an infinite loop)");
     }
-
-    // TODO: test that you cannot consume a locaiton that's not connected to your current location.
 
     @Test
     void testCompositeCommands2() {
@@ -78,7 +75,6 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: open and unlock trapdoor");
         assertTrue(response.contains(
                 "You unlock the door and see steps leading down into a cellar"));
-        // todo test empty subjects trying to do things without right resources etc.
 
         // artifacts
         response = sendCommandToServer("simon: get potion potion");
@@ -121,11 +117,18 @@ class ComplexSTAGTests {
         String response;
         response = sendCommandToServer("simon!: goto fOrest");
         assertTrue(response.contains("Player name is invalid."));
-        // todo you could test other stuff here.
         response = sendCommandToServer("simon's: goto forest");
         assertTrue(response.contains("deep dark forest"));
         response = sendCommandToServer("bryan-s: goto forest");
         assertTrue(response.contains("deep dark forest"));
+        response = sendCommandToServer(" : goto forest");
+        assertTrue(response.contains("deep dark forest"));
+        response = sendCommandToServer("': goto forest");
+        assertTrue(response.contains("deep dark forest"));
+        response = sendCommandToServer("-: goto forest");
+        assertTrue(response.contains("deep dark forest"));
+        response = sendCommandToServer("!: goto forest");
+        assertTrue(response.contains("Player name is invalid"));
     }
 
     @Test

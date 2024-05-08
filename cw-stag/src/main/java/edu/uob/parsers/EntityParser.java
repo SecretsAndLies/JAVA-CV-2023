@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.BiFunction;
 
 public class EntityParser {
 
@@ -120,55 +121,38 @@ public class EntityParser {
     }
 
 
-    // todo: the getArtfacts getFurnitue and getCharacters methods are very similar and use a repeated loop
-    // fiure out how to optimize.
-    private Map<String, Item> getArtifacts(List<Graph> locationSubgraphs) {
-        Map<String, Item> artifacts = new HashMap<>();
+    private <T> Map<String, T> extractEntities(List<Graph> locationSubgraphs,
+                                               String type,
+                                               BiFunction<String, String, T> entityConstructor) {
+        Map<String, T> entities = new HashMap<>();
         for (Graph locationSubgraph : locationSubgraphs) {
-            if ("artefacts".equals(locationSubgraph.getId().getId())) {
+            if (type.equals(locationSubgraph.getId().getId())) {
                 List<Node> nodeList = locationSubgraph.getNodes(false);
                 for (Node node : nodeList) {
                     String name = node.getId().getId().toLowerCase();
                     String description = node.getAttribute("description");
-                    Item item = new Item(name, description, true);
-                    artifacts.put(item.getName(), item);
+                    T entity = entityConstructor.apply(name, description);
+                    entities.put(name, entity);
                 }
             }
         }
-        return artifacts;
+        return entities;
+    }
+
+    private Map<String, Item> getArtifacts(List<Graph> locationSubgraphs) {
+        return extractEntities(locationSubgraphs, "artefacts",
+                (name, desc) -> new Item(name, desc, true));
     }
 
     private Map<String, Item> getFurniture(List<Graph> locationSubgraphs) {
-        Map<String, Item> furniture = new HashMap<>();
-        for (Graph locationSubgraph : locationSubgraphs) {
-            if ("furniture".equals(locationSubgraph.getId().getId())) {
-                List<Node> nodeList = locationSubgraph.getNodes(false);
-                for (Node node : nodeList) {
-                    String name = node.getId().getId().toLowerCase();
-                    String description = node.getAttribute("description");
-                    Item item = new Item(name, description, false);
-                    furniture.put(item.getName(), item);
-                }
-            }
-        }
-        return furniture;
+        return extractEntities(locationSubgraphs, "furniture",
+                (name, desc) -> new Item(name, desc, false));
     }
 
     private Map<String, Character> getCharacters(
             List<Graph> locationSubgraphs) {
-        Map<String, Character> characters = new HashMap<>();
-        for (Graph locationSubgraph : locationSubgraphs) {
-            if ("characters".equals(locationSubgraph.getId().getId())) {
-                List<Node> nodeList = locationSubgraph.getNodes(false);
-                for (Node node : nodeList) {
-                    String name = node.getId().getId().toLowerCase();
-                    String description = node.getAttribute("description");
-                    Character character = new Character(name, description);
-                    characters.put(character.getName(), character);
-                }
-            }
-        }
-        return characters;
+        return extractEntities(locationSubgraphs, "characters",
+                Character::new);
     }
 
     private Location getLocationByName(String name) throws

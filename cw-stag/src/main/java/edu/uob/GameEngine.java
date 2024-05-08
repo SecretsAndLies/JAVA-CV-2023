@@ -191,7 +191,6 @@ public class GameEngine {
     }
 
 
-    // TODO: validators are repetitive.
     private boolean commandContainsEntities() {
         for (String word : commandText) {
             if (entityParser.isEntity(word)) {
@@ -250,7 +249,6 @@ public class GameEngine {
     }
 
 
-    // todo simplify
     private String getArtifactForGetAndDrop() throws GameException {
         int countOfArtifacts = 0;
         String artifact = "";
@@ -322,7 +320,6 @@ public class GameEngine {
     }
 
 
-    // TODO: these were written fast - test when you have time.
     private List<GameAction> filterForUniqueActions(
             List<GameAction> potentialActions) {
         if (potentialActions.size() <= 1) {
@@ -394,7 +391,7 @@ public class GameEngine {
             return isConnectedLocationAccessible(itemName);
         }
         // Check if the item is included in the world and accessible to the player.
-        // TODO: note that unlike the worldIncludes.. this also checks the player inventory.
+        // noe that unlike the worldIncludes.. this also checks the player inventory.
         return player.worldIncludesItemName(itemName);
     }
 
@@ -408,8 +405,7 @@ public class GameEngine {
     }
 
 
-    // todo: put in the action class.
-    // TODO: returns true if this action is possible for this player to complete at the moment
+    // returns true if this action is possible for this player to complete at the moment
     // ie: do they have the required items.
     private boolean isActionPossible(GameAction action) {
         // Does the player have all the items they need to execute the action?
@@ -425,8 +421,6 @@ public class GameEngine {
         return isPossibleToProduceRequiredItems(action);
     }
 
-    // todo: this is very similar to code that lives in the player class. except it doesn't search in the inventory
-    //  rename and rethink.
     public boolean worldIncludesItemName(String item) {
         for (Location location : entityParser.getGameLocations().values()) {
             if (location.getArtifacts().containsKey(item)) {
