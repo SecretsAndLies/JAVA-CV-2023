@@ -32,9 +32,15 @@ public class Player extends Character {
             return;
         }
 
-        if (tryConsumeFromInventory(itemName)) return;
-        if (tryConsumeCharacterFromLocation(itemName)) return;
-        if (tryConsumeFromAllLocations(itemName)) return;
+        if (tryConsumeFromInventory(itemName)) {
+            return;
+        }
+        if (tryConsumeCharacterFromLocation(itemName)) {
+            return;
+        }
+        if (tryConsumeFromAllLocations(itemName)) {
+            return;
+        }
 
         // If no item or character matches, assume it's a location change
         location.removeAccessibleLocation(itemName);
@@ -64,10 +70,12 @@ public class Player extends Character {
     private boolean tryConsumeFromAllLocations(String itemName) throws
             GameException {
         for (Location gameLocation : getAllLocationsExceptStoreroom()) {
-            if (tryRemoveAndStoreItem(gameLocation.getFurniture(), itemName))
+            if (tryRemoveAndStoreItem(gameLocation.getFurniture(), itemName)) {
                 return true;
-            if (tryRemoveAndStoreItem(gameLocation.getArtifacts(), itemName))
+            }
+            if (tryRemoveAndStoreItem(gameLocation.getArtifacts(), itemName)) {
                 return true;
+            }
         }
         return false;
     }

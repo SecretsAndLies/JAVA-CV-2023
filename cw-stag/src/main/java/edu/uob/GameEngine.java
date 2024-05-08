@@ -38,7 +38,11 @@ public class GameEngine {
         return response;
     }
 
-    private void getThePlayer() {
+    private void getThePlayer() throws GameException {
+        if (playerName.isEmpty()) {
+            throw new GameException(
+                    "Player names must be at least one letter.");
+        }
         player = players.get(playerName);
         if (player == null) {
             player = new Player(playerName, "another player",
@@ -357,7 +361,7 @@ public class GameEngine {
 
     private boolean isPossibleToProduceRequiredItems(GameAction action) {
         for (String itemName : action.getProduced()) {
-            if (itemName.equals("health")) {
+            if ("health".equals(itemName)) {
                 continue;
             }
             // check if location.
@@ -381,7 +385,7 @@ public class GameEngine {
     }
 
     private boolean isItemConsumable(String itemName) {
-        if (itemName.equals("health")) {
+        if ("health".equals(itemName)) {
             return true;
         }
 

@@ -225,7 +225,11 @@ class ComplexSTAGTests {
     @Test
     void testThatAllSubjectsAreAvailableBeforeActionIsDone() {
         String response;
+        response = sendCommandToServer(": loOk");
+        assertTrue(
+                response.contains("Player names must be at least one letter"));
         response = sendCommandToServer("simon: loOk");
+        assertTrue(response.contains("log cabin in the woods"));
         response = sendCommandToServer("simon:  with ceLebrate, trapdoor");
         assertTrue(response.contains("can't do that"));
         response = sendCommandToServer("simon: goTo Forest");

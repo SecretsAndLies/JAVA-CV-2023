@@ -25,7 +25,6 @@ public class Location extends GameEntity {
     }
 
     //Determines if this location is connected to the given location.
-
     public Location getConnectedLocation(String name) throws GameException {
         Location location = accessibleLocations.get(name);
         if (location == null) {
@@ -116,7 +115,7 @@ public class Location extends GameEntity {
                 .collect(Collectors.joining("\n      ", header + "\n      ",
                         ""));
     }
-    
+
 
     public String getDescriptionOfLocation(Player currentPlayer) {
         return "You are in " + this.getDescription()

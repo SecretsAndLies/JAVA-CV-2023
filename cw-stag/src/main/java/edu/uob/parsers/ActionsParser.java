@@ -55,7 +55,8 @@ public class ActionsParser {
 
     private void parse() {
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder();
             Document document = builder.parse(actionFile);
             Element root = document.getDocumentElement();
             NodeList actions = root.getChildNodes();
@@ -66,29 +67,44 @@ public class ActionsParser {
                 // create a new action.
                 addNewActionToActionsList(actions, i);
             }
-        } catch (ParserConfigurationException | SAXException | IOException pce) {
+        } catch (ParserConfigurationException | SAXException |
+                 IOException pce) {
             System.err.println(pce.getMessage());
         }
     }
 
     private void addNewActionToActionsList(NodeList actions, int i) {
         Element action = (Element) actions.item(i);
-        Element subjectsElement = (Element) action.getElementsByTagName("subjects").item(0);
-        List<String> subjects = getStringListFromElement(subjectsElement, "entity");
-        Element consumedElement = (Element) action.getElementsByTagName("consumed").item(0);
-        List<String> consumed = getStringListFromElement(consumedElement, "entity");
-        Element producedElement = (Element) action.getElementsByTagName("produced").item(0);
-        List<String> produced = getStringListFromElement(producedElement, "entity");
-        String narration = action.getElementsByTagName("narration").item(0).getTextContent();
-        Element triggers = (Element) action.getElementsByTagName("triggers").item(0);
-        List<String> triggerList = getStringListFromElement(triggers, "keyphrase");
-        addTriggersFromTriggerList(triggerList, subjects, consumed, produced, narration);
+        Element subjectsElement = (Element) action.getElementsByTagName(
+                "subjects").item(0);
+        List<String> subjects = getStringListFromElement(subjectsElement,
+                "entity");
+        Element consumedElement = (Element) action.getElementsByTagName(
+                "consumed").item(0);
+        List<String> consumed = getStringListFromElement(consumedElement,
+                "entity");
+        Element producedElement = (Element) action.getElementsByTagName(
+                "produced").item(0);
+        List<String> produced = getStringListFromElement(producedElement,
+                "entity");
+        String narration = action.getElementsByTagName("narration").item(0)
+                .getTextContent();
+        Element triggers = (Element) action.getElementsByTagName("triggers")
+                .item(0);
+        List<String> triggerList = getStringListFromElement(triggers,
+                "keyphrase");
+        addTriggersFromTriggerList(triggerList, subjects, consumed, produced,
+                narration);
     }
 
-    private void addTriggersFromTriggerList(List<String> triggerList, List<String> subjects,
-                                            List<String> consumed, List<String> produced, String narration) {
+    private void addTriggersFromTriggerList(List<String> triggerList,
+                                            List<String> subjects,
+                                            List<String> consumed,
+                                            List<String> produced,
+                                            String narration) {
         for (String trigger : triggerList) {
-            GameAction gameAction = new GameAction(subjects, consumed, produced, narration);
+            GameAction gameAction = new GameAction(subjects, consumed, produced,
+                    narration);
             if (this.actions.get(trigger) == null) {
                 Set<GameAction> gameActionHashSet = new HashSet<>();
                 gameActionHashSet.add(gameAction);
@@ -99,10 +115,13 @@ public class ActionsParser {
         }
     }
 
-    private List<String> getStringListFromElement(Element element, String targetElementName) {
+    private List<String> getStringListFromElement(Element element,
+                                                  String targetElementName) {
         List<String> stringList = new ArrayList<>();
-        for (int i = 0; i < element.getElementsByTagName(targetElementName).getLength(); i++) {
-            String phrase = element.getElementsByTagName(targetElementName).item(i).getTextContent().toLowerCase();
+        for (int i = 0; i < element.getElementsByTagName(targetElementName)
+                .getLength(); i++) {
+            String phrase = element.getElementsByTagName(targetElementName)
+                    .item(i).getTextContent().toLowerCase(Locale.ENGLISH);
             stringList.add(phrase);
         }
         return stringList;
