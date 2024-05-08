@@ -10,7 +10,8 @@ public class GameAction {
     private final List<String> produced;
     private final String narration;
 
-    public GameAction(List<String> subjects, List<String> consumed, List<String> produced, String narration) {
+    public GameAction(List<String> subjects, List<String> consumed,
+                      List<String> produced, String narration) {
         this.subjects = new ArrayList<>(subjects);
         this.consumed = new ArrayList<>(consumed);
         this.produced = new ArrayList<>(produced);
@@ -57,4 +58,6 @@ public class GameAction {
                 "Produced: " + produced + "\n" +
                 "Narration: " + narration;
     }
+
+
 }

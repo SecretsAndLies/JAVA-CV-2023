@@ -63,6 +63,19 @@ public class EntityParser {
         return gameLocations;
     }
 
+    public boolean isEntity(String word) {
+        if (getGameArtifacts().containsKey(word)) {
+            return true;
+        }
+        if (getGameCharacters().containsKey(word)) {
+            return true;
+        }
+        if (getGameFurniture().containsKey(word)) {
+            return true;
+        }
+        return getGameLocations().containsKey(word);
+    }
+
     private void addLocationsToGameLocationList(List<Graph> sections) {
         List<Graph> locations = sections.get(0).getSubgraphs();
         for (int i = 0; i < locations.size(); i++) {
@@ -81,7 +94,8 @@ public class EntityParser {
         Node locationDetails = locationElement.getNodes(false).get(0);
         // Yes, you do need to get the ID twice !
         String locationName = locationDetails.getId().getId();
-        String locationDescription = locationDetails.getAttribute("description");
+        String locationDescription = locationDetails.getAttribute(
+                "description");
         // the first location is the start.
         boolean isStartLocation = i == 0;
 
@@ -89,7 +103,7 @@ public class EntityParser {
         Map<String, Item> furniture = getFurniture(locationSubgraphs);
         Map<String, Character> characters = getCharacters(locationSubgraphs);
         addAllEntitesToMainEntiesList(artifacts, furniture, characters);
-        Location location = new Location(locationName, locationDescription, isStartLocation,
+        Location location = new Location(locationName, locationDescription,
                 artifacts, furniture, characters);
         if (isStartLocation) {
             startLocation = location;
@@ -140,7 +154,8 @@ public class EntityParser {
         return furniture;
     }
 
-    private Map<String, Character> getCharacters(List<Graph> locationSubgraphs) {
+    private Map<String, Character> getCharacters(
+            List<Graph> locationSubgraphs) {
         Map<String, Character> characters = new HashMap<>();
         for (Graph locationSubgraph : locationSubgraphs) {
             if ("characters".equals(locationSubgraph.getId().getId())) {
@@ -156,15 +171,18 @@ public class EntityParser {
         return characters;
     }
 
-    private Location getLocationByName(String name) throws NoSuchElementException {
+    private Location getLocationByName(String name) throws
+            NoSuchElementException {
         Location location = gameLocations.get(name);
         if (location == null) {
-            throw new NoSuchElementException("location name " + name + " not found");
+            throw new NoSuchElementException(
+                    "location name " + name + " not found");
         }
         return location;
     }
 
-    private void addConnectedLocationsToGameLocations(List<Graph> sections) throws NoSuchElementException {
+    private void addConnectedLocationsToGameLocations(
+            List<Graph> sections) throws NoSuchElementException {
         List<Edge> paths = sections.get(1).getEdges();
         for (Edge path : paths) {
             String fromName = path.getSource().getNode().getId().getId();

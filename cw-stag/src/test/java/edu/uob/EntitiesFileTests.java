@@ -22,7 +22,8 @@ final class EntitiesFileTests {
     void testBasicEntitiesFileIsReadable() {
         try {
             Parser parser = new Parser();
-            FileReader reader = new FileReader("config" + File.separator + "basic-entities.dot");
+            FileReader reader = new FileReader(
+                    "config" + File.separator + "basic-entities.dot");
             parser.parse(reader);
             Graph wholeDocument = parser.getGraphs().get(0);
             ArrayList<Graph> sections = wholeDocument.getSubgraphs();
@@ -33,7 +34,8 @@ final class EntitiesFileTests {
             Node locationDetails = firstLocation.getNodes(false).get(0);
             // Yes, you do need to get the ID twice !
             String locationName = locationDetails.getId().getId();
-            assertEquals("cabin", locationName, "First location should have been 'cabin'");
+            assertEquals("cabin", locationName,
+                    "First location should have been 'cabin'");
 
             // The paths will always be in the second subgraph
             ArrayList<Edge> paths = sections.get(1).getEdges();
@@ -42,8 +44,10 @@ final class EntitiesFileTests {
             String fromName = fromLocation.getId().getId();
             Node toLocation = firstPath.getTarget().getNode();
             String toName = toLocation.getId().getId();
-            assertEquals("cabin", fromName, "First path should have been from 'cabin'");
-            assertEquals("forest", toName, "First path should have been to 'forest'");
+            assertEquals("cabin", fromName,
+                    "First path should have been from 'cabin'");
+            assertEquals("forest", toName,
+                    "First path should have been to 'forest'");
 
         } catch (FileNotFoundException fnfe) {
             fail("FileNotFoundException was thrown when attempting to read basic entities file");

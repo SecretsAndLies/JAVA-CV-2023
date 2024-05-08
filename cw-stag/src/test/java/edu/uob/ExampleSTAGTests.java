@@ -16,8 +16,12 @@ class ExampleSTAGTests {
     // Create a new server _before_ every @Test
     @BeforeEach
     void setup() {
-        File entitiesFile = Paths.get("config" + File.separator + "basic-entities.dot").toAbsolutePath().toFile();
-        File actionsFile = Paths.get("config" + File.separator + "basic-actions.xml").toAbsolutePath().toFile();
+        File entitiesFile = Paths.get(
+                        "config" + File.separator + "basic-entities.dot")
+                .toAbsolutePath().toFile();
+        File actionsFile = Paths.get(
+                        "config" + File.separator + "basic-actions.xml")
+                .toAbsolutePath().toFile();
         server = new GameServer(entitiesFile, actionsFile);
     }
 
@@ -34,11 +38,16 @@ class ExampleSTAGTests {
     void testLook() {
         String response = sendCommandToServer("simon: look");
         response = response.toLowerCase();
-        assertTrue(response.contains("cabin"), "Did not see the name of the current room in response to look");
-        assertTrue(response.contains("log cabin"), "Did not see a description of the room in response to look");
-        assertTrue(response.contains("magic potion"), "Did not see a description of artifacts in response to look");
-        assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
-        assertTrue(response.contains("forest"), "Did not see available paths in response to look");
+        assertTrue(response.contains("cabin"),
+                "Did not see the name of the current room in response to look");
+        assertTrue(response.contains("log cabin"),
+                "Did not see a description of the room in response to look");
+        assertTrue(response.contains("magic potion"),
+                "Did not see a description of artifacts in response to look");
+        assertTrue(response.contains("wooden trapdoor"),
+                "Did not see description of furniture in response to look");
+        assertTrue(response.contains("forest"),
+                "Did not see available paths in response to look");
     }
 
     // Test that we can pick something up and that it appears in our inventory
@@ -49,10 +58,12 @@ class ExampleSTAGTests {
         sendCommandToServer("simon: get potion");
         response = sendCommandToServer("simon: inv");
         response = response.toLowerCase();
-        assertTrue(response.contains("potion"), "Did not see the potion in the inventory after an attempt was made to get it");
+        assertTrue(response.contains("potion"),
+                "Did not see the potion in the inventory after an attempt was made to get it");
         response = sendCommandToServer("simon: look");
         response = response.toLowerCase();
-        assertFalse(response.contains("potion"), "Potion is still present in the room after an attempt was made to get it");
+        assertFalse(response.contains("potion"),
+                "Potion is still present in the room after an attempt was made to get it");
         response = sendCommandToServer("simon: drop potion");
         response = sendCommandToServer("simon: inv");
         assertTrue(response.contains("empty"));
@@ -76,7 +87,8 @@ class ExampleSTAGTests {
         assertTrue(response.contains("forest"));
         response = sendCommandToServer("simon: look");
         response = response.toLowerCase();
-        assertTrue(response.contains("key"), "Failed attempt to use 'goto' command to move to the forest - there is no key in the current location");
+        assertTrue(response.contains("key"),
+                "Failed attempt to use 'goto' command to move to the forest - there is no key in the current location");
     }
 
     @Test
@@ -120,7 +132,8 @@ class ExampleSTAGTests {
         assertTrue(response.contains("key"));
         response = sendCommandToServer("simon: goto cabin");
         response = sendCommandToServer("simon: open trapdoor");
-        assertTrue(response.contains("You unlock the trapdoor and see steps leading down into a cellar"));
+        assertTrue(response.contains(
+                "You unlock the trapdoor and see steps leading down into a cellar"));
         response = sendCommandToServer("simon: goto cellar");
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("cellar"));
@@ -143,20 +156,24 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: attack elf");
-        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        assertTrue(response.contains(
+                "You attack the elf, but he fights back and you lose some health"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: drink potion");
-        assertTrue(response.contains("You drink the potion and your health improves"));
+        assertTrue(response.contains(
+                "You drink the potion and your health improves"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: hit elf");
-        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        assertTrue(response.contains(
+                "You attack the elf, but he fights back and you lose some health"));
 
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: fight elf");
-        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        assertTrue(response.contains(
+                "You attack the elf, but he fights back and you lose some health"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("1"));
         response = sendCommandToServer("simon: attack elf");
@@ -166,7 +183,8 @@ class ExampleSTAGTests {
         assertTrue(response.contains("cabin"));
         response = sendCommandToServer("simon: goto cellar");
         response = sendCommandToServer("simon: look");
-        assertTrue(response.contains("axe"), "Expecting a dropped axe but found " + response);
+        assertTrue(response.contains("axe"),
+                "Expecting a dropped axe but found " + response);
         response = sendCommandToServer("james: look");
         assertTrue(response.contains("forest"));
     }
@@ -217,7 +235,8 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: get key");
         response = sendCommandToServer("simon: goto cabin");
         response = sendCommandToServer("simon: open door with key");
-        assertTrue(response.contains("You unlock the trapdoor and see steps leading down into a cellar"));
+        assertTrue(response.contains(
+                "You unlock the trapdoor and see steps leading down into a cellar"));
 
     }
 
@@ -228,7 +247,8 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: get key");
         response = sendCommandToServer("simon: goto cabin");
         response = sendCommandToServer("simon: with your key unlock the door");
-        assertTrue(response.contains("You unlock the trapdoor and see steps leading down into a cellar"));
+        assertTrue(response.contains(
+                "You unlock the trapdoor and see steps leading down into a cellar"));
         response = sendCommandToServer("simon: goto cellar");
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("cellar"));
@@ -242,7 +262,8 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: get key");
         response = sendCommandToServer("simon: goto cabin");
         response = sendCommandToServer("simon: unlock with key");
-        assertTrue(response.contains("You unlock the trapdoor and see steps leading down into a cellar"));
+        assertTrue(response.contains(
+                "You unlock the trapdoor and see steps leading down into a cellar"));
         response = sendCommandToServer("simon: goto cellar");
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("cellar"));
@@ -257,7 +278,8 @@ class ExampleSTAGTests {
         response = sendCommandToServer("james may: inv");
         assertTrue(response.contains("axe"));
         response = sendCommandToServer("James May: gET Axe");
-        assertTrue(response.contains("I can't pick up axe"), "upper case names are differenrt characters.");
+        assertTrue(response.contains("I can't pick up axe"),
+                "upper case names are differenrt characters.");
         response = sendCommandToServer("James May: look");
         assertTrue(response.contains("james may"));
         response = sendCommandToServer("james may: look");
@@ -304,13 +326,15 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: get potion");
         assertTrue(response.contains("potion added to your inventory"));
         response = sendCommandToServer("simon: open traPdoor");
-        assertTrue(response.contains("You unlock the trapdoor and see steps leading down into a cellar"));
+        assertTrue(response.contains(
+                "You unlock the trapdoor and see steps leading down into a cellar"));
         response = sendCommandToServer("simon: goto cellar");
         assertTrue(response.contains("dusty cellar"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: attack eLF");
-        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        assertTrue(response.contains(
+                "You attack the elf, but he fights back and you lose some health"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: drink POTION axe");
@@ -319,19 +343,22 @@ class ExampleSTAGTests {
         assertTrue(response.contains("I can't do that."));
 
         response = sendCommandToServer("simon: drink pOTION");
-        assertTrue(response.contains("You drink the potion and your health improves"));
+        assertTrue(response.contains(
+                "You drink the potion and your health improves"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: hit elf");
-        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        assertTrue(response.contains(
+                "You attack the elf, but he fights back and you lose some health"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("2"));
         response = sendCommandToServer("simon: fight elf");
-        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        assertTrue(response.contains(
+                "You attack the elf, but he fights back and you lose some health"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("1"));
         response = sendCommandToServer("simon: attack elf");
-        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"));
+        assertTrue(response.contains("You died"));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
         response = sendCommandToServer("simon: look");
@@ -339,7 +366,8 @@ class ExampleSTAGTests {
         response = sendCommandToServer("simon: goto cellar");
         assertTrue(response.contains("dusty cellar"));
         response = sendCommandToServer("simon: look");
-        assertTrue(response.contains("axe"), "Expecting a dropped axe but found " + response);
+        assertTrue(response.contains("axe"),
+                "Expecting a dropped axe but found " + response);
         response = sendCommandToServer("james may: look");
         assertTrue(response.contains("forest"));
         response = sendCommandToServer("simon: goto      cabin");

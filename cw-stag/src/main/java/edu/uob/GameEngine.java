@@ -12,6 +12,13 @@ public class GameEngine {
     private final ActionsParser actionsParser;
     private final EntityParser entityParser;
     private final Map<String, Player> players;
+    private String[] commandText;
+    private Player player;
+    String playerName;
+    List<String> listOfBuiltInCommandWords = Arrays.asList("health", "goto",
+            "drop", "get", "inv", "inventory", "look");
+
+    String defaultErrorMessage = "Can't understand this command";
 
     public GameEngine(File entitiesFile, File actionsFile) {
         actionsParser = new ActionsParser(actionsFile);
@@ -21,40 +28,48 @@ public class GameEngine {
 
     public String handleCommand(String command) throws GameException {
         String response;
-        String[] commandParts = command.split(":");
-        String playerName = commandParts[0];
-        checkPlayerNameIsValid(playerName);
-        String[] commandText = tokenizeCommandText(commandParts[1]);
-        Player player;
-        // if the player has never been seen before, add them to list of players, and put them in start location
-        player = players.get(playerName);
-        if (player == null) {
-            player = new Player(playerName, "another player", entityParser.getStartLocation(), entityParser.getGameLocations());
-            players.put(playerName, player);
-            entityParser.getStartLocation().addCharacterToLocation(player);
-        }
-        List<String> listOfBuiltInCommandWords = Arrays.asList("health", "goto", "drop", "get", "inv", "inventory", "look");
-        if (commandContainsBuiltInKeywords(commandText, listOfBuiltInCommandWords)) {
-            response = executeBuiltInCommand(commandText, player, listOfBuiltInCommandWords);
+        this.commandText = extractCommandText(command);
+        getThePlayer();
+        if (commandContainsBuiltInKeywords()) {
+            response = executeBuiltInCommand();
         } else {
-            response = handleComplexCommand(commandText, player);
+            response = handleComplexCommand();
         }
-
         return response;
     }
 
-    private void checkPlayerNameIsValid(String playerName) throws GameException {
+    private void getThePlayer() {
+        player = players.get(playerName);
+        if (player == null) {
+            player = new Player(playerName, "another player",
+                    entityParser.getStartLocation(),
+                    entityParser.getGameLocations());
+            players.put(playerName, player);
+            entityParser.getStartLocation().addCharacterToLocation(player);
+        }
+    }
+
+    private String[] extractCommandText(String command) throws GameException {
+        String[] commandParts = command.split(":");
+        playerName = commandParts[0];
+        checkPlayerNameIsValid();
+        return tokenizeCommandText(commandParts[1]);
+    }
+
+    private void checkPlayerNameIsValid() throws GameException {
         if (playerName.matches(".*[^a-zA-Z\\s'-].*")) {
             //uppercase and lowercase letters, spaces, apostrophes and hyphens
             throw new GameException("Player name is invalid.");
         }
     }
 
-    private boolean commandContainsBuiltInKeywords(String[] commandText, List<String> listOfBuiltInCommandWords) {
-        return !Collections.disjoint(Arrays.stream(commandText).toList(), listOfBuiltInCommandWords);
+    private boolean commandContainsBuiltInKeywords() {
+        return !Collections.disjoint(Arrays.stream(commandText).toList(),
+                listOfBuiltInCommandWords);
     }
 
-    private void placeBuiltInCommandWordsAtStartOfCommand(String[] commandText, List<String> listOfBuiltInCommandWords) throws GameException {
+    private void placeBuiltInCommandWordsAtStartOfCommand() throws
+            GameException {
         int numOfCommandWords = 0;
         List<String> commandTextList = Arrays.stream(commandText).toList();
         for (String word : listOfBuiltInCommandWords) {
@@ -75,74 +90,94 @@ public class GameEngine {
         }
     }
 
-    // todo repetitive.
-    private String executeBuiltInCommand(String[] commandText, Player player, List<String> listOfBuiltInCommandWords) {
-
+    private String executeBuiltInCommand() {
         try {
-            placeBuiltInCommandWordsAtStartOfCommand(commandText, listOfBuiltInCommandWords);
+            placeBuiltInCommandWordsAtStartOfCommand();
+            if (commandContainsCustomActionKeywords()) {
+                return defaultErrorMessage;
+            }
         } catch (GameException e) {
             return "found more command words than expected";
         }
-        String invalidCommandString = "Can't understand this command";
 
-        // todo: ask if this is acceptable - ie: can we safely reject any built in commands that contain non built in keyprhases?
-        if (commandContainsCustomActionKeywords(commandText)) {
-            return invalidCommandString;
-        }
+        return performBuiltInCommandAction(commandText[0]);
+    }
 
-        switch (commandText[0]) {
+    private String performBuiltInCommandAction(String command) {
+        switch (command) {
             case "look" -> {
-                if (isInvalidCommandWithZeroAdditionalEntites(commandText)) {
-                    return invalidCommandString;
-                }
-                return player.getLocation().getDescriptionOfLocation(player);
+                return handleLook();
             }
             case "inv", "inventory" -> {
-                if (isInvalidCommandWithZeroAdditionalEntites(commandText)) {
-                    return invalidCommandString;
-                }
-                return player.getInventoryString();
+                return handleInventory();
             }
             case "get" -> {
-                String artifact;
-                try {
-                    artifact = getArtifactForGetAndDrop(commandText);
-                } catch (GameException e) {
-                    return invalidCommandString;
-                }
-                return player.getItemFromCurrentLocation(artifact);
+                return handleGet();
             }
             case "drop" -> {
-                String artifact;
-                try {
-                    artifact = getArtifactForGetAndDrop(commandText);
-                } catch (GameException e) {
-                    return invalidCommandString;
-                }
-                return player.dropItemInLocation(artifact);
+                return handleDrop();
             }
             case "goto" -> {
-                String location;
-                try {
-                    location = getLocationFromCommand(commandText);
-                } catch (GameException e) {
-                    return invalidCommandString;
-                }
-                return player.gotoLocation(location);
+                return handleGoto();
             }
             case "health" -> {
-                if (isInvalidCommandWithZeroAdditionalEntites(commandText)) {
-                    return invalidCommandString;
-                }
-                return player.getHealthString();
+                return handleHealth();
             }
             default -> {
-                return invalidCommandString;
+                return defaultErrorMessage;
             }
         }
     }
 
-    private boolean commandContainsCustomActionKeywords(String[] commandText) {
+    private String handleLook() {
+        if (commandContainsEntities()) {
+            return defaultErrorMessage;
+        }
+        return player.getLocation().getDescriptionOfLocation(player);
+    }
+
+    private String handleInventory() {
+        if (commandContainsEntities()) {
+            return defaultErrorMessage;
+        }
+        return player.getInventoryString();
+    }
+
+    private String handleGet() {
+        try {
+            String artifact = getArtifactForGetAndDrop();
+            return player.getItemFromCurrentLocation(artifact);
+        } catch (GameException e) {
+            return defaultErrorMessage;
+        }
+    }
+
+    private String handleDrop() {
+        try {
+            String artifact = getArtifactForGetAndDrop();
+            return player.dropItemInLocation(artifact);
+        } catch (GameException e) {
+            return defaultErrorMessage;
+        }
+    }
+
+    private String handleGoto() {
+        try {
+            String location = getLocationFromCommand();
+            return player.gotoLocation(location);
+        } catch (GameException e) {
+            return defaultErrorMessage;
+        }
+    }
+
+    private String handleHealth() {
+        if (commandContainsEntities()) {
+            return defaultErrorMessage;
+        }
+        return player.getHealthString();
+    }
+
+    private boolean commandContainsCustomActionKeywords() {
         for (String word : commandText) {
             if (actionsParser.getActions().containsKey(word)) {
                 return true;
@@ -153,72 +188,78 @@ public class GameEngine {
 
 
     // TODO: validators are repetitive.
-    private boolean isInvalidCommandWithZeroAdditionalEntites(String[] commandText) {
+    private boolean commandContainsEntities() {
         for (String word : commandText) {
-            // todo: potnetially you could simplify this if you had a method in the entityparser classs.
-            if (entityParser.getGameArtifacts().containsKey(word)) {
-                return true;
-            }
-            if (entityParser.getGameCharacters().containsKey(word)) {
-                return true;
-            }
-            if (entityParser.getGameFurniture().containsKey(word)) {
-                return true;
-            }
-            if (entityParser.getGameLocations().containsKey(word)) {
+            if (entityParser.isEntity(word)) {
                 return true;
             }
         }
         return false;
     }
 
-    private String getLocationFromCommand(String[] commandText) throws GameException {
-        int countOfLocationsFound = 0;
+    private String getLocationFromCommand() throws GameException {
         String location = "";
+        boolean isLocationSet = false;
+
         for (String word : commandText) {
-            if (entityParser.getGameArtifacts().containsKey(word)) {
-                throw new GameException("artifacts");
-            }
-            if (entityParser.getGameCharacters().containsKey(word)) {
-                throw new GameException("characters");
-            }
-            if (entityParser.getGameFurniture().containsKey(word)) {
-                throw new GameException("furniture");
-            }
-            if (entityParser.getGameLocations().containsKey(word)) {
-                if (location.equals(word)) {
-                    continue;
+            validateWordNotArtifactCharacterOrFurniture(word);
+
+            String foundLocation = trySetLocation(word, location,
+                    isLocationSet);
+            if (!foundLocation.isEmpty()) {
+                if (isLocationSet) {
+                    throw new GameException("too many locations");
                 }
-                location = entityParser.getGameLocations().get(word).getName();
-                countOfLocationsFound++;
+                location = foundLocation;
+                isLocationSet = true;
             }
         }
-        if (countOfLocationsFound != 1) {
-            throw new GameException("too many locations");
+
+        if (!isLocationSet) {
+            throw new GameException("no valid location found");
         }
+
         return location;
     }
 
-    private String getArtifactForGetAndDrop(String[] commandText) throws GameException {
+    private void validateWordNotArtifactCharacterOrFurniture(String word) throws
+            GameException {
+        if (entityParser.getGameArtifacts().containsKey(word)) {
+            throw new GameException("artifacts");
+        }
+        if (entityParser.getGameCharacters().containsKey(word)) {
+            throw new GameException("characters");
+        }
+        if (entityParser.getGameFurniture().containsKey(word)) {
+            throw new GameException("furniture");
+        }
+    }
+
+    private String trySetLocation(String word, String currentLocation,
+                                  boolean isLocationSet) {
+        if (entityParser.getGameLocations().containsKey(word)) {
+            if (!isLocationSet || !currentLocation.equals(word)) {
+                return entityParser.getGameLocations().get(word).getName();
+            }
+        }
+        return "";
+    }
+
+
+    // todo simplify
+    private String getArtifactForGetAndDrop() throws GameException {
         int countOfArtifacts = 0;
         String artifact = "";
         for (String word : commandText) {
             if (entityParser.getGameArtifacts().containsKey(word)) {
+                // duplicates are OK.
                 if (artifact.equals(word)) {
                     continue;
                 }
                 countOfArtifacts++;
                 artifact = entityParser.getGameArtifacts().get(word).getName();
             }
-            if (entityParser.getGameCharacters().containsKey(word)) {
-                throw new GameException("characters");
-            }
-            if (entityParser.getGameFurniture().containsKey(word)) {
-                throw new GameException("furniture");
-            }
-            if (entityParser.getGameLocations().containsKey(word)) {
-                throw new GameException("location");
-            }
+            checkNotCharacterFurnitureOrLocation(word);
         }
         if (countOfArtifacts != 1) {
             throw new GameException("too many locations");
@@ -226,29 +267,25 @@ public class GameEngine {
         return artifact;
     }
 
+    private void checkNotCharacterFurnitureOrLocation(String word) throws
+            GameException {
+        if (entityParser.getGameCharacters().containsKey(word)) {
+            throw new GameException("characters");
+        }
+        if (entityParser.getGameFurniture().containsKey(word)) {
+            throw new GameException("furniture");
+        }
+        if (entityParser.getGameLocations().containsKey(word)) {
+            throw new GameException("location");
+        }
+    }
 
-    private String handleComplexCommand(String[] commandText, Player player) throws GameException {
-        List<String> actionKeywords = getActionKeywords(commandText);
+    private String handleComplexCommand() throws GameException {
+        List<String> actionKeywords = getActionKeywords();
         List<GameAction> potentialActions = new ArrayList<>();
 
         for (String actionKeyWord : actionKeywords) {
-            List<String> subjects = getSubjects(commandText, player);
-            if (subjects.isEmpty()) {
-                // this could be caused if a player lacks a resource or if they don't include any entity keywords
-                // (eg: open)
-                continue;
-//                return "Can't execute this action.";
-            }
-            Set<GameAction> allActions = actionsParser.getActionByKeyPhrase(actionKeyWord);
-            for (GameAction action : allActions) {
-                // take the list of subjects. If an action does not contain ALL of the given subjects, exclude it
-                if (!action.actionContainsAllSubjects(subjects)) {
-                    continue;
-                }
-                if (isActionPossible(action, player)) {
-                    potentialActions.add(action);
-                }
-            }
+            populatePotentialActions(actionKeyWord, potentialActions);
         }
         potentialActions = filterForUniqueActions(potentialActions);
         if (potentialActions.size() > 1) {
@@ -257,13 +294,33 @@ public class GameEngine {
         if (potentialActions.isEmpty()) {
             return "I can't do that.";
         }
-        return executeAction(potentialActions.get(0), player);
+        return executeAction(potentialActions.get(0));
 
+    }
+
+    private void populatePotentialActions(String actionKeyWord,
+                                          List<GameAction> potentialActions) {
+        List<String> subjects = getSubjects();
+        if (subjects.isEmpty()) {
+            return;
+        }
+        Set<GameAction> allActions = actionsParser.getActionByKeyPhrase(
+                actionKeyWord);
+        for (GameAction action : allActions) {
+            // take the list of subjects. If an action does not contain ALL of the given subjects, exclude it
+            if (!action.actionContainsAllSubjects(subjects)) {
+                continue;
+            }
+            if (isActionPossible(action)) {
+                potentialActions.add(action);
+            }
+        }
     }
 
 
     // TODO: these were written fast - test when you have time.
-    private List<GameAction> filterForUniqueActions(List<GameAction> potentialActions) {
+    private List<GameAction> filterForUniqueActions(
+            List<GameAction> potentialActions) {
         if (potentialActions.size() <= 1) {
             return potentialActions;
         }
@@ -278,7 +335,8 @@ public class GameEngine {
         return filteredGameActions;
     }
 
-    private boolean listContainsAction(GameAction gameAction, List<GameAction> actionList) {
+    private boolean listContainsAction(GameAction gameAction,
+                                       List<GameAction> actionList) {
         for (GameAction gameAction1 : actionList) {
             if (gameAction.deepEquals(gameAction1)) {
                 return true;
@@ -287,38 +345,17 @@ public class GameEngine {
         return false;
     }
 
-    // todo: put in the action class.
-    // TODO: returns true if this action is possible for this player to complete at the moment
-    // ie: do they have the required items.
-    private boolean isActionPossible(GameAction action, Player player) {
-        // Does the player have all the items they need.
+
+    private boolean playerIsMissingNeededItem(GameAction action) {
         for (String itemName : action.getSubjects()) {
-            if (!player.environmentIncludesItemName(itemName)) {
-                return false;
-            }
-        }
-        // can we consume all the items we need to?
-        // todo: this loop is basically identical to the one below except it uses the poorly named player mehtod
-        // that also checks inventory.
-        for (String itemName : action.getConsumed()) {
-            if (itemName.equals("health")) {
-                continue;
-            }
-            // check if location.
-            if (entityParser.getGameLocations().containsKey(itemName)) {
-                try {
-                    // get connected location throws an exception if it's not connected to the current player.
-                    player.getLocation().getConnectedLocation(itemName);
-                } catch (GameException e) {
-                    return false;
-                }
+            if (!player.playerImmediateEnviromentContainsItem(itemName)) {
                 return true;
             }
-            if (!player.worldIncludesItemName(itemName)) {
-                return false;
-            }
         }
-        // can we produce all the required items
+        return false;
+    }
+
+    private boolean isPossibleToProduceRequiredItems(GameAction action) {
         for (String itemName : action.getProduced()) {
             if (itemName.equals("health")) {
                 continue;
@@ -331,8 +368,57 @@ public class GameEngine {
                 return false;
             }
         }
-
         return true;
+    }
+
+    private boolean isPossibleToConsumeRequiredItems(GameAction action) {
+        for (String itemName : action.getConsumed()) {
+            if (!isItemConsumable(itemName)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isItemConsumable(String itemName) {
+        if (itemName.equals("health")) {
+            return true;
+        }
+
+        // Check if item is a location and if it's connected to the player's current location.
+        if (entityParser.getGameLocations().containsKey(itemName)) {
+            return isConnectedLocationAccessible(itemName);
+        }
+        // Check if the item is included in the world and accessible to the player.
+        // TODO: note that unlike the worldIncludes.. this also checks the player inventory.
+        return player.worldIncludesItemName(itemName);
+    }
+
+    private boolean isConnectedLocationAccessible(String locationName) {
+        try {
+            player.getLocation().getConnectedLocation(locationName);
+            return true;
+        } catch (GameException e) {
+            return false;
+        }
+    }
+
+
+    // todo: put in the action class.
+    // TODO: returns true if this action is possible for this player to complete at the moment
+    // ie: do they have the required items.
+    private boolean isActionPossible(GameAction action) {
+        // Does the player have all the items they need to execute the action?
+        if (playerIsMissingNeededItem(action)) {
+            return false;
+        }
+        // can we consume all the items we need to?
+        if (!isPossibleToConsumeRequiredItems(action)) {
+            return false;
+        }
+
+        // can we produce all the required items
+        return isPossibleToProduceRequiredItems(action);
     }
 
     // todo: this is very similar to code that lives in the player class. except it doesn't search in the inventory
@@ -353,7 +439,8 @@ public class GameEngine {
     }
 
     // take the action and implement its effects
-    private String executeAction(GameAction action, Player player) throws GameException {
+    private String executeAction(GameAction action) throws
+            GameException {
         // produce the items that should be produced
         for (String item : action.getProduced()) {
             player.produceItem(item);
@@ -365,7 +452,7 @@ public class GameEngine {
     }
 
     // get all the subjects mentioned in the command
-    private List<String> getSubjects(String[] commandText, Player player) {
+    private List<String> getSubjects() {
         List<String> subjects = new ArrayList<>();
         for (String word : commandText) {
             if (subjects.contains(word)) {
@@ -378,7 +465,7 @@ public class GameEngine {
         return subjects;
     }
 
-    private List<String> getActionKeywords(String[] commandText) {
+    private List<String> getActionKeywords() {
         List<String> actionKeywords = new ArrayList<>();
         // get all the actionKeywords in the command
         for (String word : commandText) {
@@ -403,10 +490,12 @@ public class GameEngine {
         List<String> mutliWordActions = actionsParser.getMultiWordActions();
         // replace those actions in the command with -. So cut down becomes cut-down
         for (String action : mutliWordActions) {
-            commandParts = commandParts.replaceAll(action, action.replace(" ", "-"));
+            commandParts = commandParts.replaceAll(action,
+                    action.replace(" ", "-"));
         }
         // split the strings up by spaces - so cut-down test becomes cut-down, test
-        String[] commandText = commandParts.toLowerCase(Locale.ENGLISH).strip().split(" ");
+        String[] commandText = commandParts.toLowerCase(
+                Locale.ENGLISH).strip().split(" ");
 
         // reform the valid commands  so cut-down, test becomes cut down, test
         for (int i = 0; i < commandText.length; i++) {

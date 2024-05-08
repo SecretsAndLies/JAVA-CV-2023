@@ -2,21 +2,22 @@ package edu.uob.game_entities;
 
 import edu.uob.GameException;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Location extends GameEntity {
-    private final boolean isStartLocation; // todo: remove.
     private final Map<String, Item> artifacts;
     private final Map<String, Item> furniture;
     private final Map<String, Character> characters;
     private final Map<String, Location> accessibleLocations;
 
 
-    public Location(String name, String description, boolean isStartLocation,
-                    Map<String, Item> artifacts, Map<String, Item> furniture, Map<String, Character> characters) {
+    public Location(String name, String description,
+                    Map<String, Item> artifacts, Map<String, Item> furniture,
+                    Map<String, Character> characters) {
         super(name, description);
-        this.isStartLocation = isStartLocation;
         this.artifacts = artifacts;
         this.furniture = furniture;
         this.characters = characters;
@@ -78,44 +79,44 @@ public class Location extends GameEntity {
         characters.remove(character.getName());
     }
 
-    // TODO: these string methods are similar. Refactor.
+
     private String getCharactersString(Player currentPlayer) {
         Map<String, Character> characterCopy = new HashMap<>(characters);
         characterCopy.remove(currentPlayer.getName());
-        if (characterCopy.isEmpty()) {
-            return "";
-        }
-        final String[] charactersString = {"\nYou can see characters: "};
-        characterCopy.forEach((key, value) -> charactersString[0] = charactersString[0] + "\n      " + value);
-        return charactersString[0];
+        return formatCollectionDescription(characterCopy.values(),
+                "\nYou can see characters:");
     }
 
+
     private String getArtifactsString() {
-        if (artifacts.isEmpty()) {
-            return "";
-        }
-        final String[] artifactsString = {"\nYou can see the following objects: "};
-        artifacts.forEach((key, value) -> artifactsString[0] = artifactsString[0] + "\n      " + " " + value);
-        return artifactsString[0];
+        return formatCollectionDescription(artifacts.values(),
+                "\nYou can see the following objects:");
     }
 
     private String getFurnitureString() {
-        if (furniture.isEmpty()) {
-            return "";
-        }
-        final String[] furnitureString = {"\nYou can see the following furniture: "};
-        furniture.forEach((key, value) -> furnitureString[0] = furnitureString[0] + "\n      " + " " + value);
-        return furnitureString[0];
+        return formatCollectionDescription(furniture.values(),
+                "\nYou can see the following furniture:");
     }
 
+
     private String getAccessibleLocationsString() {
-        if (accessibleLocations.isEmpty()) {
+        return formatCollectionDescription(
+                accessibleLocations.values().stream().map(Location::getName)
+                        .collect(Collectors.toList()),
+                "\nLocations accessible from here are:");
+    }
+
+    private String formatCollectionDescription(Collection<?> items,
+                                               String header) {
+        if (items.isEmpty()) {
             return "";
         }
-        final String[] accessibleLocationsString = {"\nLocations accessible from here are: "};
-        accessibleLocations.forEach((key, value) -> accessibleLocationsString[0] = accessibleLocationsString[0] + "\n      " + " " + value.getName());
-        return accessibleLocationsString[0];
+        return items.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining("\n      ", header + "\n      ",
+                        ""));
     }
+    
 
     public String getDescriptionOfLocation(Player currentPlayer) {
         return "You are in " + this.getDescription()

@@ -1,13 +1,9 @@
 package edu.uob;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class IndividualTests {
@@ -25,8 +21,12 @@ public class IndividualTests {
     // Create a new server _before_ every @Test
     @BeforeEach
     void setup() {
-        File entitiesFile = Paths.get("config" + File.separator + "extended-entities.dot").toAbsolutePath().toFile();
-        File actionsFile = Paths.get("config" + File.separator + "extended-actions.xml").toAbsolutePath().toFile();
+        File entitiesFile = Paths.get(
+                        "config" + File.separator + "extended-entities.dot")
+                .toAbsolutePath().toFile();
+        File actionsFile = Paths.get(
+                        "config" + File.separator + "extended-actions.xml")
+                .toAbsolutePath().toFile();
         server = new GameServer(entitiesFile, actionsFile);
     }
 
@@ -37,7 +37,6 @@ public class IndividualTests {
 //                },
 //                "Server took too long to respond (probably stuck in an infinite loop)");
     }
-
 
 
 }

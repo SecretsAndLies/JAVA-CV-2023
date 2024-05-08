@@ -16,7 +16,8 @@ public class Player extends Character {
     private int health;
     private static final int START_HEALTH = 3;
 
-    public Player(String name, String description, Location location, Map<String, Location> gameLocations) {
+    public Player(String name, String description, Location location,
+                  Map<String, Location> gameLocations) {
         super(name, description);
         this.location = location;
         this.startLocation = location;
@@ -25,46 +26,68 @@ public class Player extends Character {
         health = START_HEALTH;
     }
 
-    // consume item from inventory or location.
     public void consumeItem(String itemName) throws GameException {
         if ("health".equals(itemName)) {
             this.reduceHealth();
             return;
         }
-        // todo repetive
-        // remove item if it's in the inventory.
-        Item inventoryItem = inventory.remove(itemName);
-        if (inventoryItem != null) {
-            getStoreroom().addItemToLocation(inventoryItem);
-            return;
-        }
 
-        Character locationCharacter = location.takeCharacterFromLocation(itemName);
-        if (locationCharacter != null) {
-            getStoreroom().addCharacterToLocation(locationCharacter);
-            return;
-        }
+        if (tryConsumeFromInventory(itemName)) return;
+        if (tryConsumeCharacterFromLocation(itemName)) return;
+        if (tryConsumeFromAllLocations(itemName)) return;
 
-        // remove item which can be in any location (not just the current one)
-        for (Location gameLocation : getAllLocationsExceptStoreroom()) {
-            Item furnitureItem = gameLocation.getFurniture().remove(itemName);
-            if (furnitureItem != null) {
-                getStoreroom().addItemToLocation(furnitureItem);
-                return;
-            }
-            Item artifactItem = gameLocation.getArtifacts().remove(itemName);
-            if (artifactItem != null) {
-                getStoreroom().addItemToLocation(artifactItem);
-                return;
-            }
-        }
-
-        // if all else hasn't happened - this is a location so remove the path from the current location.
+        // If no item or character matches, assume it's a location change
         location.removeAccessibleLocation(itemName);
-
     }
 
-    public void reduceHealth() {
+    private boolean tryConsumeFromInventory(String itemName) throws
+            GameException {
+        Item inventoryItem = inventory.remove(itemName);
+        if (inventoryItem != null) {
+            storeItem(inventoryItem);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean tryConsumeCharacterFromLocation(String itemName) throws
+            GameException {
+        Character locationCharacter = location.takeCharacterFromLocation(
+                itemName);
+        if (locationCharacter != null) {
+            getStoreroom().addCharacterToLocation(locationCharacter);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean tryConsumeFromAllLocations(String itemName) throws
+            GameException {
+        for (Location gameLocation : getAllLocationsExceptStoreroom()) {
+            if (tryRemoveAndStoreItem(gameLocation.getFurniture(), itemName))
+                return true;
+            if (tryRemoveAndStoreItem(gameLocation.getArtifacts(), itemName))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean tryRemoveAndStoreItem(Map<String, Item> items,
+                                          String itemName) throws
+            GameException {
+        Item item = items.remove(itemName);
+        if (item != null) {
+            storeItem(item);
+            return true;
+        }
+        return false;
+    }
+
+    private void storeItem(Item item) throws GameException {
+        getStoreroom().addItemToLocation(item);
+    }
+
+    public void reduceHealth() throws GameException {
         health--;
         if (health == 0) {
             // todo: also provide custom error?
@@ -79,6 +102,7 @@ public class Player extends Character {
             this.location = startLocation;
             this.location.addCharacterToLocation(this);
             health = START_HEALTH;
+            throw new GameException("You died.");
         }
     }
 
@@ -100,33 +124,60 @@ public class Player extends Character {
 
     // Gets item from the storeroom and adds to the room.
     // can also get a location from the locations list and add it as an accessible location.
-    public void produceItem(String itemName) throws GameException {
-        // if item is a location
+    public void produceItem(String itemName) {
         if ("health".equals(itemName)) {
             increaseHealth();
             return;
         }
+
+        if (tryAddPathToLocation(itemName)) {
+            return;
+        }
+        tryAddCharacterOrItemToCurrentLocation(itemName);
+    }
+
+    private boolean tryAddPathToLocation(String itemName) {
         Location location = getLocationByName(itemName);
         if (location != null) {
             this.location.addAccessibleLocation(location);
-            return;
+            return true;
         }
+        return false;
+    }
 
-        for (Location locationFromList : gameLocations.values()) {
-            if (locationFromList.equals(this.getLocation())) {
+    private void tryAddCharacterOrItemToCurrentLocation(String itemName) {
+        for (Location locationToTakeFrom : gameLocations.values()) {
+            if (locationToTakeFrom.equals(this.getLocation())) {
                 continue;
             }
-            Character character = locationFromList.takeCharacterFromLocation(itemName);
-            if (character != null) {
-                this.location.addCharacterToLocation(character);
+            if (tryAddCharacterToLocation(itemName, locationToTakeFrom)) {
                 return;
             }
-            Item item = locationFromList.takeItem(itemName);
-            if (item == null) {
-                continue;
+            if (tryAddItemToLocation(itemName, locationToTakeFrom)) {
+                return;
             }
-            this.location.addItemToLocation(item);
         }
+    }
+
+    private boolean tryAddCharacterToLocation(String itemName,
+                                              Location locationToTakeFrom) {
+        Character character = locationToTakeFrom.takeCharacterFromLocation(
+                itemName);
+        if (character != null) {
+            this.location.addCharacterToLocation(character);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean tryAddItemToLocation(String itemName,
+                                         Location locationToTakeFrom) {
+        Item item = locationToTakeFrom.takeItem(itemName);
+        if (item != null) {
+            this.location.addItemToLocation(item);
+            return true;
+        }
+        return false;
     }
 
     private Location getLocationByName(String name) {
@@ -151,42 +202,33 @@ public class Player extends Character {
     }
 
     // searches environment (including player inventory and current location) for item returns true if found.
-    public boolean environmentIncludesItemName(String item) {
-        if (this.location.getName().equals(item)) {
-            return true;
-        }
-        if (inventory.containsKey(item)) {
-            return true;
-        }
-        if (location.getArtifacts().containsKey(item)) {
-            return true;
-        }
-        if (location.getFurniture().containsKey(item)) {
-            return true;
-        }
-        return location.getCharacters().containsKey(item);
+    public boolean playerImmediateEnviromentContainsItem(String item) {
+        return inventory.containsKey(item) || itemIsLocationOrContainsItem(
+                this.location,
+                item);
     }
+
+    private boolean itemIsLocationOrContainsItem(Location location,
+                                                 String item) {
+        return location.getName().equals(item) ||
+                location.getArtifacts().containsKey(item) ||
+                location.getFurniture().containsKey(item) ||
+                location.getCharacters().containsKey(item);
+    }
+
 
     public boolean worldIncludesItemName(String item) {
         if (inventory.containsKey(item)) {
             return true;
         }
         for (Location location : gameLocations.values()) {
-            if (location.getName().equals(item)) {
-                return true;
-            }
-            if (location.getArtifacts().containsKey(item)) {
-                return true;
-            }
-            if (location.getFurniture().containsKey(item)) {
-                return true;
-            }
-            if (location.getCharacters().containsKey(item)) {
+            if (itemIsLocationOrContainsItem(location, item)) {
                 return true;
             }
         }
         return false;
     }
+
 
     public String getHealthString() {
         return "your health is " + health;
