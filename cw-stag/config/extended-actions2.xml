@@ -2,6 +2,91 @@
 <actions>
     <action>
         <triggers>
+            <keyphrase>throw</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>coin</entity>
+            <entity>axe</entity>
+        </subjects>
+        <consumed>
+            <entity>health</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You throw the axe near the coin and lose some health!</narration>
+    </action>
+        <action>
+            <triggers>
+                <keyphrase>set everything on fire</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>axe</entity>
+            </subjects>
+            <consumed>
+                <entity>weirdCase</entity>
+                <entity>health</entity>
+                <entity>forest</entity>
+                <entity>coin</entity>
+                <entity>key</entity>
+                <entity>potion</entity>
+                <entity>lumberjack</entity>
+                <entity>log</entity>
+            </consumed>
+            <produced>
+            </produced>
+            <narration>You set everything on fire!</narration>
+        </action>
+                <action>
+                    <triggers>
+                        <keyphrase>bring everything back</keyphrase>
+                    </triggers>
+                    <subjects>
+                        <entity>axe</entity>
+                    </subjects>
+                    <consumed>
+                    </consumed>
+                    <produced>
+                        <entity>weirdCase</entity>
+                        <entity>health</entity>
+                        <entity>forest</entity>
+                        <entity>coin</entity>
+                        <entity>key</entity>
+                        <entity>potion</entity>
+                        <entity>lumberjack</entity>
+                        <entity>log</entity>
+                    </produced>
+                    <narration>You brought back everything!</narration>
+                </action>
+        <action>
+            <triggers>
+                <keyphrase>throw</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>axe</entity>
+            </subjects>
+            <consumed>
+            </consumed>
+            <produced>
+                <entity>lumberjack</entity>
+            </produced>
+            <narration>You throw the axe far from the coin and gain a lumberjack!</narration>
+        </action>
+                <action>
+                    <triggers>
+                        <keyphrase>grab</keyphrase>
+                    </triggers>
+                    <subjects>
+                        <entity>axe</entity>
+                    </subjects>
+                    <consumed>
+                    </consumed>
+                    <produced>
+                        <entity>horn</entity>
+                    </produced>
+                    <narration>You get the horn!</narration>
+                </action>
+    <action>
+        <triggers>
             <keyphrase>forcedrop</keyphrase>
         </triggers>
         <subjects>

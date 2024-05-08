@@ -57,6 +57,9 @@ public class GameEngine {
         String[] commandParts = command.split(":");
         playerName = commandParts[0];
         checkPlayerNameIsValid();
+        if (commandParts.length != 2) {
+            throw new GameException("No player name found.");
+        }
         return tokenizeCommandText(commandParts[1]);
     }
 
@@ -361,6 +364,10 @@ public class GameEngine {
             if ("health".equals(itemName)) {
                 continue;
             }
+            // check if it's the current location. This cannot be produced or consumed.
+            if (player.getLocation().getName().equals(itemName)) {
+                return false;
+            }
             // check if location.
             if (entityParser.getGameLocations().containsKey(itemName)) {
                 return true;
@@ -384,6 +391,10 @@ public class GameEngine {
     private boolean isItemConsumable(String itemName) {
         if ("health".equals(itemName)) {
             return true;
+        }
+        // check if it's the current location. This cannot be produced or consumed.
+        if (player.getLocation().getName().equals(itemName)) {
+            return false;
         }
 
         // Check if item is a location and if it's connected to the player's current location.

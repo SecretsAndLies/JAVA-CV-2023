@@ -22,7 +22,7 @@ public class ActionsParser {
     public ActionsParser(File actionFile) {
         actions = new HashMap<>();
         this.actionFile = actionFile;
-        parse();
+        parseCommand();
     }
 
     public Map<String, Set<GameAction>> getActions() {
@@ -53,7 +53,7 @@ public class ActionsParser {
         }
     }
 
-    private void parse() {
+    private void parseCommand() {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance()
                     .newDocumentBuilder();

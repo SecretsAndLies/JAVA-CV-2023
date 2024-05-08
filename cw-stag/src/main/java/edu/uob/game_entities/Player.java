@@ -179,7 +179,7 @@ public class Player extends Character {
 
     private boolean tryAddItemToLocation(String itemName,
                                          Location locationToTakeFrom) {
-        Item item = locationToTakeFrom.takeItem(itemName);
+        Item item = locationToTakeFrom.takeItemFromLocation(itemName);
         if (item != null) {
             this.location.addItemToLocation(item);
             return true;

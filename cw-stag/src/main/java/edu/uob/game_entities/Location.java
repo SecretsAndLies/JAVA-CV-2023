@@ -34,7 +34,7 @@ public class Location extends GameEntity {
     }
 
     // removes the item from this location and gives it to the caller
-    public Item takeItem(String itemName) {
+    public Item takeItemFromLocation(String itemName) {
         Item item = artifacts.remove(itemName);
         if (item == null) {
             item = furniture.remove(itemName);
@@ -112,7 +112,8 @@ public class Location extends GameEntity {
         }
         return items.stream()
                 .map(Object::toString)
-                .collect(Collectors.joining("\n      ", header + "\n      ",
+                .collect(Collectors.joining("\n      ",
+                        header + "\n      ",
                         ""));
     }
 

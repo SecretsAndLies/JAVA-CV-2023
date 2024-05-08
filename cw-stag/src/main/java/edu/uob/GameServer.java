@@ -12,8 +12,12 @@ public final class GameServer {
     private final GameEngine gameEngine;
 
     public static void main(String[] args) throws IOException {
-        File entitiesFile = Paths.get("config" + File.separator + "extended-entities2.dot").toAbsolutePath().toFile();
-        File actionsFile = Paths.get("config" + File.separator + "extended-actions2.xml").toAbsolutePath().toFile();
+        File entitiesFile = Paths.get(
+                        "config" + File.separator + "extended-entities2.dot")
+                .toAbsolutePath().toFile();
+        File actionsFile = Paths.get(
+                        "config" + File.separator + "extended-actions2.xml")
+                .toAbsolutePath().toFile();
         GameServer server = new GameServer(entitiesFile, actionsFile);
         server.blockingListenOn(8888);
     }
@@ -40,8 +44,7 @@ public final class GameServer {
             return gameEngine.handleCommand(command);
         } catch (GameException gameException) {
             return gameException.getMessage();
-        }
-        catch (Exception exception){
+        } catch (Exception exception) {
             return "Something went wrong.";
         }
     }
@@ -73,10 +76,13 @@ public final class GameServer {
      * @param serverSocket The client socket to read/write from.
      * @throws IOException If any IO related operation fails.
      */
-    private void blockingHandleConnection(ServerSocket serverSocket) throws IOException {
+    private void blockingHandleConnection(ServerSocket serverSocket) throws
+            IOException {
         try (Socket s = serverSocket.accept();
-             BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()))) {
+             BufferedReader reader = new BufferedReader(
+                     new InputStreamReader(s.getInputStream()));
+             BufferedWriter writer = new BufferedWriter(
+                     new OutputStreamWriter(s.getOutputStream()))) {
             System.out.println("Connection established");
             String incomingCommand = reader.readLine();
             if (incomingCommand != null) {
