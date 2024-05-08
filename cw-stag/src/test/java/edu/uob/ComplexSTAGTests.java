@@ -84,6 +84,17 @@ class ComplexSTAGTests {
                 "simon: bring everything back with axe");
         // attempting to produce the current location should fail.
         assertTrue(response.contains("I can't do that."));
+        response = sendCommandToServer("simon: goto riverbank");
+        response = sendCommandToServer(
+                "simon: bring everything back with axe");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("weirdcase"));
+        assertTrue(response.contains("potion"));
+        assertTrue(response.contains("key"));
+        assertTrue(response.contains("lumberjack"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("3"));
+
     }
 
     @Test
