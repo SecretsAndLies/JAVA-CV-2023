@@ -1142,7 +1142,9 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: goto riverbank");
 
         response = sendCommandToServer("simon: goto cabin");
-
+        response = sendCommandToServer("simon: look cabin");
+        assertTrue(response.contains(
+                "Can't understand this command"));
         response = sendCommandToServer("simon: get horn");
         response = sendCommandToServer("simon: portal close horn");
         response = sendCommandToServer("simon: goto forest");
