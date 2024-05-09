@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class ActionsParser {
-
-
     private final Map<String, Set<GameAction>> actions;
     private final File actionFile;
 
@@ -126,5 +124,4 @@ public class ActionsParser {
         }
         return stringList;
     }
-
 }

@@ -255,6 +255,48 @@
         </produced>
         <narration>You unlock the door and see steps leading down into a cellar</narration>
     </action>
+        <action>
+            <triggers>
+                <keyphrase>remove</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>axe</entity>
+            </subjects>
+            <consumed>
+                <entity>trapdoor</entity>
+            </consumed>
+            <produced>
+=            </produced>
+            <narration>You remove the trapdoor</narration>
+        </action>
+                <action>
+                    <triggers>
+                        <keyphrase>make it</keyphrase>
+                    </triggers>
+                    <subjects>
+                        <entity>axe</entity>
+                    </subjects>
+                    <consumed>
+                    </consumed>
+                    <produced>
+                          <entity>trapdoor</entity>
+                  </produced>
+                    <narration>You create the trapdoor</narration>
+                </action>
+                                <action>
+                                    <triggers>
+                                        <keyphrase>destruct</keyphrase>
+                                    </triggers>
+                                    <subjects>
+                                        <entity>axe</entity>
+                                    </subjects>
+                                    <consumed>
+                                          <entity>key</entity>
+                                    </consumed>
+                                    <produced>
+                                  </produced>
+                                    <narration>You remove the key</narration>
+                                </action>
     <action>
         <triggers>
             <keyphrase>kiss</keyphrase>
@@ -473,6 +515,21 @@
         </produced>
         <narration>You pour the potion onto the coin and it disappears.</narration>
     </action>
+        <action>
+            <triggers>
+                <keyphrase>pour</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>potion</entity>
+                <entity>coin</entity>
+            </subjects>
+            <consumed>
+                <entity>coin</entity>
+            </consumed>
+            <produced>
+            </produced>
+            <narration>You pour the potion onto the coin and it disappears.</narration>
+        </action>
     <action>
         <triggers>
             <keyphrase>use</keyphrase>
@@ -535,6 +592,22 @@
         </produced>
         <narration>You cut down the tree with the axe</narration>
     </action>
+        <action>
+            <triggers>
+                <keyphrase>harvest down</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>tree</entity>
+                <entity>axe</entity>
+            </subjects>
+            <consumed>
+                <entity>health</entity>
+            </consumed>
+            <produced>
+                <entity>log</entity>
+            </produced>
+            <narration>You harvest the tree but lose health</narration>
+        </action>
     <action>
         <triggers>
             <keyphrase>repair</keyphrase>
@@ -550,6 +623,20 @@
         </produced>
         <narration>You repaired the log back into a tree.</narration>
     </action>
+        <action>
+            <triggers>
+                <keyphrase>remove the</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>axe</entity>
+            </subjects>
+            <consumed>
+                                <entity>axe</entity>
+            </consumed>
+            <produced>
+            </produced>
+            <narration>You destroyed your axe.</narration>
+        </action>
     <action>
         <triggers>
             <keyphrase>drink</keyphrase>

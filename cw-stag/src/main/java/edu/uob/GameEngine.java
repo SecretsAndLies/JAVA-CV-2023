@@ -300,7 +300,6 @@ public class GameEngine {
             return "I can't do that.";
         }
         return executeAction(potentialActions.get(0));
-
     }
 
     private void populatePotentialActions(String actionKeyWord,

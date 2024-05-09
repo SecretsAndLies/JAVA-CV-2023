@@ -58,6 +58,4 @@ public class GameAction {
                 "Produced: " + produced + "\n" +
                 "Narration: " + narration;
     }
-
-
 }

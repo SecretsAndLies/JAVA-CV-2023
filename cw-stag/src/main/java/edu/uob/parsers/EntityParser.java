@@ -19,10 +19,7 @@ import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 
 public class EntityParser {
-
     private final Map<String, Location> gameLocations;
-
-
     private final Map<String, Item> gameArtifacts;
     private final Map<String, Character> gameCharacters;
     private final Map<String, Item> gameFurniture;

@@ -162,7 +162,6 @@ class ComplexSTAGTests {
         response = sendCommandToServer("bryan: pour potion coin");
         assertTrue(response.contains("potion onto the coin"));
         response = sendCommandToServer("bryan: pour potion coin");
-        System.out.println(response);
         assertTrue(response.contains("can't do that"));
         response = sendCommandToServer("bryan: get axe");
         response = sendCommandToServer("bryan: get potion");
@@ -246,6 +245,30 @@ class ComplexSTAGTests {
         assertFalse(response.contains("furnitureitem"));
         response = sendCommandToServer("simon: magically destroy potion");
         assertTrue(response.contains("I can't do that."));
+    }
+
+    @Test
+    void produceSomethingTwice() {
+        String response;
+        response = sendCommandToServer("simon: magically create potion");
+        System.out.println(response);
+        response = sendCommandToServer("simon: magically create potion");
+        System.out.println(response);
+        // there's no rule here - we can produce it twice and just drop it at your feet again.
+    }
+
+    @Test
+    void anotherInv() {
+        String response;
+        response = sendCommandToServer("simon: get axe");
+        response = sendCommandToServer("simon: kiss axe cabin");
+        assertTrue(response.contains(
+                "kiss the axe in the cabin and it costs health"));
+        response = sendCommandToServer("simon: health");
+        assertTrue(response.contains("2"));
+        response = sendCommandToServer("james: kiss axe cabin");
+        response = sendCommandToServer("james: health");
+        assertTrue(response.contains("3"));
     }
 
     @Test
@@ -397,21 +420,58 @@ class ComplexSTAGTests {
         assertTrue(response.contains("3"));
     }
 
+    @Test
+    void testFurnitureConsumption() {
+        String response;
+        response = sendCommandToServer("simon: remove with axe");
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("trapdoor"));
+        response = sendCommandToServer("simon: make it with axe");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("trapdoor"));
+    }
+
+    @Test
+    void testArtefactConsumption() {
+        String response;
+        response = sendCommandToServer("simon: get potion");
+        response = sendCommandToServer("simon: destruct axe");
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("key"));
+        response = sendCommandToServer("simon: summon potion");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("key"));
+        response = sendCommandToServer("simon: destruct axe");
+        assertFalse(response.contains("key"));
+    }
 
     @Test
     void tesstCharacterConsumption() {
         String response;
-
         response = sendCommandToServer("simon: call axe");
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("dog"));
         response = sendCommandToServer("simon: eat dog");
         response = sendCommandToServer("simon: look");
         assertFalse(response.contains("dog"));
+        response = sendCommandToServer("james: get axe");
+        response = sendCommandToServer("james: goto forest");
         response = sendCommandToServer("james: call axe");
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("dog"));
+        response = sendCommandToServer("james: drop axe");
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: get axe");
+        response = sendCommandToServer("simon: goto cabin");
+        response = sendCommandToServer("simon: call axe");
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("dog"));
-
+        response = sendCommandToServer("james: look");
+        assertFalse(response.contains("dog"));
+        response = sendCommandToServer("simon: eat dog");
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("dog"));
     }
 
     @Test
@@ -936,6 +996,33 @@ class ComplexSTAGTests {
     }
 
     @Test
+    void keyphraseWordOrder() {
+        String response;
+        response = sendCommandToServer("simon: get axe");
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon:  down harvest tree");
+        assertTrue(response.contains("I can't do that"));
+        response = sendCommandToServer("simon:  harvest tree down");
+        assertTrue(response.contains("I can't do that"));
+        response = sendCommandToServer("simon:  harvest down tree");
+        assertTrue(response.contains("You harvest the tree but lose health"));
+    }
+
+    @Test
+    void testRemoveAxeTreeCutDown() {
+        String response;
+        response = sendCommandToServer("simon: get axe");
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: remove the axe");
+        response = sendCommandToServer("simon: inv");
+        assertFalse(response.contains("axe"));
+        response = sendCommandToServer("simon: cut tree");
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("log"));
+
+    }
+
+    @Test
     void testCutDownTwoWords() {
         String response;
         response = sendCommandToServer("simon: goto cellar");
@@ -956,6 +1043,8 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: repair log");
         assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: down slice tree with axe");
+        assertTrue(response.contains("I can't do that."));
+        response = sendCommandToServer("simon: down it slice tree with axe");
         assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: cut down tree with axe");
         assertTrue(response.contains("You cut down the tree with the axe"));

@@ -13,7 +13,6 @@ public class Location extends GameEntity {
     private final Map<String, Character> characters;
     private final Map<String, Location> accessibleLocations;
 
-
     public Location(String name, String description,
                     Map<String, Item> artifacts, Map<String, Item> furniture,
                     Map<String, Character> characters) {
@@ -86,7 +85,6 @@ public class Location extends GameEntity {
                 "\nYou can see characters:");
     }
 
-
     private String getArtifactsString() {
         return formatCollectionDescription(artifacts.values(),
                 "\nYou can see the following objects:");
@@ -96,7 +94,6 @@ public class Location extends GameEntity {
         return formatCollectionDescription(furniture.values(),
                 "\nYou can see the following furniture:");
     }
-
 
     private String getAccessibleLocationsString() {
         return formatCollectionDescription(
@@ -116,7 +113,6 @@ public class Location extends GameEntity {
                         header + "\n      ",
                         ""));
     }
-
 
     public String getDescriptionOfLocation(Player currentPlayer) {
         return "You are in " + this.getDescription()

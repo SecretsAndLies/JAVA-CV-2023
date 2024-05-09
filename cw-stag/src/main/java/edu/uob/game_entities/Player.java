@@ -113,7 +113,6 @@ public class Player extends Character {
         }
     }
 
-
     public void increaseHealth() {
         if (health == 3) {
             return;
@@ -205,7 +204,6 @@ public class Player extends Character {
             gameLocationsExceptStoreroom.add(location);
         }
         return gameLocationsExceptStoreroom;
-
     }
 
     // searches environment (including player inventory and current location) for item returns true if found.
@@ -223,7 +221,6 @@ public class Player extends Character {
                 location.getCharacters().containsKey(item);
     }
 
-
     public boolean worldIncludesItemName(String item,
                                          boolean includeStoreroom) {
         if (inventory.containsKey(item)) {
@@ -240,7 +237,6 @@ public class Player extends Character {
         }
         return false;
     }
-
 
     public String getHealthString() {
         return "your health is " + health;
