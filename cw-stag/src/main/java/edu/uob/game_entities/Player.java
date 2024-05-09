@@ -196,7 +196,7 @@ public class Player extends Character {
         return null;
     }
 
-    private List<Location> getAllLocationsExceptStoreroom() {
+    public List<Location> getAllLocationsExceptStoreroom() {
         List<Location> gameLocationsExceptStoreroom = new ArrayList<>();
         for (Location location : gameLocations.values()) {
             if ("storeroom".equals(location.getName())) {
@@ -224,11 +224,16 @@ public class Player extends Character {
     }
 
 
-    public boolean worldIncludesItemName(String item) {
+    public boolean worldIncludesItemName(String item,
+                                         boolean includeStoreroom) {
         if (inventory.containsKey(item)) {
             return true;
         }
-        for (Location location : gameLocations.values()) {
+        List<Location> locations = getAllLocationsExceptStoreroom();
+        if (includeStoreroom) {
+            locations = gameLocations.values().stream().toList();
+        }
+        for (Location location : locations) {
             if (itemIsLocationOrContainsItem(location, item)) {
                 return true;
             }

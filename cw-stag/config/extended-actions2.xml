@@ -2,6 +2,71 @@
 <actions>
     <action>
         <triggers>
+            <keyphrase>ambig</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>coin</entity>
+            <entity>axe</entity>
+            <entity>potion</entity>
+        </subjects>
+        <consumed>
+        </consumed>
+        <produced>
+            <entity>log</entity>
+        </produced>
+        <narration>do ambig with potion!</narration>
+    </action>
+        <action>
+            <triggers>
+                <keyphrase>ambig</keyphrase>
+            </triggers>
+            <subjects>
+                <entity>coin</entity>
+                <entity>axe</entity>
+                <entity>key</entity>
+            </subjects>
+            <consumed>
+                <entity>health</entity>
+            </consumed>
+            <produced>
+                <entity>log</entity>
+            </produced>
+            <narration>do ambig with key!</narration>
+        </action>
+                <action>
+                    <triggers>
+                        <keyphrase>ambig</keyphrase>
+                    </triggers>
+                    <subjects>
+                        <entity>coin</entity>
+                        <entity>axe</entity>
+                        <entity>cabin</entity>
+                    </subjects>
+                    <consumed>
+                        <entity>health</entity>
+                    </consumed>
+                    <produced>
+                    </produced>
+                    <narration>do ambig in cabin!</narration>
+                </action>
+            <action>
+                <triggers>
+                    <keyphrase>ambig</keyphrase>
+                </triggers>
+                <subjects>
+                    <entity>coin</entity>
+                    <entity>axe</entity>
+                    <entity>trapdoor</entity>
+                </subjects>
+                <consumed>
+                </consumed>
+                <produced>
+                    <entity>health</entity>
+                </produced>
+                <narration>do ambig with trapdoor gain health!</narration>
+            </action>
+    <action>
+        <triggers>
             <keyphrase>throw</keyphrase>
         </triggers>
         <subjects>
@@ -176,6 +241,7 @@
         <triggers>
             <keyphrase>open</keyphrase>
             <keyphrase>unlock</keyphrase>
+            <keyphrase>open and</keyphrase>
         </triggers>
         <subjects>
             <entity>trapdoor</entity>
@@ -248,6 +314,34 @@
         </produced>
         <narration>You've locked the trapdoor, how will you get it down now!</narration>
       </action>
+          <action>
+              <triggers>
+                  <keyphrase>open portal</keyphrase>
+              </triggers>
+              <subjects>
+                  <entity>axe</entity>
+              </subjects>
+              <consumed>
+              </consumed>
+              <produced>
+                    <entity>riverbank</entity>
+              </produced>
+              <narration>You've open a portal to the riverbank!</narration>
+            </action>
+                    <action>
+                          <triggers>
+                              <keyphrase>portal close</keyphrase>
+                          </triggers>
+                          <subjects>
+                              <entity>horn</entity>
+                          </subjects>
+                          <consumed>
+                                <entity>riverbank</entity>
+                          </consumed>
+                          <produced>
+                          </produced>
+                          <narration>Your grammar health no!</narration>
+                        </action>
     <action>
         <triggers>
             <keyphrase>call</keyphrase>

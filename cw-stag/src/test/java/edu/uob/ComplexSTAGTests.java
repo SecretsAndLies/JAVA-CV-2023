@@ -83,6 +83,7 @@ class ComplexSTAGTests {
         response = sendCommandToServer(
                 "simon: bring everything back with axe");
         // attempting to produce the current location should fail.
+        // technically this isn't a rule.
         assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("simon: goto riverbank");
         response = sendCommandToServer(
@@ -154,11 +155,14 @@ class ComplexSTAGTests {
         assertTrue(response.contains("I can't do that."));
         response = sendCommandToServer("bryan: open trapdoor");
         assertTrue(response.contains("I can't do that."));
+        response = sendCommandToServer("bryan: get trapdoor");
+        assertTrue(response.contains("Can't understand"));
         response = sendCommandToServer("simon: open trapdoor");
         assertTrue(response.contains("unlock the door and"));
         response = sendCommandToServer("bryan: pour potion coin");
         assertTrue(response.contains("potion onto the coin"));
         response = sendCommandToServer("bryan: pour potion coin");
+        System.out.println(response);
         assertTrue(response.contains("can't do that"));
         response = sendCommandToServer("bryan: get axe");
         response = sendCommandToServer("bryan: get potion");
@@ -211,6 +215,52 @@ class ComplexSTAGTests {
                 "I can't do that.")); // there's no test for this this year.
     }
 
+    @Test
+    void testConsumeEverywhere() {
+        String response;
+        response = sendCommandToServer("simon: magically create potion");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("furnitureitem"));
+        response = sendCommandToServer("simon: get potion");
+        response = sendCommandToServer("simon: magically destroy potion");
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("furnitureitem"));
+        response = sendCommandToServer("simon: magically create potion");
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: magically destroy potion");
+        assertTrue(response.contains("magically destroy furnitureItem"));
+        response = sendCommandToServer("simon: goto cabin");
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("furnitureitem"));
+    }
+
+    @Test
+    void consumeSomethingTwice() {
+        String response;
+        response = sendCommandToServer("simon: magically create potion");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("furnitureitem"));
+        response = sendCommandToServer("simon: get potion");
+        response = sendCommandToServer("simon: magically destroy potion");
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("furnitureitem"));
+        response = sendCommandToServer("simon: magically destroy potion");
+        assertTrue(response.contains("I can't do that."));
+    }
+
+    @Test
+    void checkProducedPathsAreOneWay() {
+        String response;
+        response = sendCommandToServer("simon: open portal axe");
+        response = sendCommandToServer("simon: goto riverbank");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("grassy riverbank"));
+        response = sendCommandToServer("simon: goto cabin");
+        assertTrue(response.contains("Can't access that location from here"));
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("grassy riverbank"));
+    }
+
 
     @Test
     void testDoubleWordCommands() {
@@ -224,19 +274,25 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: open and unlock trapdoor");
         assertTrue(response.contains(
                 "You unlock the door and see steps leading down into a cellar"));
-
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("simon"));
         // artifacts
         response = sendCommandToServer("simon: get potion potion");
         assertTrue(response.contains("potion added to your inventory"));
-
+        response = sendCommandToServer("james: look");
+        assertFalse(response.contains("potion"));
         response = sendCommandToServer("simon: drop potion potion");
         assertTrue(response.contains("dropped on the ground"));
+        response = sendCommandToServer("james: look");
+        assertTrue(response.contains("potion"));
 
         response = sendCommandToServer("simon: get trapdoor trapdoor");
         assertTrue(response.contains("Can't understand this command"));
 
         // locations
         response = sendCommandToServer("simon: goto forest forest");
+        response = sendCommandToServer("james: look");
+        assertFalse(response.contains("simon"));
         response = sendCommandToServer("simon: look");
         assertTrue(response.contains("A deep dark forest"));
         response = sendCommandToServer("simon: meditate forest forest");
@@ -256,8 +312,45 @@ class ComplexSTAGTests {
 
         // THIS ISN'T TESTED
 //        response = sendCommandToServer("simon: look get");
-//        System.out.println(response);  // this also should work because (not testing it though)
+//        System.out.println(response);  // this also should workk (not testing it though)
 
+
+    }
+
+    @Test
+    void oneStuff() {
+        String response;
+        response = sendCommandToServer(
+                "simon: magically destroy magically create potion");
+        System.out.println(response);
+    }
+
+    @Test
+    void tooManySubjects() {
+        String response;
+        response = sendCommandToServer("simon: open and trapdoor key cellar");
+        assertTrue(response.contains("I can't"));
+        response = sendCommandToServer("simon: summon potion");
+        response = sendCommandToServer("simon: open and trapdoor key cellar");
+        assertTrue(response.contains("I can't"));
+        response = sendCommandToServer("simon: open and trapdoor key coin");
+        assertTrue(response.contains("I can't"));
+        response = sendCommandToServer("simon: magically create with potion");
+        response = sendCommandToServer(
+                "simon: open and trapdoor key furnitureItem");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("furnitureitem"));
+        response = sendCommandToServer("simon: inv");
+        assertTrue(response.contains("inventory is empty"));
+        assertFalse(response.contains("furnitureitem"));
+        response = sendCommandToServer("simon: drop potion");
+        System.out.println(response);
+        response = sendCommandToServer("simon: look");
+        System.out.println(response);
+        response = sendCommandToServer("simon: open and trapdoor ");
+        System.out.println(response);
+        response = sendCommandToServer("simon: goto cellar forest");
+        System.out.println(response);
 
     }
 
@@ -302,6 +395,23 @@ class ComplexSTAGTests {
                 "You kiss the axe outside the cabin and gain some health."));
         response = sendCommandToServer("simon: health");
         assertTrue(response.contains("3"));
+    }
+
+
+    @Test
+    void tesstCharacterConsumption() {
+        String response;
+
+        response = sendCommandToServer("simon: call axe");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("dog"));
+        response = sendCommandToServer("simon: eat dog");
+        response = sendCommandToServer("simon: look");
+        assertFalse(response.contains("dog"));
+        response = sendCommandToServer("james: call axe");
+        response = sendCommandToServer("simon: look");
+        assertTrue(response.contains("dog"));
+
     }
 
     @Test
@@ -697,10 +807,10 @@ class ComplexSTAGTests {
                 "You used the potion to magically create furnitureItem"));
         response = sendCommandToServer("james: get furnitureItem");
         assertTrue(response.contains("Can't understand this command"));
-        response = sendCommandToServer("james: look");
+        response = sendCommandToServer("tom: look");
         assertTrue(response.contains("furnitureitem"));
         response = sendCommandToServer(
-                "james: use potion to magically destroy");
+                "tom: use potion to magically destroy");
         assertTrue(response.contains(
                 "You used the potion to magically destroy furnitureItem"));
         response = sendCommandToServer("james: look");
@@ -910,10 +1020,65 @@ class ComplexSTAGTests {
     }
 
     @Test
+    void testMoreThanOne() {
+        //there is more than one valid and performable action possible
+        String response;
+//        response = sendCommandToServer("simon: look");
+//        response = sendCommandToServer("simon: bash trapdoor");
+//        System.out.println(response);
+//        response = sendCommandToServer("simon: ambig coin axe");
+//        System.out.println(response);
+//        response = sendCommandToServer("simon: look");
+//        System.out.println(response);
+//        response = sendCommandToServer("simon: health");
+//        System.out.println(response);
+//        response = sendCommandToServer("simon: summon potion");
+//        System.out.println(response);
+//        response = sendCommandToServer("simon: unlock trapdoor");
+//        response = sendCommandToServer("simon: goto cellar");
+//        response = sendCommandToServer("simon: fight elf");
+//        System.out.println(response);
+//        response = sendCommandToServer("simon: fight elf");
+//        System.out.println(response);
+//        response = sendCommandToServer("simon: fight elf");
+//        System.out.println(response);
+//        response = sendCommandToServer("ia: lock trapdoor");
+//        System.out.println(response);
+//        response = sendCommandToServer("ia: goto cellar");
+//        System.out.println(response);
+//        response = sendCommandToServer("simon: goto cellar");
+//        System.out.println(response);
+        response = sendCommandToServer("simon: open portal axe");
+        response = sendCommandToServer("simon: look");
+        response = sendCommandToServer("simon: goto riverbank");
+
+        response = sendCommandToServer("simon: goto cabin");
+
+        response = sendCommandToServer("simon: get horn");
+        response = sendCommandToServer("simon: portal close horn");
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: goto cabin");
+        response = sendCommandToServer("simon: goto riverbank");
+        response = sendCommandToServer("james: goto riverbank");
+        System.out.println(response);
+        response = sendCommandToServer("simon: goto forest");
+        response = sendCommandToServer("simon: goto cabin");
+        response = sendCommandToServer("simon: portal close horn");
+        response = sendCommandToServer("tony: goto riverbank");
+        System.out.println(response);
+        response = sendCommandToServer("simon: goto riverbank");
+        System.out.println(response);
+    }
+
+    @Test
     void testPlayingTheGame() {
         String response;
         response = sendCommandToServer("simon: axe get");
         assertTrue(response.contains("axe added to your inventory"));
+//        response = sendCommandToServer("simon: get");
+//        System.out.println(response);
+//        response = sendCommandToServer("simon: po summon axe coin");
+//        System.out.println(response);
         response = sendCommandToServer("simon: look");
         response = sendCommandToServer("simon: drop potion");
         assertTrue(response.contains("potion isn't in your inventory"));
@@ -1068,6 +1233,11 @@ class ComplexSTAGTests {
                 "lumberjack")); // tests that characters can be created.
         response = sendCommandToServer("simon: talk horn");
         assertTrue(response.contains("woah dude, nice horn"));
+        response = sendCommandToServer("david: goto forest");
+        response = sendCommandToServer("david: goto riverbank");
+        response = sendCommandToServer("david: goto clearing");
+        response = sendCommandToServer("david: get lumberjack");
+        assertTrue(response.contains("Can't understand this command"));
         response = sendCommandToServer("simon: talk lumberjack");
         assertTrue(response.contains(
                 "Multiple actions are available, can you be more specific"));
@@ -1079,10 +1249,10 @@ class ComplexSTAGTests {
         response = sendCommandToServer("simon: talk lumberjack horn look");
         assertTrue(response.contains("Can't understand this command"));
         response = sendCommandToServer(
-                "simon: murder lUmberjack"); // tests that characters can be consumed.
+                "simon: mUrder lUmberjack"); // tests that characters can be consumed.
         assertTrue(response.contains(
                 "You murdered the lumberjack. Oh, the humanity"));
-        response = sendCommandToServer("simon: look");
+        response = sendCommandToServer("simon: lOok");
         assertFalse(response.contains("lumberjack"));
     }
 

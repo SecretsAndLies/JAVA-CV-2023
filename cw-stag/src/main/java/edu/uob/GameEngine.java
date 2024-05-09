@@ -403,7 +403,7 @@ public class GameEngine {
         }
         // Check if the item is included in the world and accessible to the player.
         // noe that unlike the worldIncludes.. this also checks the player inventory.
-        return player.worldIncludesItemName(itemName);
+        return player.worldIncludesItemName(itemName, false);
     }
 
     private boolean isConnectedLocationAccessible(String locationName) {
@@ -467,7 +467,7 @@ public class GameEngine {
             if (subjects.contains(word)) {
                 continue;
             }
-            if (player.worldIncludesItemName(word)) {
+            if (player.worldIncludesItemName(word, true)) {
                 subjects.add(word);
             }
         }
