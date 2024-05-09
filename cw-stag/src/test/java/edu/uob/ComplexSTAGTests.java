@@ -1160,6 +1160,13 @@ class ComplexSTAGTests {
     }
 
     @Test
+    void testGrammar() {
+        String response;
+        response = sendCommandToServer("simon: goto : forest");
+        assertTrue(response.contains("deep dark forest"));
+    }
+
+    @Test
     void testPlayingTheGame() {
         String response;
         response = sendCommandToServer("simon: axe get");

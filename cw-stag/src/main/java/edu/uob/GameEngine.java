@@ -54,7 +54,7 @@ public class GameEngine {
     }
 
     private String[] extractCommandText(String command) throws GameException {
-        String[] commandParts = command.split(":");
+        String[] commandParts = command.split(":", 2);
         playerName = commandParts[0];
         checkPlayerNameIsValid();
         if (commandParts.length != 2) {
