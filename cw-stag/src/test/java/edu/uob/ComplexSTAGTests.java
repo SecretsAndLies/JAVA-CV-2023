@@ -1164,6 +1164,8 @@ class ComplexSTAGTests {
         String response;
         response = sendCommandToServer("simon: goto : forest");
         assertTrue(response.contains("deep dark forest"));
+        response = sendCommandToServer("simon: goto ,.!-asda cabin");
+        System.out.println(response);
     }
 
     @Test
